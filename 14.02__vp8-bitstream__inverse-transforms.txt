@@ -1,0 +1,11 @@
+
+
+#### 14.2 Inverse Transforms
+
+
+If the Y2 residue block exists (i.e., the macroblock luma mode is not `SPLITMV` or `B_PRED`), it is inverted first (using the inverse WHT) and the element of the result at row i, column j is used as the 0<sup>th</sup> coefficient of the Y subblock at position (i, j), that is, the Y subblock whose index is (i * 4) + j. As discussed in Chapter 13, if the luma mode is `B_PRED` or `SPLITMV`, the 0<sup>th</sup> Y coefficients are part of the residue signal for the subblocks themselves.
+
+In either case, the inverse transforms for the sixteen Y subblocks and eight chroma subblocks are computed next. All 24 of these inversions are independent of each other; their results may (at least conceptually) be stored in 24 separate 4x4 arrays.
+
+As is done by the reference decoder, an implementation may wish to represent the prediction and residue buffers as macroblock-sized arrays (that is, a 16x16 Y buffer and two 8x8 chroma buffers). Regarding the inverse DCT implementation given below, this requires a simple adjustment to the address calculation for the resulting residue pixels.
+

@@ -1,0 +1,23 @@
+
+
+### Chapter 15: Loop Filter
+
+
+Loop filtering is the last stage of frame reconstruction and the next-to-last stage of the decoding process. The loop filter is applied to the entire frame after the summation of predictor and residue described in Chapter 14.
+
+The purpose of the loop filter is to eliminate (or at least reduce) visually objectionable artifacts associated with the semi-independence of the coding of macroblocks and their constituent subblocks.
+
+As was discussed in Chapter 5, the loop filter is "integral" to decoding, in that the results of loop filtering are used in the prediction of subsequent frames. Consequently, a functional decoder implementation must perform loop filtering exactly as described here. This is in distinction to any postprocessing that may be applied only to the image immediately before display; such postprocessing is entirely at the option of the implementor (and/or user) and has no effect on decoding per se.
+
+The baseline frame level parameters controlling the loop filter are defined in the frame header (Chapter 9.4) along with a mechanism for adjustment based on a macroblock's prediction mode and/or reference frame. The first is a flag selecting the type of filter (normal or simple), the other two are numbers (`loop_filter_level` and `sharpness_level`) that adjust the strength or sensitivity of the filter. As described in Chapters 9.3 and 10, `loop_filter_level` may be also overridden on a per-macroblock basis using segmentation.
+
+Loop filtering is one of the more computationally-intensive aspects of VP8 decoding. This is the reason for the existence of the optional less-demanding simple filter type. Also, the loop filter is completely disabled if the loop_filter_level in the frame header is zero; macroblock-level overrides are ignored in this case. (It is of course possible for a compressor to encode a frame in which only a few macroblocks are loop filtered: The global loop_filter_level must be non-zero and each macroblock can select one of four levels, most of which could be zero.)
+
+To facilitate efficient implementation, the VP8 decoding algorithms generally, and the loop filter especially, were designed with SIMD ("Single Instruction Multiple Datum" or "integer vector") processors in mind. The reference decoder implementation of loop filtering (found in `loopfilter.c`) is, in effect, a portable SIMD specification of the loop filtering algorithms intended to simplify a realization on an actual SIMD processor.
+
+Unfortunately, the approach taken there does not lead to maximal efficency (restricted to the C language, that is) and, as far as a pure algorithm specification is concerned, is in places obscure. For example, various aspects of filtering are conditioned on absolute differences lying below certain thresholds. An ordinary C implementation would simply discriminate amongst these behaviors using if statements. The reference decoder instead effects this by "masking arithmetic", that is, using "and" operations to (conditionally) zero-out values to be added or subtracted to pixels. Furthermore, the structure holding the various threshold values is artificially parallelized. While this mimics closely the approach taken in vector-processor machine language, it is not how one usually programs in C.
+
+In this document, we take a different approach and present the algorithms in a more straightforward, idiomatic, and terse C style. Together with the reference version, we hope to provide the "best of both worlds", that is, a pure algorithm specification here and a strong suggestion as to an optimal actual implementation in `loopfilter.c`.
+
+We begin by discussing the aspects of loop filtering that are independent of the controlling parameters and type of filter chosen.
+

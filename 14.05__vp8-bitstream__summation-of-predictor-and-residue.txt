@@ -1,0 +1,13 @@
+
+
+#### 14.5 Summation of Predictor and Residue
+
+
+Finally, the prediction and residue signals are summed to form the reconstructed macroblock, which, except for loop filtering (taken up next), completes the decoding process.
+
+The summing procedure is fairly straightforward, having only a couple of details. The prediction and residue buffers are both arrays of 16-bit signed integers. Each individual (Y, U, and V pixel) result is calculated first as a 32-bit sum of the prediction and residue, and is then saturated to 8-bit unsigned range (using, say, the `clamp255` function defined above) before being stored as an 8-bit unsigned pixel value.
+
+VP8 also supports a mode where the encoding of a bitstream guarantees all reconstructed pixel values between 0 and 255, compliant bitstreams of such requirements have the `clamp_type` bit in the frame header set to 1. In such case, the `clamp255` is no longer required.
+
+The summation process is the same, regardless of the (intra or inter) mode of prediction in effect for the macroblock. The reference decoder implementation of reconstruction may be found in the file `recon.c`.
+

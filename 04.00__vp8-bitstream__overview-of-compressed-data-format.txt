@@ -1,0 +1,29 @@
+
+
+### Chapter 4: Overview of Compressed Data Format
+
+The input to a VP8 decoder is a sequence of compressed frames whose order matches their order in time. Issues such as the duration of frames, the corresponding audio, and synchronization are generally provided by the playback environment and are irrelevant to the decoding process itself, however, to aid in fast seeking a start code is included in the header of each key frame.
+
+The decoder is simply presented with a sequence of compressed frames and produces a sequence of decompressed (reconstructed) YUV frames corresponding to the input sequence. As stated in the introduction, the exact pixel values in the reconstructed frame are part of VP8's specification. This document specifies the layout of the compressed frames and gives unambiguous algorithms for the correct production of reconstructed frames.
+
+The first frame presented to the decompressor is of course a key frame. This may be followed by any number of interframes; the correct reconstruction of each frame depends on all prior frames up to the key frame. The next key frame restarts this process: The decompressor resets to its default initial condition upon reception of a key frame and the decoding of a key frame (and its ensuing interframes) is completely independent of any prior decoding.
+
+At the highest level, every compressed frame has three or more pieces. It begins with an uncompressed data chunk comprising 10 bytes in the case of key frames and 3-bytes for inter frames. This is followed by two or more blocks of compressed data (called _partitions_). These compressed data partitions begin and end on byte boundaries.
+
+The first compressed partition has two subsections:
+
+  1. Header information that applies to the frame as a whole.
+  2. Per-macroblock information specifying how each macroblock is predicted from the already-reconstructed data that is available to the decompressor.
+
+As stated above, the macroblock-level information occurs in raster-scan order.
+
+The rest of the partitions contain, for each block, the DCT/WHT coefficients (quantized and logically compressed) of the residue signal to be added to the predicted block values. It typically accounts for roughly 70% of the overall datarate. VP8 supports packing the compressed DCT/WHT coefficients' data from macroblock rows into separate partitions. If there is more than one partition for these coefficients, the sizes of the partitions -- except the last partition -- in bytes are also present in the bitstream right after the above first partition. Each of the sizes is a 3-byte data item written in little endian format. These sizes provide the decoder direct access to all DCT/WHT coefficient partitions, which enables parallel processing of the coefficients in a decoder.
+
+The separate partitioning of the prediction data and coefficient data also allows flexibility in the implementation of a decompressor: An implementation may decode and store the prediction information for the whole frame and then decode, transform, and add the residue signal to the entire frame, or it may simultaneously decode both partitions, calculating prediction information and adding in the residue signal for each block in order. The length field in the frame tag, which allows decoding of the second partition to begin before the first partition has been completely decoded, is necessary for the second "block-at-a-time" decoder implementation.
+
+All partitions are decoded using separate instances of the boolean entropy decoder described in Chapter 7. Although some of the data represented within the partitions is conceptually "flat" (a bit is just a bit with no probabilistic expectation one way or the other), because of the way such coders work, there is never a direct correspondence between a "conceptual bit" and an actual physical bit in the compressed data partitions. Only in the 3 or 10 byte uncompressed chunk described above is there such a physical correspondence.
+
+A related matter, which is true for most lossless compression formats, is that seeking within a partition is not supported. The data must be decompressed and processed (or at least stored) in the order in which it occurs in the partition.
+
+While this document specifies the ordering of the partition data correctly, the details and semantics of this data are discussed in a more logical fashion to facilitate comprehension. For example, the frame header contains updates to many probability tables used in decoding per-macroblock data. The latter is often described before the layouts of the probabilities and their updates, even though this is the opposite of their order in the bitstream.
+

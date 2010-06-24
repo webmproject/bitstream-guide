@@ -1,0 +1,34 @@
+
+
+#### 11.3 Subblock Mode Contexts
+
+
+The coding of subblock modes in key frames uses the modes already coded for the subblocks to the left of and above the subblock to select a probability array for decoding the current subblock mode. This is our first instance of contextual prediction, and there are several caveats associated with it:
+
+  1. The adjacency relationships between subblocks are based on the normal default raster placement of the subblocks.
+
+  2. The adjacent subblocks need not lie in the current macroblock. The subblocks to the left of the left-edge subblocks 0, 4, 8, and 12 are the right-edge subblocks 3, 7, 11, and 15, respectively, of the (already coded) macroblock immediately to the left. Similarly, the subblocks above the top-edge subblocks 0, 1, 2, and 3 are the bottom-edge subblocks 12, 13, 14, and 15 of the already-coded macroblock immediately above us.
+
+  3. For macroblocks on the top row or left edge of the image, some of the predictors will be non-existent. Such predictors are taken to have had the value `B_DC_PRED` which, perhaps conveniently, takes the value `0` in the enumeration above. A simple management scheme for these contexts might maintain a row of above predictors and four left predictors. Before decoding the frame, the entire row is initialized to `B_DC_PRED`; before decoding each row of macroblocks, the four left predictors are also set to `B_DC_PRED`. After decoding a macroblock, the bottom four subblock modes are copied into the row predictor (at the current position, which then advances to be above the next macroblock) and the right four subblock modes are copied into the left predictor.
+
+  4. Many macroblocks will of course be coded using a 16x16 luma prediction mode. For the purpose of predicting ensuing subblock modes (only), such macroblocks derive a subblock mode, constant throughout the macroblock, from the 16x16 luma mode as follows: `DC_PRED` uses `B_DC_PRED`, `V_PRED` uses `B_VE_PRED`, `H_PRED` uses `B_HE_PRED`, and `TM_PRED` uses `B_TM_PRED`.
+
+  5. Although we discuss interframe modes later, we remark here that, while interframes do use all the intra-coding modes described here and below, the subblock modes in an interframe are coded using a single constant probability array that does not depend on any context.
+
+The dependence of subblock mode probability on the nearby subblock mode context is most easily handled using a three-dimensional constant array:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes-1];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The outer two dimensions of this array are indexed by the already-coded subblock modes above and to the left of the current block, respectively. The inner dimension is a typical tree probability list whose indices correspond to the even indices of the `bmode_tree` above. The mode for the [[ j^(th) ]] luma subblock is then
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Bmode = (intra_bmode) treed_read( d, bmode_tree, kf_bmode_prob [A] [L]);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+where the 4x4 Y subblock index [[ j ]] varies from `0` to `15` in raster order and `A` and `L` are the modes used above and to-the-left of the [[ j^(th) ]] subblock.
+
+The contents of the `kf_bmode_prob` array are given at the end of this chapter.
+

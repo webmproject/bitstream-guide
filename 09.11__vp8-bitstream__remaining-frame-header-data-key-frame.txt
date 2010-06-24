@@ -1,0 +1,16 @@
+
+
+#### 9.11 Remaining Frame Header Data (Key Frame)
+
+
+| Index        | Description
+| ------------ | ------------- 
+| `L(1)`       | `mb_no_coeff_skip`. This flag indicates at the frame level if skipping of macroblocks with no non-zero coefficients is enabled. If it is set to `0` then `prob_skip_false` is not read and `mb_skip_coeff` is forced to `0` for all macroblocks (see Sections 11.1 and 12.1).
+| `L(8)`       | `prob_skip_false` = Probability used for decoding a macroblock level flag, which indicates if a macroblock has any non-zero coefficients. Only read if `mb_no_coeff_skip` is `1`.
+
+Decoding of this portion of the frame header is handled in the reference decoder file `demode.c`.
+
+This completes the layout of the frame header. The remainder of the first data partition consists of macroblock-level prediction data.
+
+After the frame header is processed, all probabilities needed to decode the prediction and residue data are known and will not change until the next frame.
+

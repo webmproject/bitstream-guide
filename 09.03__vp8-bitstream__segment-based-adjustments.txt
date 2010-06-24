@@ -1,0 +1,19 @@
+
+
+#### 9.3 Segment-based Adjustments
+
+
+This subsection contains probability and value information for implementing segment adaptive adjustments to default decoder behaviors. The data in this section is used in the decoding of the ensuing per-segment information and applies to the entire frame. When segment adaptive adjustments are enabled, each macroblock will be assigned a segment ID. Macroblocks with the same segment ID belong to same segment, and have the same adaptive adjustments over default baseline values for the frame. The adjustments can be quantization level or loop filter strength.
+
+The context for decoding this feature is provided by section B of the frame header. It contains:
+
+  1. A `segmentation_enabled` Flag which if `1` (`0`), enables (disables) the feature for this frame. The remaining fields occur if the feature is enabled.
+  2. `L(1)` indicates if the segment map is updated for the current frame (`update_mb_segmentaton_map`)
+  3. `L(1)` indicates if the segment feature data items are updated for the current frame
+  4. If flag in 3 is `1`, the following fields occur: 
+     1. `L(1)` the mode of segment feature data, can be absolute value mode or delta value mode, later mode, feature data is the difference against current frame defaults.
+     2. Segment feature data items are decoded segment by each segment for each segment feature. For every data item, a one bit flag indicating if the item is `0` or a non-zero value to be decoded. If there is non-zero value, the value is decoded as a magnitude `L(n)` followed by a one bit sign (`L(1)`, `0` for positive and `1` for negative). The length `n` can be looked up from a pre-defined length table for all feature data.
+  5. If flag in 2 is `1`, the probabilities of the decoding tree for segment map are decoded from the bitstream. Each probability is decoded with one bit flag indicating if the probability is the default value of `255` (flag is `0`), or the probability is an 8-bit value, `L(8)`, from the bitstream.
+
+The layout and semantics supporting this feature at the macroblock level will be described in Chapter 10.
+

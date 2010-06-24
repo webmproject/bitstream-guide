@@ -1,0 +1,212 @@
+
+
+#### 16.3 Mode and Motion Vector Contexts
+
+
+The probability table used to decode the `mv_ref`, along with three reference motion vectors used by the selected mode, is calculated via a survey of the already-decoded motion vectors in (up to) 3 nearby macroblocks. 
+
+The algorithm generates a sorted list of distinct motion vectors adjacent to the search site. The `best_mv` is the vector with the highest score. The `nearest_mv` is the non-zero vector with the highest score. The `near_mv` is the non-zero vector with the next highest score. The number of motion vectors coded using the `SPLITMV` mode is scored using the same weighting and is returned with the scores of the best, nearest, and near vectors.
+
+The three adjacent macroblocks above, left, and above-left are considered in order. If the macroblock is intra-coded, no action is taken. Otherwise, the motion vector is compared to other previously found motion vectors to determine if it has been seen before, and if so contributes its weight to that vector, otherwise enters a new vector in the list. The above and left vectors have twice the weight of the above-left vector.
+
+As is the case with many contexts used by VP8, it is possible for macroblocks near the top or left edges of the image to reference blocks that are outside the visible image. VP8 provides a border of 1 macroblock filled with 0x0 motion vectors left of the left edge, and a border filled with 0,0 motion vectors of 1 macroblocks above the top edge.
+
+Much of the process is more easily described in C than in English. The reference code for this can be found in `findnearmv.c`.  The calculation of reference vectors, probability table, and, finally, the inter-prediction mode itself is implemented as follows.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+typedef union 
+{
+    unsigned int as_int;
+    MV           as_mv;
+} int_mv;        /* facilitates rapid equality tests */
+
+
+
+static void mv_bias(MODE_INFO *x,int refframe, int_mv *mvp, int * ref_frame_sign_bias )
+{
+    MV xmv;
+    xmv = x->mbmi.mv.as_mv;
+    if ( ref_frame_sign_bias[x->mbmi.ref_frame] != ref_frame_sign_bias[refframe] )
+    {
+        xmv.row*=-1;
+        xmv.col*=-1;
+    }
+    mvp->as_mv = xmv;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void vp8_clamp_mv(MV *mv, const MACROBLOCKD *xd) 
+{
+    if ( mv->col < (xd->mb_to_left_edge - LEFT_TOP_MARGIN) )
+        mv->col = xd->mb_to_left_edge - LEFT_TOP_MARGIN;
+    else if ( mv->col > xd->mb_to_right_edge + RIGHT_BOTTOM_MARGIN )
+        mv->col = xd->mb_to_right_edge + RIGHT_BOTTOM_MARGIN;
+
+    if ( mv->row < (xd->mb_to_top_edge - LEFT_TOP_MARGIN) )
+        mv->row = xd->mb_to_top_edge - LEFT_TOP_MARGIN;
+    else if ( mv->row > xd->mb_to_bottom_edge + RIGHT_BOTTOM_MARGIN )
+        mv->row = xd->mb_to_bottom_edge + RIGHT_BOTTOM_MARGIN;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+In the function `vp8_find_near_mvs()`, the vectors "nearest" and "near" are used by the corresponding modes.
+
+The vector `best_mv` is used as a base for explicitly-coded motion vectors.
+
+The first three entries in the return value `cnt` are (in order) weighted census values for "zero", "nearest", and "near" vectors. The final value indicates the extent to which `SPLIT_MV` was used by the neighboring macroblocks. The largest possible "weight" value in each case is 5.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void vp8_find_near_mvs
+(
+    MACROBLOCKD *xd,
+    const MODE_INFO *here,
+    MV *nearest,
+    MV *near,
+    MV *best_mv,
+    int cnt[4],
+    int refframe,
+    int * ref_frame_sign_bias
+)
+{
+    const MODE_INFO *above = here - xd->mode_info_stride;
+    const MODE_INFO *left = here - 1;
+    const MODE_INFO *aboveleft = above - 1;
+    int_mv            near_mvs[4];
+    int_mv           *mv = near_mvs;
+    int             *cntx = cnt;
+    enum {CNT_ZERO, CNT_NEAREST, CNT_NEAR, CNT_SPLITMV};
+
+    /* Zero accumulators */
+    mv[0].as_int = mv[1].as_int = mv[2].as_int = 0;
+    cnt[0] = cnt[1] = cnt[2] = cnt[3] = 0;
+
+    /* Process above */
+    if(above->mbmi.ref_frame != INTRA_FRAME) {
+        if(above->mbmi.mv.as_int) {
+            (++mv)->as_int = above->mbmi.mv.as_int;
+            mv_bias(above, refframe, mv, ref_frame_sign_bias);
+            ++cntx;
+        }
+        *cntx += 2;
+    }
+
+    /* Process left */
+    if(left->mbmi.ref_frame != INTRA_FRAME) {
+        if(left->mbmi.mv.as_int) {
+            int_mv this_mv;
+
+            this_mv.as_int = left->mbmi.mv.as_int;
+            mv_bias(left, refframe, &this_mv, ref_frame_sign_bias);
+
+            if(this_mv.as_int != mv->as_int) {
+                (++mv)->as_int = this_mv.as_int;
+                ++cntx;
+            }
+            *cntx += 2;
+        } else
+            cnt[CNT_ZERO] += 2;
+    }
+
+    /* Process above left */
+    if(aboveleft->mbmi.ref_frame != INTRA_FRAME) {
+        if(aboveleft->mbmi.mv.as_int) {
+            int_mv this_mv;
+
+            this_mv.as_int = aboveleft->mbmi.mv.as_int;
+            mv_bias(aboveleft, refframe, &this_mv, ref_frame_sign_bias);
+
+            if(this_mv.as_int != mv->as_int) {
+                (++mv)->as_int = this_mv.as_int;
+                ++cntx;
+            }
+            *cntx += 1;
+        } else
+            cnt[CNT_ZERO] += 1;
+    }
+
+    /* If we have three distinct MV's ... */
+    if(cnt[CNT_SPLITMV]) {
+        /* See if above-left MV can be merged with NEAREST */
+        if(mv->as_int == near_mvs[CNT_NEAREST].as_int)
+            cnt[CNT_NEAREST] += 1;
+    }
+
+    cnt[CNT_SPLITMV] = ((above->mbmi.mode == SPLITMV)
+                         + (left->mbmi.mode == SPLITMV)) * 2
+                        + (aboveleft->mbmi.mode == SPLITMV);
+
+    /* Swap near and nearest if necessary */
+    if(cnt[CNT_NEAR] > cnt[CNT_NEAREST]) {
+        int tmp;
+        tmp = cnt[CNT_NEAREST];
+        cnt[CNT_NEAREST] = cnt[CNT_NEAR];
+        cnt[CNT_NEAR] = tmp;
+        tmp = near_mvs[CNT_NEAREST].as_int;
+        near_mvs[CNT_NEAREST].as_int = near_mvs[CNT_NEAR].as_int;
+        near_mvs[CNT_NEAR].as_int = tmp;
+    }
+
+    /* Use near_mvs[0] to store the "best" MV */
+    if(cnt[CNT_NEAREST] >= cnt[CNT_ZERO])
+        near_mvs[CNT_ZERO] = near_mvs[CNT_NEAREST];
+
+    /* Set up return values */
+    *best_mv = near_mvs[0].as_mv;
+    *nearest = near_mvs[CNT_NEAREST].as_mv;
+    *near = near_mvs[CNT_NEAR].as_mv;
+
+    vp8_clamp_mv(nearest, xd);
+    vp8_clamp_mv(near, xd);
+    vp8_clamp_mv(best_mv, xd); //TODO: move this up before the copy
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The `mv_ref` probability table (`mv_ref_p`) is then derived from the census as follows.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+const int vp8_mode_contexts[6][4] =
+{
+  {   7,     1,     1,   143,   },
+  {  14,    18,    14,   107,   },
+  { 135,    64,    57,    68,   },
+  {  60,    56,   128,    65,   },
+  { 159,   134,   128,    34,   },
+  { 234,   188,   128,    28,   },
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+vp8_prob *vp8_mv_ref_probs(vp8_prob mv_ref_p[VP8_MVREFS-1], int cnt[4])
+{
+    mv_ref_p[0] = vp8_mode_contexts [cnt[0]] [0];
+    mv_ref_p[1] = vp8_mode_contexts [cnt[1]] [1];
+    mv_ref_p[2] = vp8_mode_contexts [cnt[2]] [2];
+    mv_ref_p[3] = vp8_mode_contexts [cnt[3]] [3];
+    return p;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Once `mv_ref_p` is established, the `mv_ref` is decoded as usual.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  mvr = (mv_ref) treed_read( d, mv_ref_tree, mv_ref_p); 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+For the first four inter-coding modes, the same motion vector is used for all the Y subblocks. The first three modes use an implicit motion vector.
+
+| Mode           | Instruction
+| -------------- | ------------------------------------------ 
+| `mv_nearest`   | Use the nearest vector returned by `vp8_find_near_mvs`.
+| `mv_near`      | Use the near vector returned by `vp8_find_near_mvs`.
+| `mv_zero`      | Use a zero vector, that is, predict the current macroblock from the corresponding macroblock in the prediction frame.
+| `NEWMV`        | This mode is followed by an explicitly-coded motion vector (the format of which is described in the next chapter) that is added (component-wise) to the `best_mv` reference vector returned by `find_near_mvs` and applied to all 16 subblocks.
+

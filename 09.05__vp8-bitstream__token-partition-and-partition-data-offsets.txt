@@ -1,0 +1,21 @@
+
+
+#### 9.5 Token Partition and Partition Data Offsets
+
+
+VP8 allows DCT coefficients to be packed into multiple partitions besides the first partition with header and per-macroblock prediction information, so the decoder can perform parallel decoding in an efficient manner. There are two bits `L(2)` used to indicate the number of coefficient data partitions within a compressed frame. The two bits are defined in the following table:
+
+| Bit 1   |  Bit 0  |  Number of Partitions
+| :-----: | :-----: | :--------------------:
+| 0       | 0       | 1
+| 0       | 1       | 2
+| 1       | 0       | 4
+| 1       | 1       | 8
+
+When the number of partitions is greater than one, offsets are embedded in the bitstream to provide the decoder direct access to token partitions. Each offset is written in 3 bytes (24 bits). Since the offset to the first partition is always 0, only the offsets for partitions other than the first partition are encoded in the bitstream. The partitioned data are consecutive in the bitstream, so offsets can also be used to calculate the data size of each partition. The following pseudo code illustrates how the size/offset is defined by the three bytes in the bitstream.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Offset/size  =  (uint32)(byte0) + ((uint32)(byte1)<<8) + ((uint32)(byte2)<<16);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

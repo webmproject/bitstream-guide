@@ -1,0 +1,88 @@
+
+
+#### 14.4 Implementation of the DCT Inversion
+
+
+All of the DCT inversions are computed in exactly the same way. In principle, VP8 uses a classical 2D inverse discrete cosine transform, implemented as two passes of 1-D inverse DCT. The 1-D inverse DCT was calculated using a similar algorithm to what was described in the paper "Practical Fast 1-D DCT Algorithms with 11 Multiplications" by Loeffler, Lightenberg and Moschytz. However, the paper only provided the 8-point and 16-point version of the algorithms, which was adapted by On2 to perform the 4-point 1-D DCT.
+
+Accurate calculation of 1-D DCT of the above algorithm requires infinite precision. VP8 of course can use only a finite-precision approximation. Also, the inverse DCT used by VP8 takes care of normalization of the standard unitary transform, that is, every dequantized coefficient has roughly double the size of the corresponding unitary coefficient. However, at all but the highest datarates, the discrepancy between transmitted and ideal coefficients is due almost entirely to (lossy) compression and not to errors induced by finite-precision arithmetic. 
+
+The inputs to the inverse DCT (that is, the dequantized coefficients), the intermediate "horizontally detransformed" signal, and the completely detransformed residue signal are all stored as arrays of 16-bit signed integers. The details of the computation are as follows.
+
+It should also be noted that this implementation makes use of 16-bit fixed point version of two multiplication constants:
+
+[[ sqrt(2) * cos (pi/8) ]]
+
+[[ sqrt(2) * sin (pi/8) ]]
+
+Because the first constant is bigger than 1, to maintain the same 16-bit fixed point precision as the second one, we make use of the fact that 
+
+[[ x * a = x + x*(a-1) ]]
+
+therefore
+
+[[ x * sqrt(2) * cos (pi/8) = x + x * ( sqrt(2) * cos(pi/8)-1) ]]
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* IDCT implementation */
+static const int cospi8sqrt2minus1=20091;
+static const int sinpi8sqrt2      =35468;
+void short_idct4x4llm_c(short *input, short *output, int pitch) 
+{
+  int i;
+  int a1, b1, c1, d1;
+
+  short *ip=input;
+  short *op=output;
+  int temp1, temp2;
+  int shortpitch = pitch>>1;
+
+  for(i=0;i<4;i++)
+  {
+    a1 = ip[0]+ip[8]; 
+    b1 = ip[0]-ip[8];
+
+    temp1 = (ip[4] * sinpi8sqrt2)>>16;
+    temp2 = ip[12]+((ip[12] * cospi8sqrt2minus1)>>16);
+    c1 = temp1 - temp2;
+
+    temp1 = ip[4] + ((ip[4] * cospi8sqrt2minus1)>>16);
+    temp2 = (ip[12] * sinpi8sqrt2)>>16;
+    d1 = temp1 + temp2;
+
+    op[shortpitch*0] = a1+d1;
+    op[shortpitch*3] = a1-d1;
+    op[shortpitch*1] = b1+c1;
+    op[shortpitch*2] = b1-c1;
+
+    ip++;
+    op++;
+  }
+  ip = output;
+  op = output;
+  for(i=0;i<4;i++)
+  {
+    a1 = ip[0]+ip[2];
+    b1 = ip[0]-ip[2];
+
+    temp1 = (ip[1] * sinpi8sqrt2)>>16;
+    temp2 = ip[3]+((ip[3] * cospi8sqrt2minus1)>>16);
+    c1 = temp1 - temp2;
+
+    temp1 = ip[1] + ((ip[1] * cospi8sqrt2minus1)>>16);
+    temp2 = (ip[3] * sinpi8sqrt2)>>16;
+    d1 = temp1 + temp2;
+
+    op[0] = (a1+d1+4)>>3;
+    op[3] = (a1-d1+4)>>3;
+    op[1] = (b1+c1+4)>>3;
+    op[2] = (b1-c1+4)>>3;
+
+    ip+=shortpitch;
+    op+=shortpitch;
+  }
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The reference decoder DCT inversion may be found in the files `invtrans.c` and `idctllm.c`.
+

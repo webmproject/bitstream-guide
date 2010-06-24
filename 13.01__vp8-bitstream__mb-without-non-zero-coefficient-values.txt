@@ -1,0 +1,7 @@
+
+
+#### 13.1 MB Without non-Zero Coefficient Values
+
+
+If the flag within macroblock mode info indicates that a macroblock does not have any non-zero coefficients, the decoding process of DCT coefficients is skipped for the macroblock.
+

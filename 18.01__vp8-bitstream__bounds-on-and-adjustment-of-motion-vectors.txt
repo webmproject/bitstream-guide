@@ -1,0 +1,27 @@
+
+
+#### 18.1 Bounds on and Adjustment of Motion Vectors
+
+
+It is possible within the VP8 format for a block or macroblock to have an arbitrarily large motion vectors, due to the fact that each motion vector is differentially encoded without any clamp from a neighboring block or macroblock.
+
+Because the motion vectors applied to the chroma subblocks have 1/8 pixel resolution, the synthetic pixel calculation, outlined in Chapter 5 and detailed below, uses this resolution for the luma subblocks as well. In accordance, the stored luma motion vectors are all doubled, each component of each luma vector becoming an even integer in the range -510 to +510, inclusive.
+
+The vector applied to each chroma subblock is calculated by averaging the vectors for the 4 luma subblocks occupying the same visible area as the chroma subblock in the usual correspondence, that is, the vector for U and V block 0 is the average of the vectors for the Y subblocks { 0, 1, 4, 5}, chroma block 1 corresponds to Y blocks { 2, 3, 6, 7}, chroma block 2 to Y blocks { 8, 9, 12, 13}, and chroma block 3 to Y blocks { 10, 11, 14, 15}.
+
+In detail, each of the two components of the vectors for each of the chroma subblocks is calculated from the corresponding luma vector components as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int avg( int c1, int c2, int c3, int c4)
+{
+    int s = c1 + c2 + c3 + c4;
+
+    /* The shift divides by 8 (not 4) because chroma pixels have half
+       the diameter of luma pixels.  The handling of negative motion vector
+       components is slightly cumbersome because, strictly speaking,
+       right shifts of negative numbers are not well-defined in C. */
+
+    return s >= 0 ?  (s + 4) >> 3 : -( (-s + 4) >> 3);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

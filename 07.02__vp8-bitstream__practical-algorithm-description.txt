@@ -1,0 +1,40 @@
+
+
+#### 7.2 Practical Algorithm Description
+
+VP8's bool coder works with 8-bit probabilities [[ p ]]. The range of such [[ p ]] is [[ 0 <= p <= 255 ]]; the actual probability represented by [[ p ]] is [[ p//256 ]]. Also, the coder is designed so that decoding of a bool requires no more than an 8-bit comparison and so that the state of both the encoder and decoder can be easily represented using a small number of unsigned 16-bit integers.
+
+The details are most easily understood if we first describe the algorithm using bit-at-a-time input and output. Aside from the ability to maintain a position in this bitstream and write/read bits, the encoder also needs the ability to add [[ 1 ]] to the bits already output; after writing [[ n ]] bits, adding [[ 1 ]] to the existing output is the same thing as adding [[ pow( 2, -n) ]] to [[ x ]].
+
+Together with the bit position, the encoder must maintain two unsigned 8-bit numbers which we call [[ "bottom" ]] and [[ "range" ]]. Writing [[ w ]] for the [[ n ]] bits already written and [[ S = pow( 2, - n - 8) ]] for the scale of the current bit position one byte out, we have the following constraint on all future values [[ v ]] of [[ w ]] (including the final value [[ v = x ]]):
+
+[[ w + ( S * "bottom" ) <= v < w + ( S * ( "bottom" + "range" ) ) ]]
+
+Thus, appending [[ "bottom" ]] to the already-written bits [[ w ]] gives the left endpoint of the interval of possible values, appending [[ "bottom" + "range" ]] gives the right endpoint, [[ "range" ]] itself (scaled to the current output position) is the length of the interval.
+
+So that our probabilistic encodings are reasonably accurate, we do not let [[ "range" ]] vary by more than a factor of two: It stays within the bounds [[ 128 <= "range" <= 255 ]].
+
+The process for encoding a boolean value [[ "val" ]] whose probability of being zero is [[ "prob" / 256 ]] -- and whose probability of being one is [[ ( 256 - "prob" ) / 256 ]] -- with [[ 1 <= "prob" <= 255 ]] is as follows.
+
+Using an unsigned 16-bit multiply followed by an unsigned right shift, we calculate an unsigned 8-bit [[ "split" ]] value:
+
+[[ split = 1 + ((("range" - 1) * "probability")]] >> [[ 8) ]]
+
+[[ "split" ]] is approximately [[ ( "prob" / 256 ) * "range" ]] and lies within the bounds [[ 1 <= "split" <=  "range" - 1 ]]. These bounds ensure the correctness of the decoding procedure described below.
+
+If [[ "val" ]] is false, we leave the left interval endpoint [[ "bottom" ]] alone and reduce [[ "range" ]], replacing it by [[ "split" ]]. If [[ "val" ]] is true, we move up the left endpoint to [[ "bottom" + "split" ]], propagating any carry to the already-written value [[ "w" ]] (this is where we need the ability to add 1 to [[ "w" ]]), and reduce [[ "range" ]] to [[ "range" - "split" ]].
+
+Regardless of the value encoded, [[ "range" ]] has been reduced and now has the bounds [[ 1 <= "range" <= 254 ]]. If [[ "range" < 128 ]], the encoder doubles it and shifts the high-order bit out of [[ "bottom" ]] to the output as it also doubles [[ "bottom" ]], repeating this process one bit at a time until [[ 128 <= "range" <= 255 ]]. Once this is completed, the encoder is ready to accept another bool, maintaining the constraints described above.
+
+After encoding the last bool, the partition may be completed by appending [[ "bottom" ]] to the bitstream.
+
+The decoder mimics the state of the encoder. It maintains, together with an input bit position, two unsigned 8-bit numbers, a [[ "range" ]] identical to that maintained by the encoder and a [[ "value" ]]. Decoding one bool at a time, the decoder (in effect) tracks the same left interval endpoint as does the encoder and subtracts it from the remaining input. Appending the unread portion of the bitstream to the 8-bit [[ "value" ]] gives the difference between the actual value encoded and the known left endpoint.
+
+The decoder is initialized by setting [[ "range" = 255 ]] and reading the first 16 input bits into [[ "value" ]]. The decoder maintains [[ "range" ]] and calculates [[ "split" ]] in exactly the same way as does the encoder.
+
+To decode a bool, it compares [[ "value" ]] to [[ "split" ]]; if [[ "value" < "split" ]], the bool is zero, and [[ "range" ]] is replaced with [[ "split" ]]. If [[ "value" >= "split" ]], the bool is one, [[ "range" ]] is replaced with [[ "range" - "split" ]], and [[ "value" ]] is replaced with [[ "value" - "split" ]].
+
+Again, [[ "range" ]] is doubled one bit at a time until it is at least 128. The [[ "value" ]] is doubled in parallel, shifting a new input bit into the [[ "bottom" ]] each time.
+
+Writing [[ "Value" ]] for [[ "value" ]] together with the unread input bits and [[ "Range" ]] for [[ "range" ]] extended indefinitely on the right by zeros, the condition [[ "Value" < "Range" ]] is maintained at all times by the decoder. In particular, the bits shifted out of [[ "value" ]] as it is doubled are always zero.
+

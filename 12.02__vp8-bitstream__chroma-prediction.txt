@@ -1,0 +1,56 @@
+
+
+#### 12.2 Chroma Prediction
+
+
+The chroma prediction is a little simpler than the luma prediction, so we treat it first. Each of the chroma modes treats U and V identically, that is, the U and V prediction values are calculated in parallel, using the same relative addressing and arithmetic in each of the two planes.
+
+The modes extrapolate prediction values using the 8-pixel row "A" lying immediately above the block (that is, the bottom chroma row of the macroblock immediately above the current macroblock) and the 8-pixel column "L" immediately to the left of the block (that is, the rightmost chroma column of the macroblock immediately to the left of the current macroblock).
+
+Vertical prediction (chroma mode `V_PRED`) simply fills each 8-pixel row of the 8x8 chroma block with a copy of the "above" row (A). If the current macroblock lies on the top row of the frame, all 8 of the pixel values in A are assigned the value `127`.
+
+Similarly, horizontal prediction (`H_PRED`) fills each 8-pixel column of the 8x8 chroma block with a copy of the "left" column (L). If the current macroblock is in the left column of the frame, all 8 pixel values in L are assigned the value `129`.
+
+DC prediction (`DC_PRED`) fills the 8x8 chroma block with a single value. In the generic case of a macroblock lying below the top row and right of the leftmost column of the frame, this value is the average of the 16 (genuinely visible) pixels in the (union of the) above row A and left column L.
+
+Otherwise, if the current macroblock lies on the top row of the frame, the average of the 8 pixels in L is used; if it lies in the left column of the frame, the average of the 8 pixels in A is used.  Note that the averages used in these exceptional cases are not the same as those that would be arrived at by using the out-of-bounds A and L values defined for V_PRED and H_PRED. In the case of the leftmost macroblock on the top row of the frame the 8x8 block is simply filled with the constant value `128`.
+
+For `DC_PRED`, apart from the exceptional case of the top left macroblock, 
+we are averaging either 16 or 8 pixel values to get a single prediction value that fills the 8x8 block. The rounding is done as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int sum;    /* sum of 8 or 16 pixels at (at least) 16-bit precision */
+int shf;    /* base 2 logarithm of the number of pixels (3 or 4) */
+
+Pixel DCvalue = (sum + (1 << (shf-1))) >> shf;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Because the summands are all valid pixels, no "clamp" is necessary in the calculation of `DCvalue`.
+
+The remaining "True Motion" (`TM_PRED`) chroma mode gets its name from an older technique of video compression used by On2 Technologies, to which it bears some relation. In addition to the row "A" and column "L", `TM_PRED` uses the pixel "P" above and to the left of the chroma block.
+
+In this mode, we propagate the horizontal differences between pixels in A (starting from P), using the pixels from L to start each row. The exact algorithm is as follows.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void TMpred(
+    Pixel b[8][8],      /* chroma (U or V) prediction block */
+    const Pixel A[8],   /* row of already-constructed pixels above block */
+    const Pixel L[8],   /* column of "" just to the left of block */
+    const Pixel P       /* pixel just to the left of A and above L*/
+) {
+    int r = 0;          /* row */
+    do {
+        int c = 0;      /* column */
+        do {
+            b[r][c] = clamp255( L[r]+ A[c] - P);
+        } while( ++c < 8);
+    } while( ++r < 8);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note that the process could equivalently be described as propagating the vertical differences between pixels in L (starting from P), using the pixels from A to start each column.
+
+An implementation of chroma intra-prediction may be found in the reference decoder file `reconintra.c`.
+
+Unlike `DC_PRED`, for macroblocks on the top row or left edge `TM_PRED` does use the out-of-bounds values of `127` and `129` (respectively) defined for `V_PRED` and `H_PRED`.
+

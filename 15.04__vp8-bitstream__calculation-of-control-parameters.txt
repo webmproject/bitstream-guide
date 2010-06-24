@@ -1,0 +1,57 @@
+
+
+#### 15.4 Calculation of Control Parameters
+
+
+We conclude the discussion of loop filtering by showing how the thresholds supplied to the procedures above are derived from the two control parameters `sharpness_level` (an unsigned 3-bit number having maximum value 7) and `loop_filter_level` (an unsigned 6-bit number having maximum value 63).
+
+While the `sharpness_level` is constant over the frame, individual macroblocks may override the `loop_filter_level` with one of four possibilities supplied in the frame header (as described in Chapter 10).
+
+Both the simple and normal filters disable filtering if a value derived from the four pixels that straddle the edge (2 either side) exceeds a threshold / limit value.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* Luma and Chroma use the same inter-macroblock edge limit */
+uint8 mbedge_limit = ((loop_filter_level + 2) * 2) + interior_limit;
+
+/* Luma and Chroma use the same inter-subblock edge limit */
+uint8 sub_bedge_limit = (loop_filter_level * 2) + interior_limit;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The remaining thresholds are used only by the normal filters. The filter-disabling interior difference limit is the same for all edges (luma, chroma, inter-subblock, inter-macroblock) and is given by the following.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+uint8 interior_limit = loop_filter_level;
+
+if( sharpness_level) 
+{
+    interior_limit  >>=  sharpness_level > 4 ?  2 : 1;
+    if( interior_limit > 9 - sharpness_level)
+        interior_limit = 9 - sharpness_level;
+}
+if( !interior_limit)
+    interior_limit = 1;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally, we give the derivation of the high edge-variance threshold, which is also the same for all edge types.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+uint8 hev_threshold = 0;
+
+if( we_are_decoding_akey_frame)         /* current frame is a key frame */
+{
+    if( loop_filter_level >= 40)
+        hev_threshold = 2;
+    else if( loop_filter_level >= 15)
+        hev_threshold = 1;
+}
+else                                /* current frame is an interframe */
+{
+    if( loop_filter_level >= 40)
+        hev_threshold = 3;
+    else if( loop_filter_level >= 20)
+        hev_threshold = 2;
+    else if( loop_filter_level >= 15)
+        hev_threshold = 1;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

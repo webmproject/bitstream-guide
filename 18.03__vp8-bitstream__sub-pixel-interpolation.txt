@@ -1,0 +1,102 @@
+
+
+#### 18.3 Sub-pixel Interpolation
+
+
+The sub-pixel interpolation is effected via two one-dimensional convolutions. These convolutions may be thought of as operating on a two-dimensional array of pixels whose origin is the subblock origin, that is the origin of the prediction macroblock described above plus the offset to the subblock. Because motion vectors are arbitrary, so are these "prediction subblock origins".
+
+The integer part of the motion vector is subsumed in the origin of the prediction subblock, the 16 (synthetic) pixels we need to construct are given by 16 offsets from the origin. The integer part of each of these offsets is the offset of the corresponding pixel from the subblock origin (using the vertical stride). To these integer parts is added a constant fractional part, which is simply the difference between the actual motion vector and its integer truncation used to calculate the origins of the prediction macroblock and subblock. Each component of this fractional part is an integer between 0 and 7, representing a forward displacement in eighths of a pixel.
+
+It is these fractional displacements that determine the filtering process. If they both happen to be zero (that is, we had a "whole pixel" motion vector), the prediction subblock is simply copied into the corresponding piece of the current macroblock's prediction buffer. As discussed in Chapter 14, the layout of the macroblock's prediction buffer can depend on the specifics of the reconstruction implementation chosen. Of course, the vertical displacement between lines of the prediction subblock is given by the stride, as are all vertical displacements used here.
+
+Otherwise, at least one of the fractional displacements is non-zero. We then synthesize the missing pixels via a horizontal, followed by a vertical, one-dimensional interpolation.
+
+The two interpolations are essentially identical. Each uses an (at most) six-tap filter (the choice of which of course depends on the one-dimensional offset). Thus, every calculated pixel references at most three pixels before (above or to-the-left of) it and at most three pixels after (below or to-the-right of) it. The horizontal interpolation must calculate two extra rows above and three extra rows below the 4x4 block, to provide enough samples for the vertical interpolation to proceed.
+
+The exact implementation of subsampling is as follows.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* Filter taps taken to 7-bit precision.
+   Because DC is always passed, taps always sum to 128. */
+
+const int filters [8] [6[ = {           /* indexed by displacement */
+    { 0,  0,  128,    0,   0,  0 },     /* degenerate whole-pixel */
+    { 0, -6,  123,   12,  -1,  0 },     /* 1/8 */
+    { 2, -11, 108,   36,  -8,  1 },     /* 1/4 */
+    { 0, -9,   93,   50,  -6,  0 },     /* 3/8 */
+    { 3, -16,  77,   77, -16,  3 },     /* 1/2 is symmetric */
+    { 0, -6,   50,   93,  -9,  0 },     /* 5/8 = reverse of 3/8 */
+    { 1, -8,   36,  108, -11,  2 },     /* 3/4 = reverse of 1/4 */
+    { 0, -1,   12,  123,  -6,  0 }      /* 7/8 = reverse of 1/8 */
+};
+
+
+/* One-dimensional synthesis of a single sample.
+   Filter is determined by fractional displacement */
+
+Pixel interp(
+    const int fil[6],   /* filter to apply */
+    const Pixel *p,     /* origin (rounded "before") in prediction area */
+    const int s         /* size of one forward step "" */
+) {
+    int32 a = 0;
+    int i = 0;
+    p -= s + s;         /* move back two positions */
+
+    do {
+        a += *p * fil[i];
+        p += s;
+    }  while( ++i < 6);
+
+    return clamp255( (a + 64) >> 7);    /* round to nearest 8-bit value */
+}
+
+
+/* First do horizontal interpolation, producing intermediate buffer. */
+
+void Hinterp(
+    Pixel temp[9][4],   /* 9 rows of 4 (intermediate) destination values */
+    const Pixel *p,     /* subblock origin in prediction frame */
+    int s,              /* vertical stride to be used in prediction frame */
+    uint hfrac          /* 0 <= horizontal displacement <= 7 */
+) {
+    const int * const fil = filters [hfrac];
+
+    int r = 0;  do              /* for each row */
+    {
+        int c = 0;  do          /* for each destination sample */
+        {   
+            /* Pixel separation = one horizontal step = 1 */
+
+            temp[r][c] = interp( fil, p + c, 1);
+        }
+        while( ++c < 4);
+    }
+    while( p += s, ++r < 9);    /* advance p to next row */
+}
+
+/* Finish with vertical interpolation, producing final results.
+   Input array "temp" is of course that computed above. */
+
+
+void Vinterp(
+    Pixel final[4][4],      /* 4 rows of 4 (final) destination values */
+    const Pixel temp[9][4],
+    uint vfrac              /* 0 <= vertical displacement <= 7 */
+) {
+    const int * const fil = filters [vfrac];
+
+    int r = 0;  do              /* for each row */
+    {
+        int c = 0;  do          /* for each destination sample */
+        {   
+            /* Pixel separation = one vertical step = width of array = 4 */
+
+            final[r][c] = interp( fil, temp[r] + c, 4);
+        }
+        while( ++c < 4);
+    }
+    while( ++r < 4);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

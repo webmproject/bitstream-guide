@@ -1,0 +1,24 @@
+
+
+#### 7.1 Underlying Theory of Coding
+
+The basic idea used by the bool coder is to consider the entire data stream (either of the partitions in our case) as the binary expansion of a single number [[ x ]] with [[ 0 <= x < 1 ]]. The bits (or bytes) in [[ x ]] are of course written from high to low order and if [[ b[j] (B[j]) ]] is the [[ j^(th) ]] bit (byte) in the partition, the value [[ x ]] is simply the sum (starting with [[ j = 1 ]]) of [[ pow(2, -j) * b[j] ]] or [[ pow(256, -j) * B[j] ]].
+
+Before the first bool is coded, all values of [[ x ]] are possible.
+
+The coding of each bool restricts the possible values of [[ x ]] in proportion to the probability of what is coded. If [[ p1 ]] is the probability of the first bool being zero and a zero is coded, the range of possible [[ x ]] is restricted to [[ 0 <= x < p1 ]]. If a one is coded, the range becomes [[ p1 <= x < 1 ]].
+
+The coding continues by repeating the same idea. At every stage, there is an interval [[ a <= x < b ]] of possible values of [[ x ]]. If [[ p ]] is the probability of a zero being coded at this stage and a zero is coded, the interval becomes [[ a <= x < a + (p*(b-a)) ]]. If a one is coded, the possible [[ x ]] are restricted to [[ a + (p*(b-a)) <= x < b ]].
+
+Assuming only finitely many values are to be coded, after the encoder has received the last bool, it can write as its output any value [[ x ]] that lies in the final interval. VP8 simply writes the left endpoint of the final interval. Consequently, the output it would make if encoding were to stop at any time either increases or stays the same as each bool is encoded.
+
+Decoding parallels encoding. The decoder is presented with the number [[ x ]], which has only the initial restriction [[ 0 <= x < 1 ]]. To decode the first bool, the decoder is given the first probability [[ p1 ]]. If [[ x < p1 ]], a zero is decoded; if [[ x >= p1 ]], a one is decoded. In either case, the new restriction on [[ x ]], that is, the interval of possible [[ x ]], is remembered.
+
+Decoding continues in exactly the same way: If [[ a <= x < b ]] is the current interval and we are to decode a bool with zero-probability [[ p ]], we return a zero if [[ a <= x < a + (p*(b-a)) ]] and a one if [[ a + (p*(b-a)) <= x < b ]]. In either case, the new restriction is remembered in preparation for decoding the next bool.
+
+The process outlined above uses real numbers of infinite precision to express the probabilities and ranges. It is true that, if one could actualize this process and coded a large number of bools whose supplied probabilities matched their value distributions, the datarate achieved would approach the theoretical minimum as the number of bools encoded increased.
+
+Unfortunately, computers operate at finite precision and an approximation to the theoretically perfect process described above is necessary. Such approximation increases the datarate but, at quite moderate precision and for a wide variety of data sets, this increase is negligible.
+
+The only conceptual limitations are, first, that coder probabilities must be expressed at finite precision and, second, that the decoder be able to detect each individual modification to the value interval via examination of a fixed amount of input. As a practical matter, many of the implementation details stem from the fact that the coder can function using only a small "window" to incrementally read or write the arbitrarily precise number [[ x ]].
+

@@ -1,0 +1,17 @@
+
+
+### Chapter 13: DCT Coefficient Decoding
+
+
+The second data partition consists of an encoding of the quantized DCT (and WHT) coefficients of the residue signal. As discussed in the format overview (Chapter 2), for each macroblock, the residue is added to the (intra- or inter-generated) prediction buffer to produce the final (except for loop-filtering) reconstructed macroblock.
+
+VP8 works exclusively with 4x4 DCTs and WHTs, applied to the 24 (or 25 with the Y2 subblock) 4x4 subblocks of a macroblock. The ordering of macroblocks within any of the "residue" partitions in general follows the same raster-scan as used in the first "prediction" partition.
+
+For all intra- and inter-prediction modes apart from `B_PRED` (intra: whose Y subblocks are independently predicted) and `SPLIT_MV` (inter) each macroblock's residue record begins with the Y2 component of the residue, coded using a WHT. `B_PRED` and `SPLIT_MV` coded macroblocks omit this WHT, instead specifying the 0<sup>th</sup> DCT coefficient of each of the 16 Y subblocks as part of its DCT.
+
+After the optional Y2 block, the residue record continues with 16 DCTs for the Y subblocks, followed by 4 DCTs for the U subblocks, ending with 4 DCTs for the V subblocks. The subblocks occur in the usual order.
+
+The DCTs and WHT are tree-coded using a 12-element alphabet whose members we call tokens. Except for the end of block token (which sets the remaining subblock coefficients to zero and is followed by the next block), each token (sometimes augmented with data immediately following the token) specifies the value of the single coefficient at the current (implicit) position and is followed by a token applying to the next (implicit) position.
+
+For all the Y and chroma subblocks, the ordering of the coefficients follows a so-called zig-zag order. DCTs begin at coefficient 1 if Y2 is present, and begin at coefficient 0 if Y2 is absent. The WHT for a Y2 subblock always begins at coefficient 0.
+

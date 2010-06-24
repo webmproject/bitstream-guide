@@ -1,0 +1,9 @@
+
+
+### Chapter 16: Interframe Macroblock Prediction Records
+
+
+We describe the layout and semantics of the prediction records for macroblocks in an interframe.
+
+After the feature specification (which is described in Chapter 10 and is identical for intraframes and interframes), there comes a Bool( prob_intra), which indicates inter-prediction (i.e., prediction from prior frames) when true and intra-prediction (i.e., prediction from already-coded portions of the current frame) when false. The zero-probability `prob_intra` is set by field J of the frame header.
+

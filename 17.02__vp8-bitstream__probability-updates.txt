@@ -1,0 +1,91 @@
+
+
+#### 17.2 Probability Updates
+
+
+The decoder should maintain an array of two `MV_CONTEXT`s for decoding row and column components, respectively. These `MV_CONTEXT`s should be set to their defaults every key frame. Each individual probability may be updated every interframe (by field [[ "J" ]] of the frame header) using a constant table of update probabilities. Each optional update is of the form [[ B? P(7) ]], that is, a bool followed by a 7-bit probability specification if true.
+
+As with other dynamic probabilities used by VP8, the updates remain in effect until the next key frame or until replaced via another update.
+
+In detail, the probabilities should then be managed as follows.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* Never-changing table of update probabilities for each individual
+   probability used in decoding motion vectors. */
+
+const MV_CONTEXT vp8_mv_update_probs[2] =
+{ 
+  {
+    237,
+    246,
+    253, 253, 254, 254, 254, 254, 254,
+    254, 254, 254, 254, 254, 250, 250, 252, 254, 254
+  }, 
+  {
+    231,
+    243,
+    245, 253, 254, 254, 254, 254, 254,
+    254, 254, 254, 254, 254, 251, 251, 254, 254, 254
+  }
+}; 
+
+/* Default MV decoding probabilities. */
+
+const MV_CONTEXT default_mv_context[2] =
+{
+  {                       // row 
+    162,                    // is short
+    128,                    // sign
+      225, 146, 172, 147, 214,  39, 156,      // short tree
+    128, 129, 132,  75, 145, 178, 206, 239, 254, 254 // long bits
+  },
+
+  {                       // same for column
+    164,                    // is short
+    128,
+    204, 170, 119, 235, 140, 230, 228,
+    128, 130, 130,  74, 148, 180, 203, 236, 254, 254 // long bits 
+
+  }
+};
+
+/* Current MV decoding probabilities, set to above defaults every key frame. */
+
+MV_CONTEXT mvc [2];     /* always row, then column */
+
+/* Procedure for decoding a complete motion vector. */
+
+typedef struct { int16 row, col;}  MV;  /* as in previous chapter */
+
+MV read_mv( bool_decoder *d)
+{
+    MV v;
+    v.row = (int16) read_mvcomponent( d, mvc);
+    v.col = (int16) read_mvcomponent( d, mvc + 1);
+    return v;
+}
+
+/* Procedure for updating MV decoding probabilities, called every interframe
+   with "d" at the appropriate position in the frame header. */
+
+void update_mvcontexts( bool_decoder *d)
+{
+    int i = 0;
+    do {                                    /* component = row, then column */
+        const Prob *up = mv_update_probs[i];  /* update probs for component */
+        Prob *p = mvc[i];                   /* start decode tbl "" */
+        Prob * const pstop = p + MVPcount;  /* end decode tbl "" */
+        do {
+            if( read_bool( d, *up++))        /* update this position */
+            {
+                const Prob x = read_literal( d, 7);
+
+                *p = x? x<<1 : 1;
+            }
+        } while( ++p < pstop);              /* next position */
+    } while( ++i < 2);                      /* next component */
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This completes the description of the motion-vector decoding procedure and, with it, the procedure for decoding interframe macroblock prediction records.
+

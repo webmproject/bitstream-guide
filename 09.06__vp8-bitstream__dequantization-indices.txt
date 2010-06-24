@@ -1,0 +1,27 @@
+
+
+#### 9.6 Dequantization Indices
+
+
+All residue signals are specified via a quantized 4x4 DCT applied to the Y, U, V, or Y2 subblocks of a macroblock. As detailed in Chapter 14, before inverting the transform, each decoded coefficient is multiplied by one of six dequantization factors, the choice of which depends on the plane (Y, chroma = U or V, Y2) and coefficient position (DC = coefficient 0, AC = coefficients 1-15). The six values are specified using 7-bit indices into six corresponding fixed tables (the tables are given in Chapter 14).
+
+The first 7-bit index gives the dequantization table index for Y plane AC coefficients, called yac_qi. It is always coded and acts as a baseline for the other 5 quantization indices, each of which is represented by a delta from this baseline index. Following is pseudo code for reading the indices:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+yac_qi     = L(7);           /* Y ac index always specified */
+ydc_delta  = F? delta(): 0;  /* Y dc delta specified if flag is true */
+
+y2dc_delta = F? delta(): 0;  /* Y2 dc delta specified if flag is true */
+y2ac_delta = F? delta(): 0;  /* Y2 ac delta specified if flag is true */
+
+uvdc_delta = F? delta(): 0;  /* chroma dc delta specified if flag is true */
+uvac_delta = F? delta(): 0;  /* chroma ac delta specified if flag is true */
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Where `delta()` is the process to read 5 bits from the bitstream to determine a signed delta value: 
+
+Index        | Description
+------------ | -------------------------------
+`L(4)`       | Magnitude of delta
+`L(1)`       | Sign of delta, 0 for positive and 1 for negative
+

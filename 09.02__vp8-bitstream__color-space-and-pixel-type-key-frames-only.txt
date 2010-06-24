@@ -1,0 +1,27 @@
+
+
+#### 9.2 Color Space and Pixel Type (Key Frames-only)
+
+
+| Field  | Value
+| ------ | ------------------------------- 
+| `L(1)` | 1-bit color space type specification
+| `L(1)` | 1-bit pixel value clamping specification
+
+
+The color space type bit is encoded as the following:
+
+  * `0` - YUV color space similar to the YCrCb color space defined in ITU-R BT.601
+  * `1` - YUV color space whose digital conversion to RGB does not involve multiplication and division
+
+It should be noted that in either case, the actual conversion between YUV and RGB is not part of this specification.
+
+**Note: In the initial release of VP8 only color space type `0` is supported.**
+
+The pixel value clamping type bit is encoded as the following:
+
+  * `0` - Decoders are required to clamp the reconstructed pixel values to between `0` and `255` (inclusive).
+  * `1` - Reconstructed pixel values are guaranteed to be between `0` and `255`, no clamping is necessary.
+
+Information in this subsection does not appear in interframes.
+

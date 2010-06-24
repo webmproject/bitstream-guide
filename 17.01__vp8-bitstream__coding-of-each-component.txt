@@ -1,0 +1,72 @@
+
+
+#### 17.1 Coding of Each Component
+
+
+Each component is a signed integer [[ "V" ]] representing a vertical or horizontal luma displacement of [[ "V" ]] quarter-pixels (and a chroma displacement of [[ "V" ]] eighth-pixels). The absolute value of [[ "V" ]], if non-zero, is followed by a boolean sign. [[ "V" ]] may take any value between -255 and +255, inclusive.
+
+The absolute value [[ "A" ]] is coded in one of two different ways according to its size. For [[ 0 <= "A" <= 7 ]], [[ "A" ]] is tree-coded, and for [[ 8 <= "A" <= 255 ]], the bits in the binary expansion of [[ "A" ]] are coded using independent boolean probabilities. The coding of [[ "A" ]] begins with a bool specifying which range is in effect.
+
+Decoding a motion vector component then requires a 17-position probability table, whose offsets, along with the procedure used to decode components, are as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+typedef enum
+{
+    mvpis_short,             /* short (<= 7) vs long (>= 8) */
+    MVPsign,                /* sign for non-zero */
+    MVPshort,               /* 8 short values = 7-position tree */
+
+    MVPbits = MVPshort + 7, /* 8 long value bits w/independent probs */
+
+    MVPcount = MVPbits + 8  /* 17 probabilities in total */
+}
+MVPindices;
+
+typedef Prob MV_CONTEXT [MVPcount];/* Decoding spec for a single component */
+
+
+/* Tree used for small absolute values (has expected correspondence). */
+
+const tree_index small_mvtree [2 * (8 - 1)] =
+{
+ 2, 8,          /* "0" subtree, "1" subtree */
+  4, 6,         /* "00" subtree", "01" subtree */
+   -0, -1,      /* 0 = "000", 1 = "001" */
+   -2, -3,      /* 2 = "010", 3 = "011" */
+  10, 12,       /* "10" subtree, "11" subtree */
+   -4, -5,      /* 4 = "100", 5 = "101" */
+   -6, -7       /* 6 = "110", 7 = "111" */
+};
+
+/* Read MV component at current decoder position, using supplied probs. */
+
+int read_mvcomponent( bool_decoder *d, const MV_CONTEXT *mvc)
+{
+    const Prob * const p = (const Prob *) mvc;
+    int A = 0;
+
+    if( read_bool( d, p [mvpis_short]))        /* 8 <= A <= 255 */
+    {
+        /* Read bits 0, 1, 2 */
+
+        int i = 0;
+        do { A += read_bool( d, p [MVPbits + i]) << i;}  while( ++i < 3);
+
+        /* Read bits 7, 6, 5, 4 */
+
+        i = 7;
+        do { A += read_bool( d, p [MVPbits + i]) << i;}  while( --i > 3);
+
+        /* We know that A >= 8 because it is coded long,
+           so if A <= 15, bit 3 is one and is not explicitly coded. */
+
+        if( !(A & 0xfff0)  ||  read_bool( d, p [MVPbits + 3]))
+            A += 8;
+    }
+    else                                    /* 0 <= A <= 7 */
+        A = treed_read( d, small_mvtree, p + MVPshort);
+
+    return A && read_bool( r, p [MVPsign]) ?  -A : A;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

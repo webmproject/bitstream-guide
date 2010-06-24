@@ -1,0 +1,200 @@
+
+
+#### 12.3 Luma Prediction
+
+
+The prediction processes for the first four 16x16 luma modes (`DC_PRED`, `V_PRED`, `H_PRED`, and `TM_PRED`) are essentially identical to the corresponding chroma prediction processes described above, the only difference being that we are predicting a single 16x16 luma block instead of two 8x8 chroma blocks.
+
+Thus, the row "A" and column "L" here contain 16 pixels, the DC prediction is calculated using 16 or 32 pixels (and shf is 4 or 5), and we of course fill the entire prediction buffer, that is, 16 rows (or columns) containing 16 pixels each. The reference implementation of 16x16 luma prediction is also in `reconintra.c`.
+
+In the remaining luma mode (`B_PRED`), each 4x4 Y subblock is independently predicted using one of ten modes (listed, along with their encodings, in Chapter 11).
+
+Also, unlike the full-macroblock modes already described, some of the subblock modes use prediction pixels above and to the right of the current subblock. In detail, each 4x4 subblock "B" is predicted using (at most) the 4-pixel column "L" immediately to the left of B and the 8-pixel row "A" immediately above B, consisting of the 4 pixels above B followed by the 4 adjacent pixels above and to the right of B, together with the single pixel "P" immediately to the left of A (and immediately above L).
+
+For the purpose of subblock intra-prediction, the pixels immediately to the left and right of a pixel in a subblock are the same as the pixels immediately to the left and right of the corresponding pixel in the frame buffer "F". Vertical offsets behave similarly: The above row A lies immediately above B in F, and the adjacent pixels in the left column L are separated by a single row in F.
+
+Because entire macroblocks (as opposed to their constituent subblocks) are reconstructed in raster-scan order, for subblocks lying along the right edge (and not along the top row) of the current macroblock, the four "extra" prediction pixels in A above and to the right of B have not yet actually been constructed.
+
+Subblocks 7, 11, and 15 are affected. All three of these subblocks use the same extra pixels as does subblock 3 (at the upper right corner of the macroblock), namely the 4 pixels immediately above and to the right of subblock 3. Writing `(R,C)` for a frame buffer position offset from the upper left corner of the current macroblock by R rows and C columns, the extra pixels for all the right-edge subblocks (3, 7, 11, and 15) are at positions (-1,16), (-1,17), (-1,18), and (-1,19).
+
+The details of the prediction modes are most easily described in code.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* Result pixels are often averages of two or three predictor pixels.
+   The following subroutines are used to calculate these averages.
+   Because the arguments are valid pixels, no clamping is necessary.
+   An actual implementation would probably use inline functions or macros. */
+
+/* Compute weighted average centered at y w/adjacent x, z */
+
+Pixel avg3( Pixel x, Pixel y, Pixel z) { return (x + y + y + z + 2) >> 2;}
+
+/* Weighted average of 3 adjacent pixels centered at p */
+
+Pixel avg3p( const Pixel *p) { return avg3( p[-1], p[0], p[1]);}
+
+/* Simple average of x and y */
+
+Pixel avg2( Pixel x, Pixel y) { return (x + y + 1) >> 1;}
+
+/* Average of p[0] and p[1] may be considered to be a synthetic pixel
+   lying between the two, that is, one half-step past p. */
+
+Pixel avg2p( const Pixel *p) { return avg2( p[0], p[1]);}
+
+/* Main function.  Out-of-frame pixels in A or L should be set to 128. */
+
+void subblock_intra_predict(
+    Pixel B[4][4],      /* Y subblock prediction buffer */
+    const Pixel *A,     /* A[0]...A[7] = above row, A[-1] = P */
+    const Pixel *L,     /* L[0]...L[3] = left column, L[-1] = P */
+    intra_bmode mode     /* enum is in section 11.1 above */
+) {
+    Pixel E[9];         /* 9 already-constructed edge pixels */
+    E[0] = L[3];  E[1] = L[2];  E[2] = L[1];  E[3] = L[0];
+    E[4] = A[-1];       /* == L[-1] == P */
+    E[5] = A[0];  E[6] = A[1];  E[7] = A[2];  E[8] = A[3];
+
+  switch( mode) {
+    /* First four modes are similar to corresponding full-block modes. */
+
+    case B_DC_PRED: /* like 16x16 DC_PRED except out-of-frame */
+    {               /* prediction pixels are always taken to be 128 */
+        int v = 4;      /* DC sum/avg, 4 is rounding adjustment */
+        int i = 0;  do { v += A[i] + L[i];}  while( ++i < 4);
+        v >>= 3;        /* averaging 8 pixels */
+        i = 0;  do {    /* fill prediction buffer with constant DC value */
+            int j = 0;  do { B[i][j] = v;}  while( ++j < 4);
+        } while( ++i < 4);
+        break;
+    }
+
+    case B_TM_PRED: /* just like 16x16 TM_PRED */
+    {
+        int r = 0;  do {
+            int c = 0;  do {
+                B[r][c] = clamp255( L[r] + A[c] - A[-1]);
+            } while( ++c < 4);
+        } while( ++r < 4);
+        break;
+    }
+    
+    case B_VE_PRED: /* like 16x16 V_PRED except using averages */
+    {
+        int c = 0;  do { /* all 4 rows = smoothed top row */
+            B[0][c] = B[1][c] = B[2][c] = B[3][c] = avg3p( A + c);
+        } while( ++c < 4);
+        break;
+    }
+
+    case B_HE_PRED: /* like 16x16 H_PRED except using averages */
+    {
+        /* Bottom row is exceptional because L[4] does not exist */
+        int v = avg3( L[2], L[3], L[3]);
+        int r = 3;  while( 1) { /* all 4 columns = smoothed left column */
+            B[r][0] = B[r][1] = B[r][2] = B[r][3] = v;
+            if( --r < 0)
+                break;
+            v = avg3p( L + r);  /* upper 3 rows use average of 3 pixels */
+        }
+        break;
+    }
+    
+    /* The remaining six "diagonal" modes subdivide the prediction buffer into
+       diagonal lines.  All the pixels on each line are assigned the same
+       value; this value is (a smoothed or synthetic version of) an
+       already-constructed predictor value lying on the same line.  For
+       clarity, in the comments, we express the positions of these predictor
+       pixels relative to the upper left corner of the destination array B.
+
+       These modes are unique to subblock prediction and have no full-block
+       analogues.  The first two use lines at +|- 45 degrees from horizontal
+       (or, equivalently, vertical), that is, lines whose slopes are +|- 1. */
+
+    case B_LD_PRED: /* southwest (left and down) step = (-1, 1) or (1,-1) */
+        /* avg3p( A + j) is the "smoothed" pixel at (-1,j) */
+        B[0][0] = avg3p( A + 1);
+        B[0][1] = B[1][0] = avg3p( A + 2);
+        B[0][2] = B[1][1] = B[2][0] = avg3p( A + 3);
+        B[0][3] = B[1][2] = B[2][1] = B[3][0] = avg3p( A + 4);
+        B[1][3] = B[2][2] = B[3][1] = avg3p( A + 5);
+        B[2][3] = B[3][2] = avg3p( A + 6);
+        B[3][3] = avg3( A[6], A[7], A[7]);  /* A[8] does not exist */
+        break;
+
+    case B_RD_PRED: /* southeast (right and down) step = (1,1) or (-1,-1) */
+        B[3][0] = avg3p( E + 1);  /* predictor is from (2, -1) */
+        B[3][1] = B[2][0] = avg3p( E + 2);  /* (1, -1) */
+        B[3][2] = B[2][1] = B[1][0] = avg3p( E + 3);  /* (0, -1) */
+        B[3][3] = B[2][2] = B[1][1] = B[0][0] = avg3p( E + 4);  /* (-1, -1) */
+        B[2][3] = B[1][2] = B[0][1] = avg3p( E + 5);  /* (-1, 0) */
+        B[1][3] = B[0][2] = avg3p( E + 6);  /* (-1, 1) */
+        B[0][3] = avg3p( E + 7);  /* (-1, 2) */
+        break;
+
+    /* The remaining 4 diagonal modes use lines whose slopes are +|- 2
+       and +|- 1/2.  The angles of these lines are roughly +|- 27 degrees
+       from horizontal or vertical.
+
+       Unlike the 45 degree diagonals, here we often need to "synthesize"
+       predictor pixels midway between two actual predictors using avg2p(p),
+       which we think of as returning the pixel "at" p[1/2]. */
+
+    case B_VR_PRED: /* SSE (vertical right) step = (2,1) or (-2,-1) */
+        B[3][0] = avg3p( E + 2);  /* predictor is from (1, -1) */
+        B[2][0] = avg3p( E + 3);  /* (0, -1) */
+        B[3][1] = B[1][0] = avg3p( E + 4);  /* (-1,  -1) */
+        B[2][1] = B[0][0] = avg2p( E + 4);  /* (-1, -1/2) */
+        B[3][2] = B[1][1] = avg3p( E + 5);  /* (-1,   0) */
+        B[2][2] = B[0][1] = avg2p( E + 5);  /* (-1, 1/2) */
+        B[3][3] = B[1][2] = avg3p( E + 6);  /* (-1,   1) */
+        B[2][3] = B[0][2] = avg2p( E + 6);  /* (-1, 3/2) */
+        B[1][3] = avg3p( E + 7);  /* (-1, 2) */
+        B[0][3] = avg2p( E + 7);  /* (-1, 5/2) */
+        break;
+
+    case B_VL_PRED: /* SSW (vertical left) step = (2,-1) or (-2,1) */
+        B[0][0] = avg2p( A);  /* predictor is from (-1, 1/2) */
+        B[1][0] = avg3p( A + 1);  /* (-1, 1) */
+        B[2][0] = B[0][1] = avg2p( A + 1);  /* (-1, 3/2) */
+        B[1][1] = B[3][0] = avg3p( A + 2);  /* (-1,   2) */
+        B[2][1] = B[0][2] = avg2p( A + 2);  /* (-1, 5/2) */
+        B[3][1] = B[1][2] = avg3p( A + 3);  /* (-1,   3) */
+        B[2][2] = B[0][3] = avg2p( A + 3);  /* (-1, 7/2) */
+        B[3][2] = B[1][3] = avg3p( A + 4);  /* (-1,   4) */
+        /* Last two values do not strictly follow the pattern. */
+        B[2][3] = avg3p( A + 5);  /* (-1, 5) [avg2p( A + 4) = (-1,9/2)] */
+        B[3][3] = avg3p( A + 6);  /* (-1, 6) [avg3p( A + 5) = (-1,5)] */
+        break;
+
+    case B_HD_PRED: /* ESE (horizontal down) step = (1,2) or (-1,-2) */
+        B[3][0] = avg2p( E);  /* predictor is from (5/2, -1) */
+        B[3][1] = avg3p( E + 1);  /* (2, -1) */
+        B[2][0] = B[3][2] = svg2p( E + 1);  /* ( 3/2, -1) */
+        B[2][1] = B[3][3] = avg3p( E + 2);  /* (   1, -1) */
+        B[2][2] = B[1][0] = avg2p( E + 2);  /* ( 1/2, -1) */
+        B[2][3] = B[1][1] = avg3p( E + 3);  /* (   0, -1) */
+        B[1][2] = B[0][0] = avg2p( E + 3);  /* (-1/2, -1) */
+        B[1][3] = B[0][1] = avg3p( E + 4);  /* (  -1, -1) */
+        B[0][2] = avg3p( E + 5);  /* (-1, 0) */
+        B[0][3] = avg3p( E + 6);  /* (-1, 1) */
+        break;
+
+    case B_HU_PRED: /* ENE (horizontal up) step = (1,-2) or (-1,2) */
+        B[0][0] = avg2p( L);  /* predictor is from ( 1/2, -1) */
+        B[0][1] = avg3p( L + 1);  /* ( 1, -1) */
+        B[0][2] = B[1][0] = avg2p( L + 1);  /* (3/2, -1) */
+        B[0][3] = B[1][1] = avg3p( L + 2);  /* (  2, -1) */
+        B[1][2] = B[2][0] = avg2p( L + 2);  /* (5/2, -1) */
+        B[1][3] = B[2][1] = avg3( L[2], L[3], L[3]);  /* ( 3, -1) */
+        /* Not possible to follow pattern for much of the bottom row
+           because no (nearby) already-constructed pixels lie on the
+           diagonals in question. */
+        B[2][2] = B[2][3] = B[3][0] = B[3][1] = B[3][2] = B[3][3] = L[3];
+  }
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The reference decoder implementation of subblock intra-prediction may be found 
+in `reconintra4x4.c`.
+

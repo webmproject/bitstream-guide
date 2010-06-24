@@ -1,0 +1,16 @@
+
+
+### Chapter 1: Introduction
+
+This document describes the VP8 compressed video data format created by Google On2, together with a discussion of the decoding procedure for this format. It is intended to be used in conjunction with and as a guide to the reference decoder provided by Google On2. If there are any conflicts between this document and the reference source code, the reference source code should be considered correct. The bitstream is defined by the reference source code and not this document.
+
+Like many modern video compression schemes, VP8 is based on decomposition of frames into square subblocks of pixels, prediction of such subblocks using previously constructed blocks, and adjustment of such predictions (as well as synthesis of unpredicted blocks) using a discrete cosine transform (hereafter abbreviated as DCT). In one special case, however, VP8 uses a "Walsh-Hadamard" (hereafter abbreviated as WHT) transform instead of a DCT.
+
+Roughly speaking, such systems reduce datarate by exploiting the temporal and spatial coherence of most video signals. It is more efficient to specify the location of a visually similar portion of a prior frame than it is to specify pixel values. The frequency segregation provided by the DCT and WHT facilitate the exploitation of both spatial coherence in the original signal and the tolerance of the human visual system to moderate losses of fidelity in the reconstituted signal.
+
+VP8 augments these basic concepts with, among other things, sophisticated usage of contextual probabilities. The result is a significant reduction in datarate at a given quality.
+
+Unlike some similar schemes (the older MPEG formats, for example), VP8 specifies exact values for reconstructed pixels. Specifically, the specification for the DCT and WHT portions of the reconstruction does not allow for any "drift" caused by truncation of fractions. Rather, the algorithm is specified using fixed-precision integer operations exclusively. This greatly facilitates the verification of the correctness of a decoder implementation as well as avoiding difficult-to-predict visual incongruities between such implementations.
+
+It should be remarked that, in a complete video playback system, the displayed frames may or may not be identical to the reconstructed frames. Many systems apply a final level of filtering (commonly referred to as postprocessing) to the reconstructed frames prior to viewing. Such postprocessing has no effect on the decoding and reconstruction of subsequent frames (which are predicted using the completely-specified reconstructed frames) and is beyond the scope of this document. In practice, the nature and extent of this sort of postprocessing is dependent on both the taste of the user and on the computational facilities of the playback environment.
+

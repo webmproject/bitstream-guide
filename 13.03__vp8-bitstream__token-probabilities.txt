@@ -1,0 +1,52 @@
+
+
+#### 13.3 Token Probabilities
+
+
+The probability specification for the token tree (unlike that for the "extra bits" described above) is rather involved. It uses three pieces of context to index a large probability table, the contents of which may be incrementally modified in the frame header. The full (non-constant) probability table is laid out as follows.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prob coef_probs [4] [8] [3] [num_dct_tokens-1];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Working from the outside in, the outermost dimension is indexed by the type of plane being decoded:
+
+  * `0` - Y beginning at coefficient 1 (i.e., Y after Y2)
+  * `1` - Y2
+  * `2` - U or V
+  * `3` - Y beginning at coefficient 0 (i.e., Y in the absence of Y2).
+
+The next dimension is selected by the position of the coefficient being decoded. That position c steps by ones up to 15, starting from zero for block types 1, 2, or 3 and starting from one for block type 0. The second array index is then
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+coef_bands [c]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+where
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+const int coef_bands [16] = {
+     0, 1, 2, 3, 6, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+is a fixed mapping of position to "band".
+
+The third dimension is the trickiest. Roughly speaking, it measures the "local complexity" or extent to which nearby coefficients are non-zero.
+
+For the first coefficient (DC, unless the block type is 0), we consider the (already encoded) blocks within the same plane (Y2, Y, U, or V) above and to the left of the current block. The context index is then the number (0, 1 or 2) of these blocks that had at least one non-zero coefficient in their residue record.
+
+Beyond the first coefficient, the context index is determined by the absolute value of the most recently decoded coefficient (necessarily within the current block) and is `0` if the last coefficient was a zero, `1` if it was plus or minus one, and `2` if its absolute value exceeded one.
+
+Note that the intuitive meaning of this measure changes as coefficients are decoded. For example, prior to the first token, a zero means that the neighbors are empty, suggesting that the current block may also be empty. After the first token, because an end-of-block token must have at least one non-zero value before it, a zero means that we just decoded a zero and hence guarantees that a non-zero coefficient will appear later in this block. However, this shift in meaning is perfectly okay because the complete context depends also on the coefficient band (and since band 0 is occupied exclusively by position 0).
+
+As with other contexts used by VP8, the "neighboring block" context described here needs a special definition for subblocks lying along the top row or left edge of the frame. These "non-existent" predictors above and to the left of the image are simply taken to be empty -- that is, taken to contain no non-zero coefficients.
+
+The residue decoding of each macroblock then requires, in each of two directions (above and to the left), an aggregate coefficient predictor consisting of a single Y2 predictor, two predictors for each of U and V, and four predictors for Y. In accordance with the scan-ordering of macroblocks, a decoder needs to maintain a single "left" aggregate predictor and a row of "above" aggregate predictors.
+
+Before decoding any residue, these maintained predictors may simply be cleared, in compliance with the definition of "non-existent" prediction. After each block is decoded, the two predictors referenced by the block are replaced with the (empty or non-empty) state of the block, in preparation for the later decoding of the blocks below and to the right of the block just decoded.
+
+The fourth, and final, dimension of the token probability array is of course indexed by (half) the position in the token tree structure, as are all tree probability arrays.
+
+While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `detokenize.c`.
+
