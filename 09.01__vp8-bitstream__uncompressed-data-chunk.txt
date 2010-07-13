@@ -9,7 +9,19 @@ The uncompressed data chunk comprises a common (for key frames and interframes) 
   3. A 1-bit `show_frame` flag (`0` when current frame is not for display, `1` when current frame is for display).
   4. A 19-bit field containing the size of the first data partition in bytes.
 
-For key frames this is followed by a further 7 bytes of uncompressed data as follows:
+Version number enables or disables certain features in the bitstream, as follows:
+
+| Version | Reconstruction filter   | Loop filter |
+| ------- | ----------------------- | ----------- |
+| `0`     | Bicubic                 | Normal      |
+| `1`     | Bilinear                | Simple      |
+| `2`     | Bilinear                | None        |
+| `3`     | None                    | None        |
+| Other   | Reserved for future use |             |
+
+The reference software also adjusts the loop filter based on version number, as per the table above. Version number `1` implies a "simple" loop filter and version numbers `2` and `3` imply no loop filter. However, the "simple" filter setting in this context has no effect whatsoever on the decoding process, and the "no loop filter" setting only forces the reference encoder to set filter level equal to `0`. Neither affect the decoding process. In decoding, the only loop filter settings that matter are those in the frame header.
+
+For key frames the frame tag is followed by a further 7 bytes of uncompressed data, as follows:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Start code byte 0     0x9d

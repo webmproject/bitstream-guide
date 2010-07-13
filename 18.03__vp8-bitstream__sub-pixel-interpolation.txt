@@ -13,13 +13,27 @@ Otherwise, at least one of the fractional displacements is non-zero. We then syn
 
 The two interpolations are essentially identical. Each uses an (at most) six-tap filter (the choice of which of course depends on the one-dimensional offset). Thus, every calculated pixel references at most three pixels before (above or to-the-left of) it and at most three pixels after (below or to-the-right of) it. The horizontal interpolation must calculate two extra rows above and three extra rows below the 4x4 block, to provide enough samples for the vertical interpolation to proceed.
 
+Depending on the reconstruction filter type given in the field `Version Number` in the frame tag, either a bicubic or a bilinear tap set is used.
+
 The exact implementation of subsampling is as follows.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Filter taps taken to 7-bit precision.
    Because DC is always passed, taps always sum to 128. */
 
-const int filters [8] [6[ = {           /* indexed by displacement */
+const int BilinearFilters[8][6] =
+{
+    { 0, 0, 128,   0, 0, 0 },
+    { 0, 0, 112,  16, 0, 0 },
+    { 0, 0,  96,  32, 0, 0 },
+    { 0, 0,  80,  48, 0, 0 },
+    { 0, 0,  64,  64, 0, 0 },
+    { 0, 0,  48,  80, 0, 0 },
+    { 0, 0,  32,  96, 0, 0 },
+    { 0, 0,  16, 112, 0, 0 }
+};
+
+const int filters [8] [6] = {           /* indexed by displacement */
     { 0,  0,  128,    0,   0,  0 },     /* degenerate whole-pixel */
     { 0, -6,  123,   12,  -1,  0 },     /* 1/8 */
     { 2, -11, 108,   36,  -8,  1 },     /* 1/4 */
@@ -58,9 +72,10 @@ void Hinterp(
     Pixel temp[9][4],   /* 9 rows of 4 (intermediate) destination values */
     const Pixel *p,     /* subblock origin in prediction frame */
     int s,              /* vertical stride to be used in prediction frame */
-    uint hfrac          /* 0 <= horizontal displacement <= 7 */
+    uint hfrac,         /* 0 <= horizontal displacement <= 7 */
+    uint bicubic        /* 1=bicubic filter, 0=bilinear */
 ) {
-    const int * const fil = filters [hfrac];
+    const int * const fil = bicubic ? filters [hfrac] : BilinearFilters[hfrac];
 
     int r = 0;  do              /* for each row */
     {
@@ -82,9 +97,10 @@ void Hinterp(
 void Vinterp(
     Pixel final[4][4],      /* 4 rows of 4 (final) destination values */
     const Pixel temp[9][4],
-    uint vfrac              /* 0 <= vertical displacement <= 7 */
+    uint vfrac,             /* 0 <= vertical displacement <= 7 */
+    uint bicubic        /* 1=bicubic filter, 0=bilinear */
 ) {
-    const int * const fil = filters [vfrac];
+    const int * const fil = bicubic ? filters [vfrac] : BilinearFilters[vfrac];
 
     int r = 0;  do              /* for each row */
     {

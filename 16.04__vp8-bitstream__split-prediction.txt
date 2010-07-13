@@ -34,13 +34,15 @@ part = (MVpartition) treed_read( d, mvpartition_tree, mvpartition_probs);
 
 After the partition come two (for `mv_top_bottom` or `mv_left_right`), four (for `mv_quarters`), or sixteen (for `MV_16`) subblock inter-prediction modes. These modes occur in the order indicated by the partition layouts (given as comments to the `MVpartition` enum) and are coded as follows. (As was done for the macroblock-level modes, we offset the mode enumeration so that a single variable may unambiguously hold either an intra- or inter-subblock mode.)
 
+Prior to decoding each subblock, a decoding tree context is chosen as illustrated in the code snippet below. The context is based on the immediate left and above subblock neighbors, and whether they are equal, are zero, or a combination of those.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
 {
     LEFT4x4 = num_intra_bmodes,   /* use already-coded MV to my left */
-    ABOVE4x4,                   /* use already-coded MV above me */
-    ZERO4x4,                    /* use zero MV */
-    NEW4x4,                     /* explicit offset from "best" */
+    ABOVE4x4,                     /* use already-coded MV above me */
+    ZERO4x4,                      /* use zero MV */
+    NEW4x4,                       /* explicit offset from "best" */
 
     num_sub_mv_ref
 };
@@ -53,11 +55,41 @@ const tree_index sub_mv_ref_tree [2 * (num_sub_mv_ref - 1)] =
    -ZERO4X4, -NEW4X4    /* ZERO = "110", NEW = "111" */
 };
 
+/* Choose correct decoding tree context 
+ * Function parameters are left subblock neighbor MV and above 
+ * subblock neighbor MV */
+int vp8_mvCont(MV *l, MV*a) 
+{
+    int lez = (l->row == 0 && l->col == 0); /* left neighbour is zero */
+    int aez = (a->row == 0 && a->col == 0); /* above neighbour is zero */
+    int lea = (l->row == a->row && l->col == a->col);  /* left neighbour 
+                                                        * equals above neighbour */
+
+    if(lea && lez)
+        return SUBMVREF_LEFT_ABOVE_ZED; /* =4 */
+
+    if(lea)
+        return SUBMVREF_LEFT_ABOVE_SAME; /* =3 */
+
+    if(aez)
+        return SUBMVREF_ABOVE_ZED; /* =2 */
+
+    if(lez)
+        return SUBMVREF_LEFT_ZED; /* =1*/
+
+    return SUBMVREF_NORMAL; /* =0 */
+}
+
 /* Constant probabilities and decoding procedure. */
 
-const Prob sub_mv_ref_prob [num_sub_mv_ref - 1] = { 180, 162, 25};
+const Prob sub_mv_ref_prob [5][num_sub_mv_ref - 1] = {
+    { 147,136,18 },
+    { 106,145,1  },
+    { 179,121,1  },
+    { 223,1  ,34 },
+    { 208,1  ,1  } };
 
-    sub_ref = (sub_mv_ref) treed_read( d, sub_mv_ref_tree, sub_mv_ref_prob);
+    sub_ref = (sub_mv_ref) treed_read( d, sub_mv_ref_tree, sub_mv_ref_prob[context]);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The first two sub-prediction modes simply copy the already-coded motion vectors used by the blocks above and to-the-left of the subblock at the upper left corner of the current subset (i.e., collection of subblocks being predicted). These prediction blocks need not lie in the current macroblock and, if the current subset lies at the top or left edges of the frame, need not lie in the frame. In this latter case, their motion vectors are taken to be zero, as are subblock motion vectors within an intra-predicted macroblock. Also, to ensure the correctness of prediction within this macroblock, all subblocks lying in an already-decoded subset of the current macroblock must have their motion vectors set.

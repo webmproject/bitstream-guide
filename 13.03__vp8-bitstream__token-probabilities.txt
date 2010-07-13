@@ -48,5 +48,91 @@ Before decoding any residue, these maintained predictors may simply be cleared, 
 
 The fourth, and final, dimension of the token probability array is of course indexed by (half) the position in the token tree structure, as are all tree probability arrays.
 
+The below pseudo-code illustrates the decoding process. Note that criteria, functions, etc. delimited with `**` are either dependent on decoder architecture or are elaborated on elsewhere in this document.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+int block[16] = { 0 }; /* current 4x4 block coeffs */
+int firstCoeff = 0;
+int plane;
+int ctx2;
+int ctx3 = 0; /* the 3rd context referred to in above description */
+Prob *probTable;
+int token;
+int sign;
+int absValue;
+int extraBits;
+bool prevCoeffWasZero = false;
+bool currentBlockHasCoeffs = false;
+/* base coeff abs values per each category, elem #0 is DCT_VAL_CATEGORY1,
+ * #1 is DCT_VAL_CATEGORY2 etc */
+int categoryBase[6] = { 5, 7, 11, 19, 35, 67 };
+
+/* Determine plane to use */
+if( **current_block_is_Y2_block** )       plane = 0;
+else if ( **current_block_is_chroma** )   plane = 2;
+else if ( **current_macroblock_has_Y2** ) plane = 1;
+else                                      plane = 3;
+
+/* For luma blocks of an "Y2 macroblock" we skip coeff index #0 */
+if( plane == 1 )
+    firstCoeff++;
+
+/* Determine whether neighbour 4x4 blocks have coeffiecients. This is dependant
+ * of the plane we are currently decoding; i.e. we check only coefficients from
+ * same plane as current block. */
+if( **left_neighbor_block_has_coefficients(plane)** )
+    ctx3++;
+if( **above_neighbor_block_has_coefficients(plane)** )
+    ctx3++;
+
+for( i = firstCoeff ; i < 16 ; ++i )
+{
+    ctx2 = coef_bands[i];
+    probTable = coef_probs[plane][ctx2][ctx3];
+
+    /* skip first code (dct_eob) if previous token was DCT_0 */
+    if( prevCoeffWasZero )
+        token = treed_read ( d, **coef_tree_without_eob**, probTable );
+    else
+        token = treed_read ( d, coef_tree, probTable );
+
+    if( token == dct_eob )
+        break;
+    
+    if( token != DCT_0 )
+    {
+        currentBlockHasCoeffs = true;
+  if( **token_has_extra_bits(token)** )
+  {
+      extraBits = DCTextra( token ); 
+      absValue =
+          categoryBase[**token_to_cat_index(token)**] + 
+    extraBits;
+  }
+  else
+  {
+      absValue = **token_to_abs_value(token)**;
+  }
+
+  sign = read_bool(d, 128);
+        block[i] = sign ? -absValue : absValue;
+    }
+    else
+    {
+        absValue = 0;
+    }
+
+    /* Set contexts and stuff for next coeff */
+    if( absValue == 0 )         ctx3 = 0;
+    else if ( absValue == 1 )   ctx3 = 1;
+    else                        ctx3 = 2;
+    prevCoeffWasZero = true;   
+}
+
+/* Store current block status to decoder internals */
+**block_has_coefficients[currentMb][currentBlock]** = currentBlockHasCoeffs;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `detokenize.c`.
 

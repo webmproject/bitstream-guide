@@ -5,6 +5,8 @@
 
 Having described the overall procedure of, and pixels affected by, the loop filter, we turn our attention to the treatment of individual segments straddling edges. We begin by describing the simple filter, which, as the reader might guess, is somewhat simpler than the normal filter.
 
+Note that the simple filter only applies to luma edges. Chroma edges are left unfiltered.
+
 Roughly speaking, the idea of loop filtering is, within limits, to reduce the difference between pixels straddling an edge. Differences in excess of a threshold (associated to the `loop_filter_level`) are assumed to be "natural" and are unmodified; differences below the threshold are assumed to be artifacts of quantization and the (partially) separate coding of blocks, and are reduced via the procedures described below. While the `loop_filter_level` is in principle arbitrary, the levels chosen by a VP8 compressor tend to be correlated to quantization levels.
 
 Most of the filtering arithmetic is done using 8-bit signed operands (having a range -128 to +127, inclusive), supplemented by 16-bit temporaries holding results of multiplies.
