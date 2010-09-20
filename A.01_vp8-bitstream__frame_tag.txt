@@ -1,0 +1,52 @@
+
+
+#### A.1 Uncompressed Data Chunk
+
+| Frame Tag                                             | Type  |
+|-------------------------------------------------------|-------|
+|INDENT00 `frame_tag`                                   | f(24) |
+|INDENT01 if (key_frame) {                              |       |
+|INDENT10 `start_code`                                  | f(24) |
+|INDENT10 `horizontal_size_code`                        | f(16) |
+|INDENT10 `vertical_size_code`                          | f(16) |
+|INDENT01 }                                             |       |
+
+The 3-byte frame tag can be parsed as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unsigned char *c = pbi->Source;
+unsigned int tmp;
+
+tmp = (c[2] << 16) | (c[1] << 8) | c[0];
+
+key_frame = tmp & 0x1;
+version = (tmp >> 1) & 0x7;
+show_frame = (tmp >> 4) & 0x1;
+first_part_size = (tmp >> 5) & 0x7FFFF;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+, where
+
+  * `key_frame` indicates if the current frame is a key frame or not
+  * `version` determines the bitstream version
+  * `show_frame` indicates if the current frame is meant to be displayed or not
+  * `first_part_size` determines the size of the first partition (control partition)
+
+The `start_code` is a constant 3-byte pattern having value 0x9d012a. The latter part of the
+uncompressed chunk (after the `start_code`) can be parsed as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unsigned char *c = pbi->Source + 6;
+unsigned int tmp;
+
+tmp = (c[1] << 8) | c[0];
+
+width = tmp & 0x3FFF;
+horizontal_scale = tmp >> 14;
+
+tmp = (c[3] << 8) | c[2];
+
+height = tmp & 0x3FFF;
+vertical_scale = tmp >> 14;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

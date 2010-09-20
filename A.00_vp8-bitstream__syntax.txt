@@ -1,0 +1,14 @@
+
+
+### Annex A: Bitstream Syntax
+
+This annex presents the bitstream syntax in a tabular form. All the information elements have been introduced and explained in the previous chapters but are collected here for a quick reference. Each syntax element is shortly described after the tabular representation along with a reference to the corresponding paragraph in the main document. The meaning of each syntax element value is not repeated here.
+
+The top-level hierarchy of the bitstream is introduced in [Chapter 4](#h-00.6).
+
+Definition of syntax element coding types can be found in [Chapter 8](#h-00.10). The types used in the representation in this annex are:
+
+  * `f(n)`, n-bit value from stream (n successive bits, not boolean encoded)
+  * `L(n)`, n-bit number encoded as n booleans (with equal probability of being `0` or `1`)
+  * `B(p)`, bool with probability `p` of being `0`
+  * `T`, tree-encoded value 
