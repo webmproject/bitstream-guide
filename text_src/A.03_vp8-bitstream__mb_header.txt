@@ -2,6 +2,9 @@
 
 #### A.3 Macroblock Data
 
+
+<div class="col1-pre" markdown="1">
+
 | Macroblock Data                                       | Type  |
 |-------------------------------------------------------|-------|
 | INDENT01 macroblock_header()                          |       |
@@ -46,6 +49,9 @@
 | INDENT10   `intra_uv_mode`                            | T     |
 | INDENT01 }                                            |       |
 
+</div>
+
+
   * `segment_id` indicates to which segment the macroblock belongs ([10](#h-00.12))
   * `mb_coeff_skip` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-00.13.1))
   * `is_inter_mb` indicates if the macroblock is intra or inter coded ([16](#h-00.18))
@@ -57,6 +63,9 @@
   * `intra_y_mode` selects the luminance intra prediction mode ([16.1](#h-00.18.1))
   * `intra_b_mode` selects the sub-macroblock luminance prediction mode for macroblocks coded using `B_PRED` mode ([16.1](#h-00.18.1))
   * `intra_uv_mode` selects the chrominance intra prediction mode ([16.1](#h-00.18.1))
+
+
+<div class="col1-pre" markdown="1">
 
 | residual_data()                                       | Type  |
 |-------------------------------------------------------|-------|
@@ -77,6 +86,8 @@
 | INDENT11   if (token_has_extra_bits) {    | |
 | INDENT20     `extra_bits`       | L(n)  |
 | INDENT10   `sign`                                   | L(1)  |
+
+</div>
 
   * firstCoeff is 1 for luma blocks of macroblocks containing Y2 subblock, otherwise 0
   * `token` defines the value of the coefficient, the value range of the coefficient or the end of block ([13.2](#h-00.15.2))

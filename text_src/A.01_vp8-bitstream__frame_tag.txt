@@ -2,6 +2,8 @@
 
 #### A.1 Uncompressed Data Chunk
 
+<div class="col1-pre" markdown="1">
+
 | Frame Tag                                             | Type  |
 |-------------------------------------------------------|-------|
 |INDENT00 `frame_tag`                                   | f(24) |
@@ -10,6 +12,8 @@
 |INDENT10 `horizontal_size_code`                        | f(16) |
 |INDENT10 `vertical_size_code`                          | f(16) |
 |INDENT01 }                                             |       |
+
+</div>
 
 The 3-byte frame tag can be parsed as follows:
 

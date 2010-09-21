@@ -2,6 +2,8 @@
 
 #### A.2 Frame Header
 
+<div class="col1-pre" markdown="1">
+
 | Frame Header                                          | Type  |
 |-------------------------------------------------------|-------|
 | INDENT01 if (key_frame) {                             |       |
@@ -35,6 +37,7 @@
 | INDENT01 token_prob_update()                          |       |
 | INDENT00 `mb_no_coeff_skip`                           | L(1)  |
 
+
 | Frame Header                                          | Type  |
 |-------------------------------------------------------|-------|
 | INDENT00 `prob_skip_false`                            | L(8)  |
@@ -54,6 +57,9 @@
 | INDENT11   }                                          |       |
 | INDENT11   mv_prob_update()                           |       |
 | INDENT01 }                                            |       |
+
+</div>
+
 
   * `color_space` defines the YUV color space of the sequence ([9.2](#h-00.11.2))
   * `clamping_type` specifies if the decoder is required to clamp the reconstructed pixel values ([9.2](#h-00.11.2))
@@ -79,6 +85,9 @@
   * `intra_16x16_prob` the branch probabilities of the luma intra prediction mode decoding tree
   * `intra_chroma_prob_update_flag` indicates if the branch probabilies used in the decoding of chroma intra prediction mode are updated ([9.10](#h-00.11.10))
   * `intra_chroma_prob` the branch probabilities of the chroma intra prediction mode decoding tree
+
+
+<div class="col1-pre" markdown="1">
 
 | update_segmentation()                                 | Type  |
 |-------------------------------------------------------|-------|
@@ -110,6 +119,9 @@
 | INDENT11   }                                          |       |
 | INDENT01 }                                            |       |
 
+</div>
+
+
   * `update_mb_segmentation_map` determines if the MB segmentation map is updated in the current frame ([9.3](#h-00.11.3))
   * `update_segment_feature_data` indicates if the segment feature data is updated in the current frame ([9.3](#h-00.11.3))
   * `segment_feature_mode` indicates the feature data update mode, 0 for delta and 1 for the absolute value ([9.3](#h-00.11.3))
@@ -121,6 +133,9 @@
   * `lf_update_sign` indicates the update sign for the loop filter level ([9.3](#h-00.11.3))
   * `segment_prob_update` indicates if the branch probabilities used to decode the `segment_id` in the MB header are decoded from the stream or use the default value of 255 ([9.3](#h-00.11.3))
   * `segment_prob` the branch probabilities of the `segment_id` decoding tree ([9.3](#h-00.11.3))
+
+
+<div class="col1-pre" markdown="1">
 
 | mb_lf_adjustments()                                   | Type  |
 |-------------------------------------------------------|-------|
@@ -145,12 +160,18 @@
 | INDENT11   }                                          |       |
 | INDENT01 }                                            |       |
 
+</div>
+
+
   * `loop_filter_adj_enable` indicates if the MB-level loop filter adjustment (based on the used reference frame and coding mode) is on for the current frame ([9.4](#h-00.11.4))
   * `mode_ref_lf_delta_update` indicates if the delta values used in adjustment are updated in the current frame ([9.4](#h-00.11.4))
   * `ref_frame_delta_update_flag` indicates if the adjustment delta value corresponding to a certain used reference frame is updated ([9.4](#h-00.11.4))
   * `delta_magnitude` is the absolute value of the delta value
   * `delta_sign` is the sign of the delta value
   * `mb_mode_delta_update_flag` indicates if the adjustment delta value corresponding to certain MB prediction mode is updated ([9.4](#h-00.11.4))
+
+
+<div class="col1-pre" markdown="1">
 
 | quant_indices()                                       | Type  |
 |-------------------------------------------------------|-------|
@@ -177,6 +198,9 @@
 | INDENT10   `uv_ac_delta_sign`                         | L(1)  |
 | INDENT01 }                                            |       |
 
+</div>
+
+
   * `y_ac_qi` is the dequantization table index used for the luma AC coefficients (and other coefficient groups if no delta value is present) ([9.6](#h-00.11.6))
   * `y_dc_delta_present` indicates if the stream contains a delta value that is added to the baseline index to obtain the luma DC coefficient dequantization index ([9.6](#h-00.11.6))
   * `y_dc_delta_magnitude` the magnitude of the delta value ([9.6](#h-00.11.6))
@@ -185,6 +209,9 @@
   * `y2_ac_delta_present` indicates if the stream contains a delta value that is added to the baseline index to obtain the Y2 block AC coefficient dequantization index ([9.6](#h-00.11.6))
   * `uv_dc_delta_present` indicates if the stream contains a delta value that is added to the baseline index to obtain the chroma DC coefficient dequantization index ([9.6](#h-00.11.6))
   * `uv_ac_delta_present` indicates if the stream contains a delta value that is added to the baseline index to obtain the chroma AC coefficient dequantization index ([9.6](#h-00.11.6))
+
+
+<div class="col1-pre" markdown="1">
 
 | token_prob_update()                                   | Type  |
 |-------------------------------------------------------|-------|
@@ -201,8 +228,14 @@
 | INDENT11   }                                          |       |
 | INDENT01 }                                            |       |
 
+</div>
+
+
   * `coeff_prob_update_flag` indicates if the corresponding branch probability is updated in the current frame ([13.4](#h-00.15.4))
   * `coeff_prob` is the new branch probability ([13.4](#h-00.15.4))
+
+
+<div class="col1-pre" markdown="1">
 
 | mv_prob_update()                                      | Type  |
 |-------------------------------------------------------|-------|
@@ -214,6 +247,9 @@
 | INDENT21     }                                        |       |
 | INDENT11   }                                          |       |
 | INDENT01 }                                            |       |
+
+</div>
+
 
   * `mv_prob_update_flag` indicates if the corresponding MV decoding probability is updated in the current frame ([17.2](#h-00.19.2))
   * `prob` is the updated probability ([17.2](#h-00.19.2))
