@@ -1,30 +1,28 @@
 README for VP8 Bitstream Guide
 ==============================
 
-History
--------
-June 2010 -- This document has had a very limited audience for most of 
-its life.  As VP8 is now an open-source project, the document is 
-expected to undergo very significant change.
+History (June 2010)
+-------------------
+This document has had a very limited audience for most of its life. 
+As VP8 is now an open-source project, the document is expected to 
+undergo very significant change.
 
-Format
+Format (September 2010)
 ------
 The complete document is composed of individual text files for each 
 section, concatenated in filename order.
 
 The text source is designed for transformation to HTML via Markdown [1], 
-and uses the syntax extensions supported by PHP Markdown Extra [2].  
-kramdown [3] also supports this syntax acceptably well; other Markdown 
-transformers may not.  For example, python-markdown Extra [4] gets a few 
-things wrong.
+and uses the syntax extensions supported by PHP Markdown Extra [2] as 
+implemented by kramdown [3].
 
 kramdown 0.10.0 is the recommended text-to-HTML transformer. PDFs may be 
-generated one-off using PrinceXML [5].
+generated one-off using PrinceXML [4].
 
 MathML
 ------
 The text source also includes some block-level and span-level MathML 
-expressions, written in ASCIIMathML syntax [6].  The standard delimiter 
+expressions, written in ASCIIMathML syntax [5].  The standard delimiter 
 for ASCIIMathML expressions is the backtick (`), which unfortunately is 
 reserved by Markdown, so an alternate delimiter of double square 
 brackets (plus one space) is used:
@@ -38,6 +36,5 @@ brackets (plus one space) is used:
 [1]: http://daringfireball.net/projects/markdown/
 [2]: http://michelf.com/projects/php-markdown/extra/
 [3]: http://kramdown.rubyforge.org/
-[4]: http://www.freewisdom.org/projects/python-markdown/Extra
-[5]: http://www.princexml.com/
-[6]: http://www1.chapman.edu/~jipsen/mathml/asciimath.html
+[4]: http://www.princexml.com/
+[5]: http://www1.chapman.edu/~jipsen/mathml/asciimath.html
