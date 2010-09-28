@@ -1,6 +1,6 @@
 
 
-###Chapter 7: Boolean Entropy Decoder
+### Chapter 7: Boolean Entropy Decoder                       {#h-07-00}
 
 As discussed in the overview above, essentially the entire VP8 data stream is encoded using a boolean entropy coder.
 

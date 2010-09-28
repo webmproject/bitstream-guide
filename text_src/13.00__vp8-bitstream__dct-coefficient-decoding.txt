@@ -1,6 +1,6 @@
 
 
-### Chapter 13: DCT Coefficient Decoding
+### Chapter 13: DCT Coefficient Decoding                     {#h-13-00}
 
 
 The second data partition consists of an encoding of the quantized DCT (and WHT) coefficients of the residue signal. As discussed in the format overview (Chapter 2), for each macroblock, the residue is added to the (intra- or inter-generated) prediction buffer to produce the final (except for loop-filtering) reconstructed macroblock.

@@ -1,6 +1,6 @@
 
 
-#### 9.8 Refresh Last Frame Buffer
+#### 9.8 Refresh Last Frame Buffer                           {#h-09-08}
 
 
 VP8 uses one bit, `L(1)`, to indicate if the last frame reference buffer is refreshed using the constructed current frame. On key frame this bit is overridden, and the last frame buffer is always refreshed.

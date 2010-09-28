@@ -1,6 +1,6 @@
 
 
-#### 11.3 Subblock Mode Contexts
+#### 11.3 Subblock Mode Contexts                             {#h-11-03}
 
 
 The coding of subblock modes in key frames uses the modes already coded for the subblocks to the left of and above the subblock to select a probability array for decoding the current subblock mode. This is our first instance of contextual prediction, and there are several caveats associated with it:
@@ -17,16 +17,21 @@ The coding of subblock modes in key frames uses the modes already coded for the 
 
 The dependence of subblock mode probability on the nearby subblock mode context is most easily handled using a three-dimensional constant array:
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes-1];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 The outer two dimensions of this array are indexed by the already-coded subblock modes above and to the left of the current block, respectively. The inner dimension is a typical tree probability list whose indices correspond to the even indices of the `bmode_tree` above. The mode for the [[ j^(th) ]] luma subblock is then
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Bmode = (intra_bmode) treed_read( d, bmode_tree, kf_bmode_prob [A] [L]);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 where the 4x4 Y subblock index [[ j ]] varies from `0` to `15` in raster order and `A` and `L` are the modes used above and to-the-left of the [[ j^(th) ]] subblock.
 

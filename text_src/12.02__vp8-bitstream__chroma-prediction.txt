@@ -1,6 +1,6 @@
 
 
-#### 12.2 Chroma Prediction
+#### 12.2 Chroma Prediction                                  {#h-12-02}
 
 
 The chroma prediction is a little simpler than the luma prediction, so we treat it first. Each of the chroma modes treats U and V identically, that is, the U and V prediction values are calculated in parallel, using the same relative addressing and arithmetic in each of the two planes.
@@ -18,18 +18,22 @@ Otherwise, if the current macroblock lies on the top row of the frame, the avera
 For `DC_PRED`, apart from the exceptional case of the top left macroblock, 
 we are averaging either 16 or 8 pixel values to get a single prediction value that fills the 8x8 block. The rounding is done as follows:
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int sum;    /* sum of 8 or 16 pixels at (at least) 16-bit precision */
 int shf;    /* base 2 logarithm of the number of pixels (3 or 4) */
 
 Pixel DCvalue = (sum + (1 << (shf-1))) >> shf;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Because the summands are all valid pixels, no "clamp" is necessary in the calculation of `DCvalue`.
 
 The remaining "True Motion" (`TM_PRED`) chroma mode gets its name from an older technique of video compression used by On2 Technologies, to which it bears some relation. In addition to the row "A" and column "L", `TM_PRED` uses the pixel "P" above and to the left of the chroma block.
 
 In this mode, we propagate the horizontal differences between pixels in A (starting from P), using the pixels from L to start each row. The exact algorithm is as follows.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void TMpred(
@@ -47,6 +51,8 @@ void TMpred(
     } while( ++r < 8);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Note that the process could equivalently be described as propagating the vertical differences between pixels in L (starting from P), using the pixels from A to start each column.
 

@@ -1,6 +1,6 @@
 
 
-### Chapter 1: Introduction
+### Chapter 1: Introduction                                  {#h-01-00}
 
 This document describes the VP8 compressed video data format created by Google On2, together with a discussion of the decoding procedure for this format. It is intended to be used in conjunction with and as a guide to the reference decoder provided by Google On2. If there are any conflicts between this document and the reference source code, the reference source code should be considered correct. The bitstream is defined by the reference source code and not this document.
 

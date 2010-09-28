@@ -1,6 +1,6 @@
 
 
-#### 8.1 Tree Coding Implementation
+#### 8.1 Tree Coding Implementation                          {#h-08-01}
 
 We give a suggested implementation of a tree data structure followed by a couple of actual examples of its usage by VP8.
 
@@ -34,7 +34,7 @@ int treed_read(
   return -i;      /* return value is negation of nonpositive index */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+{:lang="c"}
 
 Tree-based decoding is implemented in the reference decoder file `tree_reader.h`.
 

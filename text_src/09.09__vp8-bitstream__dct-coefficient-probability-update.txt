@@ -1,6 +1,6 @@
 
 
-#### 9.9 DCT Coefficient Probability Update
+#### 9.9 DCT Coefficient Probability Update                  {#h-09-09}
 
 
 Contains a partial update of the probability tables used to decode DCT coefficients. These tables are maintained across interframes but are of course replaced with their defaults at the beginning of every key frame.

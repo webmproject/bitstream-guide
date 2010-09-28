@@ -1,6 +1,6 @@
 
 
-#### 14.2 Inverse Transforms
+#### 14.2 Inverse Transforms                                 {#h-14-02}
 
 
 If the Y2 residue block exists (i.e., the macroblock luma mode is not `SPLITMV` or `B_PRED`), it is inverted first (using the inverse WHT) and the element of the result at row i, column j is used as the 0<sup>th</sup> coefficient of the Y subblock at position (i, j), that is, the Y subblock whose index is (i * 4) + j. As discussed in Chapter 13, if the luma mode is `B_PRED` or `SPLITMV`, the 0<sup>th</sup> Y coefficients are part of the residue signal for the subblocks themselves.

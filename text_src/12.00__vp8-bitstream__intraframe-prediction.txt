@@ -1,6 +1,6 @@
 
 
-### Chapter 12: Intraframe Prediction
+### Chapter 12: Intraframe Prediction                        {#h-12-00}
 
 
 Intraframe prediction uses already-coded macroblocks within the current frame to approximate the contents of the current macroblock. It applies to intra-coded macroblocks in an interframe and to all macroblocks in a key frame.

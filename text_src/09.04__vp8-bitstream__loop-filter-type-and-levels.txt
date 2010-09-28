@@ -1,6 +1,6 @@
 
 
-#### 9.4 Loop Filter Type and Levels
+#### 9.4 Loop Filter Type and Levels                         {#h-09-04}
 
 
 VP8 supports two types of loop filter, having different computational complexity. The following bits occur in the header to support the selection of the baseline type, strength and sharpness behavior of the loop filter used for the current frame. 

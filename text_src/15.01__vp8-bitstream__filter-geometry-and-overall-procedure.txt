@@ -1,6 +1,6 @@
 
 
-#### 15.1 Filter Geometry and Overall Procedure
+#### 15.1 Filter Geometry and Overall Procedure              {#h-15-01}
 
 
 The Y, U, and V planes are processed independently and, except for the values of certain control parameters (derived from the `loop_filter_level` and `sharpness_level`), identically.
@@ -17,12 +17,9 @@ For each macroblock M, there are four filtering steps, which are, (almost) in or
 
   1. If M is not on the leftmost column of macroblocks, filter 
      across the left (vertical) inter-macroblock edge of M.
-
   2. Filter across the vertical subblock edges within M.
-
   3. If M is not on the topmost row of macroblocks, filter across 
      the top (horizontal) inter-macroblock edge of M.
-
   4. Filter across the horizontal subblock edges within M.
 
 We write MY, MU, and MV for the planar constituents of M, that is, the 16x16 luma block, 8x8 U block, and 8x8 V block comprising M.
@@ -34,7 +31,6 @@ In step 4, we filter across the (three luma and one each for U and V) vertical s
 Step 2 and 4 are skipped for macroblocks that satisfy the following two conditions:
 
   1. Macroblock coding mode is neither `B_PRED` nor `SPLTMV`;
-  
   2. There is no DCT coefficient coded for the whole macroblock.
   
 For these macroblocks, loop filtering for edges between subblocks internal to a macroblock is effectively skipped. This skip strategy significantly reduces VP8 loop-filtering complexity.

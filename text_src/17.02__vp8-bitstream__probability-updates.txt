@@ -1,6 +1,6 @@
 
 
-#### 17.2 Probability Updates
+#### 17.2 Probability Updates                                {#h-17-02}
 
 
 The decoder should maintain an array of two `MV_CONTEXT`s for decoding row and column components, respectively. These `MV_CONTEXT`s should be set to their defaults every key frame. Each individual probability may be updated every interframe (by field [[ "J" ]] of the frame header) using a constant table of update probabilities. Each optional update is of the form [[ B? P(7) ]], that is, a bool followed by a 7-bit probability specification if true.
@@ -8,6 +8,7 @@ The decoder should maintain an array of two `MV_CONTEXT`s for decoding row and c
 As with other dynamic probabilities used by VP8, the updates remain in effect until the next key frame or until replaced via another update.
 
 In detail, the probabilities should then be managed as follows.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Never-changing table of update probabilities for each individual
@@ -86,6 +87,8 @@ void update_mvcontexts( bool_decoder *d)
     } while( ++i < 2);                      /* next component */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 This completes the description of the motion-vector decoding procedure and, with it, the procedure for decoding interframe macroblock prediction records.
 

@@ -1,95 +1,96 @@
 
 
-#### A.3 Macroblock Data
+#### A.3 Macroblock Data                                     {#h-0a-03}
 
 
-<div class="col1-pre" markdown="1">
-
-| Macroblock Data                                       | Type  |
-|-------------------------------------------------------|-------|
-| INDENT01 macroblock_header()                          |       |
-| INDENT01 residual_data()                              |       |
-
-| macroblock_header()                                   | Type  |
-|-------------------------------------------------------|-------|
-| INDENT01 if (segmentation_map_update) {               |       |
-| INDENT10   `segment_id`                               | T     |
-| INDENT01 if (mb_no_coeff_skip) {                      |       |
-| INDENT10   `mb_coeff_skip`                            | B(p)  |
-| INDENT01 }                                            |       |
-| INDENT01 if (!key_frame) {                            |       |
-| INDENT10   `is_inter_mb`                              | B(p)  |
-| INDENT01 if (is_inter_mb) {                           |       |
-| INDENT10   `mb_ref_frame_sel1`                        | B(p)  |
-| INDENT11   if (mb_ref_frame_sel1)                     |       |
-| INDENT20     `mb_ref_frame_sel2`                      | B(p)  |
-| INDENT10   `mv_mode`                                  | T     |
-| INDENT11   if (mv_mode == SPLITMV) {                  |       |
-| INDENT20     `mv_split_mode`                          | T     |
-| INDENT21     for (i = 0; i < numMvs; i++) {           |       |
-| INDENT30       `sub_mv_mode`                          | T     |
-| INDENT31       if (sub_mv_mode == NEWMV4x4) {         |       |
-| INDENT41         read_mvcomponent()                   |       |
-| INDENT41         read_mvcomponent()                   |       |
-| INDENT31       }                                      |       |
-| INDENT21     }                                        |       |
-| INDENT11   } else if (mv_mode == NEWMV) {             |       |
-| INDENT21     read_mvcomponent()                       |       |
-| INDENT21     read_mvcomponent()                       |       |
-| INDENT11   }                                          |       |
-| INDENT01 } else { /* intra mb */                      |       |
-| INDENT10   `intra_y_mode`                             | T     |
-
-| macroblock_header()                                   | Type  |
-|-------------------------------------------------------|-------|
-| INDENT11   if (intra_y_mode == B_PRED) {              |       |
-| INDENT21     for (i = 0; i < 16; i++)                 |       |
-| INDENT30       `intra_b_mode`                         | T     |
-| INDENT11   }                                          |       |
-| INDENT10   `intra_uv_mode`                            | T     |
-| INDENT01 }                                            |       |
-
-</div>
+| Macroblock Data                                | Type  |
+|--------------------  --------------------------|-------|
+| `macroblock_header()`                          |       |
+| `residual_data()`                              |       |
+{:.col1-pre}
 
 
-  * `segment_id` indicates to which segment the macroblock belongs ([10](#h-00.12))
-  * `mb_coeff_skip` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-00.13.1))
-  * `is_inter_mb` indicates if the macroblock is intra or inter coded ([16](#h-00.18))
-  * `mb_ref_frame_sel1` selects the reference frame to be used; last frame (0), golden/alternate (1) ([16.2](#h-00.18.2))
-  * `mb_ref_frame_sel2` selects whether the golden (0) or alternate reference frame (1) is used ([16.2](#h-00.18.2))
-  * `mv_mode` determines the macroblock motion vector mode ([16.2](#h-00.18.2))
-  * `mv_split_mode` gives macroblock partitioning specification and determines number of motion vectors used (numMvs)([16.2](#h-00.18.2))
-  * `sub_mv_mode` determines the sub-macroblock motion vector mode for macroblocks coded using `SPLITMV` motion vector mode ([16.2](#h-00.18.2))
-  * `intra_y_mode` selects the luminance intra prediction mode ([16.1](#h-00.18.1))
-  * `intra_b_mode` selects the sub-macroblock luminance prediction mode for macroblocks coded using `B_PRED` mode ([16.1](#h-00.18.1))
-  * `intra_uv_mode` selects the chrominance intra prediction mode ([16.1](#h-00.18.1))
+| macroblock_header()                            | Type  |
+|------------------------  ----------------------|-------|
+| `if (segmentation_map_update) {`               |       |
+| `  segment_id`                                 | T     |
+| `if (mb_no_coeff_skip) {`                      |       |
+| `  mb_coeff_skip`                              | B(p)  |
+| `}`                                            |       |
+| `if (!key_frame) {`                            |       |
+| `  is_inter_mb`                                | B(p)  |
+| `if (is_inter_mb) {`                           |       |
+| `  mb_ref_frame_sel1`                          | B(p)  |
+| `  if (mb_ref_frame_sel1)`                     |       |
+| `    mb_ref_frame_sel2`                        | B(p)  |
+| `  mv_mode`                                    | T     |
+| `  if (mv_mode == SPLITMV) {`                  |       |
+| `    mv_split_mode`                            | T     |
+| `    for (i = 0; i < numMvs; i++) {`           |       |
+| `      sub_mv_mode`                            | T     |
+| `      if (sub_mv_mode == NEWMV4x4) {`         |       |
+| `        read_mvcomponent()`                   |       |
+| `        read_mvcomponent()`                   |       |
+| `      }`                                      |       |
+| `   }`                                         |       |
+| `  } else if (mv_mode == NEWMV) {`             |       |
+| `    read_mvcomponent()`                       |       |
+| `    read_mvcomponent()`                       |       |
+| `  }`                                          |       |
+| `} else { /* intra mb */`                      |       |
+| `  intra_y_mode`                               | T     |
+{:.col1-pre}
 
 
-<div class="col1-pre" markdown="1">
+| macroblock_header()                            | Type  |
+|------------------------------------------------|-------|
+| `  if (intra_y_mode == B_PRED) {`              |       |
+| `    for (i = 0; i < 16; i++)`                 |       |
+| `      intra_b_mode`                           | T     |
+| `  }`                                          |       |
+| `  intra_uv_mode`                              | T     |
+| `}`                                            |       |
+{:.col1-pre}
+
+
+  * `segment_id` indicates to which segment the macroblock belongs ([10](#h-10-00))
+  * `mb_coeff_skip` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-11-01))
+  * `is_inter_mb` indicates if the macroblock is intra or inter coded ([16](#h-16-00))
+  * `mb_ref_frame_sel1` selects the reference frame to be used; last frame (0), golden/alternate (1) ([16.2](#h-16-02))
+  * `mb_ref_frame_sel2` selects whether the golden (0) or alternate reference frame (1) is used ([16.2](#h-16-02))
+  * `mv_mode` determines the macroblock motion vector mode ([16.2](#h-16-02))
+  * `mv_split_mode` gives macroblock partitioning specification and determines number of motion vectors used (numMvs)([16.2](#h-16-02))
+  * `sub_mv_mode` determines the sub-macroblock motion vector mode for macroblocks coded using `SPLITMV` motion vector mode ([16.2](#h-16-02))
+  * `intra_y_mode` selects the luminance intra prediction mode ([16.1](#h-16-01))
+  * `intra_b_mode` selects the sub-macroblock luminance prediction mode for macroblocks coded using `B_PRED` mode ([16.1](#h-16-01))
+  * `intra_uv_mode` selects the chrominance intra prediction mode ([16.1](#h-16-01))
+
 
 | residual_data()                                       | Type  |
-|-------------------------------------------------------|-------|
-| INDENT01 if (!mb_coeff_skip) {                        |       |
-| INDENT11   if ( (is_inter_mb && mv_mode != SPLITMV) \|\||       |
-| INDENT30        (!is_inter_mb && intra_y_mode != B_PRED) ) { ||
-| INDENT21     residual_block() /* Y2 */    | |
-| INDENT11   }            | |
-| INDENT11   for (i = 0; i < 24; i++)     | |
-| INDENT21     residual_block() /* 16 Y, 4 U, 4 V */    | |
-| INDENT01 }            | |
+| ----------------------------------------------------- | ----- |
+| `if (!mb_coeff_skip) {`                               |       |
+| `  if ( (is_inter_mb && mv_mode != SPLITMV) \|\|`     |       |
+| `       (!is_inter_mb && intra_y_mode != B_PRED) ) {` |       |
+| `    residual_block() /* Y2 */`                       |       |
+| `  }`                                                 |       |
+| `  for (i = 0; i < 24; i++)`                          |       |
+| `    residual_block() /* 16 Y, 4 U, 4 V */`           |       |
+| `}`                                                   |       |
+{:.col1-pre}
+
 
 | residual_block()                                      | Type  |
-|-------------------------------------------------------|-------|
-| INDENT01 for (i = firstCoeff; i < 16; i++) {          |       |
-| INDENT10   `token`                                  | T |
-| INDENT11   if (token == EOB) break;                   |   |
-| INDENT11   if (token_has_extra_bits) {    | |
-| INDENT20     `extra_bits`       | L(n)  |
-| INDENT10   `sign`                                   | L(1)  |
+| ----------------------------------------------------- | ----- |
+| `for (i = firstCoeff; i < 16; i++) {`                 |       |
+| `  token`                                             |   T   |
+| `  if (token == EOB) break;`                          |       |
+| `  if (token_has_extra_bits) {`                       |       |
+| `    extra_bits`                                      | L(n)  |
+| `  sign`                                              | L(1)  |
+{:.col1-pre}
 
-</div>
 
   * firstCoeff is 1 for luma blocks of macroblocks containing Y2 subblock, otherwise 0
-  * `token` defines the value of the coefficient, the value range of the coefficient or the end of block ([13.2](#h-00.15.2))
-  * `extra_bits` determine the value of the coefficient within the value range defined by `token` ([13.2](#h-00.15.2))
-  * `sign` indicates the sign of the coefficient ([13.2](#h-00.15.2))
+  * `token` defines the value of the coefficient, the value range of the coefficient or the end of block ([13.2](#h-13-02))
+  * `extra_bits` determine the value of the coefficient within the value range defined by `token` ([13.2](#h-13-02))
+  * `sign` indicates the sign of the coefficient ([13.2](#h-13-02))

@@ -1,6 +1,6 @@
 
 
-#### 18.3 Sub-pixel Interpolation
+#### 18.3 Sub-pixel Interpolation                            {#h-18-03}
 
 
 The sub-pixel interpolation is effected via two one-dimensional convolutions. These convolutions may be thought of as operating on a two-dimensional array of pixels whose origin is the subblock origin, that is the origin of the prediction macroblock described above plus the offset to the subblock. Because motion vectors are arbitrary, so are these "prediction subblock origins".
@@ -16,6 +16,7 @@ The two interpolations are essentially identical. Each uses an (at most) six-tap
 Depending on the reconstruction filter type given in the field `Version Number` in the frame tag, either a bicubic or a bilinear tap set is used.
 
 The exact implementation of subsampling is as follows.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Filter taps taken to 7-bit precision.
@@ -115,4 +116,5 @@ void Vinterp(
     while( ++r < 4);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

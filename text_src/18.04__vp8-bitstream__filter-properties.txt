@@ -1,6 +1,6 @@
 
 
-#### 18.4 Filter Properties
+#### 18.4 Filter Properties                                  {#h-18-04}
 
 
 We discuss briefly the rationale behind the choice of filters. Our approach is necessarily cursory; a genuinely accurate discussion would require a couple of books. Readers unfamiliar with signal processing may or may not wish to skip this.

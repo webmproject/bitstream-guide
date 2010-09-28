@@ -1,6 +1,6 @@
 
 
-#### 16.4 Split Prediction
+#### 16.4 Split Prediction                                   {#h-16-04}
 
 
 The remaining mode (`SPLITMV`) causes multiple vectors to be applied to the Y subblocks. It is immediately followed by a partition specification that determines how many vectors will be specified and how they will be assigned to the subblocks. The possible partitions, with indicated subdivisions and coding tree, are as follows.
@@ -24,17 +24,23 @@ const tree_index mvpartition_tree [2 * (mvnum_partition - 1)] =
    -mv_top_bottom, -mv_left_right     /* top_bottom = "110", left_right = "111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The partition is decoded using a fixed, constant probability table:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob mvpartition_probs [mvnum_partition - 1] = { 110, 111, 150};
 part = (MVpartition) treed_read( d, mvpartition_tree, mvpartition_probs);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 After the partition come two (for `mv_top_bottom` or `mv_left_right`), four (for `mv_quarters`), or sixteen (for `MV_16`) subblock inter-prediction modes. These modes occur in the order indicated by the partition layouts (given as comments to the `MVpartition` enum) and are coded as follows. (As was done for the macroblock-level modes, we offset the mode enumeration so that a single variable may unambiguously hold either an intra- or inter-subblock mode.)
 
 Prior to decoding each subblock, a decoding tree context is chosen as illustrated in the code snippet below. The context is based on the immediate left and above subblock neighbors, and whether they are equal, are zero, or a combination of those.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -91,6 +97,8 @@ const Prob sub_mv_ref_prob [5][num_sub_mv_ref - 1] = {
 
     sub_ref = (sub_mv_ref) treed_read( d, sub_mv_ref_tree, sub_mv_ref_prob[context]);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The first two sub-prediction modes simply copy the already-coded motion vectors used by the blocks above and to-the-left of the subblock at the upper left corner of the current subset (i.e., collection of subblocks being predicted). These prediction blocks need not lie in the current macroblock and, if the current subset lies at the top or left edges of the frame, need not lie in the frame. In this latter case, their motion vectors are taken to be zero, as are subblock motion vectors within an intra-predicted macroblock. Also, to ensure the correctness of prediction within this macroblock, all subblocks lying in an already-decoded subset of the current macroblock must have their motion vectors set.
 

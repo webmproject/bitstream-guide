@@ -1,6 +1,6 @@
 
 
-#### 18.2 Prediction Subblocks
+#### 18.2 Prediction Subblocks                               {#h-18-02}
 
 
 The prediction calculation for each subblock is then as follows. Temporarily disregarding the fractional part of the motion vector (that is, rounding "up" or "left" by right-shifting each component 3 bits with sign propagation) and adding the origin (upper left position) of the (16x16 luma or 8x8 chroma) current macroblock gives us an origin in the Y, U, or V plane of the predictor frame (either the golden frame or previous frame).

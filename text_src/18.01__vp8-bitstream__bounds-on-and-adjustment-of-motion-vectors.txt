@@ -1,6 +1,6 @@
 
 
-#### 18.1 Bounds on and Adjustment of Motion Vectors
+#### 18.1 Bounds on and Adjustment of Motion Vectors         {#h-18-01}
 
 
 It is possible within the VP8 format for a block or macroblock to have an arbitrarily large motion vectors, due to the fact that each motion vector is differentially encoded without any clamp from a neighboring block or macroblock.
@@ -10,6 +10,7 @@ Because the motion vectors applied to the chroma subblocks have 1/8 pixel resolu
 The vector applied to each chroma subblock is calculated by averaging the vectors for the 4 luma subblocks occupying the same visible area as the chroma subblock in the usual correspondence, that is, the vector for U and V block 0 is the average of the vectors for the Y subblocks { 0, 1, 4, 5}, chroma block 1 corresponds to Y blocks { 2, 3, 6, 7}, chroma block 2 to Y blocks { 8, 9, 12, 13}, and chroma block 3 to Y blocks { 10, 11, 14, 15}.
 
 In detail, each of the two components of the vectors for each of the chroma subblocks is calculated from the corresponding luma vector components as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int avg( int c1, int c2, int c3, int c4)
@@ -24,13 +25,18 @@ int avg( int c1, int c2, int c3, int c4)
     return s >= 0 ?  (s + 4) >> 3 : -( (-s + 4) >> 3);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Furthermore, if the version number in the frame tag specifies only full-pel chroma motion vectors, then the fractional parts of both components of the vector are truncated to zero, as illustrated in the following pseudo-code (assuming 3 bits of fraction for both luma and chroma vectors):
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     x = x & (~7);
     y = y & (~7);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Earlier in this document we described the `vp8_clamp_mv()` function to limit "nearest" and "near" motion vector predictors inside specified margins within the frame boundaries. Additional clamping is performed for `NEW_MV` macroblocks, for which the final motion vector is clamped again after combining the "best" predictor and the differential vector decoded from the stream. 
 

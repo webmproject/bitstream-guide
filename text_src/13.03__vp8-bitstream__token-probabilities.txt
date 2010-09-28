@@ -1,13 +1,16 @@
 
 
-#### 13.3 Token Probabilities
+#### 13.3 Token Probabilities                                {#h-13-03}
 
 
 The probability specification for the token tree (unlike that for the "extra bits" described above) is rather involved. It uses three pieces of context to index a large probability table, the contents of which may be incrementally modified in the frame header. The full (non-constant) probability table is laid out as follows.
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Prob coef_probs [4] [8] [3] [num_dct_tokens-1];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Working from the outside in, the outermost dimension is indexed by the type of plane being decoded:
 
@@ -18,17 +21,23 @@ Working from the outside in, the outermost dimension is indexed by the type of p
 
 The next dimension is selected by the position of the coefficient being decoded. That position c steps by ones up to 15, starting from zero for block types 1, 2, or 3 and starting from one for block type 0. The second array index is then
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 coef_bands [c]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 where
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const int coef_bands [16] = {
      0, 1, 2, 3, 6, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 is a fixed mapping of position to "band".
 
@@ -49,6 +58,7 @@ Before decoding any residue, these maintained predictors may simply be cleared, 
 The fourth, and final, dimension of the token probability array is of course indexed by (half) the position in the token tree structure, as are all tree probability arrays.
 
 The below pseudo-code illustrates the decoding process. Note that criteria, functions, etc. delimited with `**` are either dependent on decoder architecture or are elaborated on elsewhere in this document.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int block[16] = { 0 }; /* current 4x4 block coeffs */
@@ -131,8 +141,9 @@ for( i = firstCoeff ; i < 16 ; ++i )
 
 /* Store current block status to decoder internals */
 **block_has_coefficients[currentMb][currentBlock]** = currentBlockHasCoeffs;
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `detokenize.c`.
 

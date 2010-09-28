@@ -1,6 +1,6 @@
 
 
-#### 16.2 Inter-Predicted Macroblocks
+#### 16.2 Inter-Predicted Macroblocks                        {#h-16-02}
 
 
 Otherwise (when the above bool is true), we are using inter-prediction (which of course only happens for interframes), to which we now restrict our attention.
@@ -11,14 +11,15 @@ Together with setting the reference frame, the purpose of inter-mode decoding is
 
 After the reference frame selector comes the mode (or motion vector reference) applied to the macroblock as a whole, coded using the following enumeration and tree. Setting `mv_nearest = num_ymodes` is a convenience that allows a single variable to unambiguously hold an inter- or intraprediction mode.
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
 {
     mv_nearest = num_ymodes, /* use "nearest" motion vector for entire MB */
-    mv_near,                /* use "next nearest" "" */
-    mv_zero,                /* use zero "" */
-    mv_new,                 /* use explicit offset from implicit "" */
-    mv_split,               /* use multiple motion vectors */
+    mv_near,                 /* use "next nearest" "" */
+    mv_zero,                 /* use zero "" */
+    mv_new,                  /* use explicit offset from implicit "" */
+    mv_split,                /* use multiple motion vectors */
 
     num_mv_refs = mv_split + 1 - mv_nearest
 }
@@ -26,10 +27,11 @@ mv_ref;
 
 const tree_index mv_ref_tree [2 * (num_mv_refs - 1)] =
 {
- -mv_zero, 2,               /* zero = "0" */
-  -mv_nearest, 4,           /* nearest = "10" */
-   -mv_near, 6,             /* near = "110" */
-     -mv_new, -mv_split     /* new = "1110", split = "1111" */
+ -mv_zero, 2,                /* zero = "0" */
+  -mv_nearest, 4,            /* nearest = "10" */
+   -mv_near, 6,              /* near = "110" */
+     -mv_new, -mv_split      /* new = "1110", split = "1111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

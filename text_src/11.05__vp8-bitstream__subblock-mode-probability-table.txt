@@ -1,9 +1,10 @@
 
 
-#### 11.5 Subblock Mode Probability Table
+#### 11.5 Subblock Mode Probability Table                    {#h-11-05}
 
 
 Finally, here is the fixed probability table used to decode subblock modes in key frames.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes-1] =
@@ -130,4 +131,5 @@ const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes
   }
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

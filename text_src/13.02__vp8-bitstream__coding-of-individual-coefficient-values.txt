@@ -1,6 +1,6 @@
 
 
-#### 13.2 Coding of Individual Coefficient Values
+#### 13.2 Coding of Individual Coefficient Values            {#h-13-02}
 
 
 The coding of coefficient tokens is the same for the DCT and WHT and for the remainder of this chapter DCT should be taken to mean either DCT or WHT.
@@ -10,6 +10,7 @@ All tokens (except end-of-block) specify either a single unsigned value or a ran
 Non-zero values (of either type) are then followed by a flag indicating the sign of the coded value (negative if `1`, positive if `0`).
 
 Here are the tokens and decoding tree.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -46,10 +47,13 @@ const tree_index coef_tree [2 * (num_dct_tokens - 1)] =
       -dct_cat5, -dct_cat6  /* cat4 = "1111110", cat4 = "1111111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 While in general all DCT coefficients are decoded using the same tree, decoding of certain DCT coefficients may skip the first branch, whose preceding coefficient is a `DCT_0`. This makes use of the fact that in any block last non zero coefficient before the end of the block is not `0`, therefore no `dct_eob` follows a `DCT_0` coefficient in any block.
 
 The tokens `dct_cat1` ... `dct_cat6` specify ranges of unsigned values, the value within the range being formed by adding an unsigned offset (whose width is 1, 2, 3, 4, 5, or 11 bits, respectively) to the base of the range, using the following algorithm and fixed probability tables.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 uint DCTextra( bool_decoder *d, const Prob *p)
@@ -67,11 +71,15 @@ const Prob Pcat5[] = { 180, 157, 141, 134, 130, 0};
 const Prob Pcat6[] =
     { 254, 254, 243, 230, 196, 177, 153, 140, 133, 130, 129, 0};
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 If `v`, the unsigned value decoded using the coefficient tree, possibly augmented by the process above, is non-zero, its sign is set by simply reading a flag:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if( read_bool( d, 128))
     v = -v;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

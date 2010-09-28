@@ -1,6 +1,6 @@
 
 
-### Chapter 19: References
+### Chapter 19: References                                   {#h-19-00}
 
 
   1. "ITU BT.601: Studio encoding parameters of digital television 

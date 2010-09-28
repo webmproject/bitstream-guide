@@ -1,6 +1,6 @@
 
 
-### Chapter 3: Compressed Frame Types
+### Chapter 3: Compressed Frame Types                        {#h-03-00}
 
 There are only two types of frames in VP8.
 

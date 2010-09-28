@@ -1,6 +1,6 @@
 
 
-#### 14.4 Implementation of the DCT Inversion
+#### 14.4 Implementation of the DCT Inversion                {#h-14-04}
 
 
 All of the DCT inversions are computed in exactly the same way. In principle, VP8 uses a classical 2D inverse discrete cosine transform, implemented as two passes of 1-D inverse DCT. The 1-D inverse DCT was calculated using a similar algorithm to what was described in the paper "Practical Fast 1-D DCT Algorithms with 11 Multiplications" by Loeffler, Lightenberg and Moschytz. However, the paper only provided the 8-point and 16-point version of the algorithms, which was adapted by On2 to perform the 4-point 1-D DCT.
@@ -22,6 +22,7 @@ Because the first constant is bigger than 1, to maintain the same 16-bit fixed p
 therefore
 
 [[ x * sqrt(2) * cos (pi/8) = x + x * ( sqrt(2) * cos(pi/8)-1) ]]
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* IDCT implementation */
@@ -83,6 +84,8 @@ void short_idct4x4llm_c(short *input, short *output, int pitch)
   }
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The reference decoder DCT inversion may be found in the files `invtrans.c` and `idctllm.c`.
 

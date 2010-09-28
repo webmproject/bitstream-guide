@@ -1,6 +1,6 @@
 
 
-#### 12.3 Luma Prediction
+#### 12.3 Luma Prediction                                    {#h-12-03}
 
 
 The prediction processes for the first four 16x16 luma modes (`DC_PRED`, `V_PRED`, `H_PRED`, and `TM_PRED`) are essentially identical to the corresponding chroma prediction processes described above, the only difference being that we are predicting a single 16x16 luma block instead of two 8x8 chroma blocks.
@@ -18,6 +18,7 @@ Because entire macroblocks (as opposed to their constituent subblocks) are recon
 Subblocks 7, 11, and 15 are affected. All three of these subblocks use the same extra pixels as does subblock 3 (at the upper right corner of the macroblock), namely the 4 pixels immediately above and to the right of subblock 3. Writing `(R,C)` for a frame buffer position offset from the upper left corner of the current macroblock by R rows and C columns, the extra pixels for all the right-edge subblocks (3, 7, 11, and 15) are at positions (-1,16), (-1,17), (-1,18), and (-1,19).
 
 The details of the prediction modes are most easily described in code.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Result pixels are often averages of two or three predictor pixels.
@@ -194,6 +195,8 @@ void subblock_intra_predict(
   }
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The reference decoder implementation of subblock intra-prediction may be found 
 in `reconintra4x4.c`.

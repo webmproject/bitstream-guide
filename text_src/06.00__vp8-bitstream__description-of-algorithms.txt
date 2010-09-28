@@ -1,6 +1,6 @@
 
 
-### Chapter 6: Description of Algorithms
+### Chapter 6: Description of Algorithms                     {#h-06-00}
 
 As the intent of this document, together with the reference decoder source code, is to specify a platform-independent procedure for the decoding and reconstruction of a VP8 video stream, many (small) algorithms must be described exactly.
 
@@ -50,6 +50,7 @@ represents probabilities as unsigned 8-bit numbers. */
 
 typedef uint8 Prob;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 We occasionally need to discuss mathematical functions involving honest-to-goodness "infinite precision" real numbers. The DCT is first described via the cosine function [[ cos ]]; the ratio of the lengths of the circumference and diameter of a circle is denoted [[ pi ]]; at one point, we take a (base [[ 1//2 ]]) logarithm denoted [[ log ]]; and [[ pow( x, y) ]] denotes [[ x ]] raised to the power [[ y ]]. If [[ x = 2 ]] and [[ y ]] is a small non-negative integer, [[ pow( 2, y) ]] may be expressed in C as `1 << y`.

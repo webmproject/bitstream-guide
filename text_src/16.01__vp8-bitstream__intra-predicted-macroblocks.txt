@@ -1,11 +1,12 @@
 
 
-#### 16.1 Intra-Predicted Macroblocks
+#### 16.1 Intra-Predicted Macroblocks                        {#h-16-01}
 
 
 For intra-prediction, the layout of the prediction data is essentially the same as the layout for key frames, although the contexts used by the decoding process are slightly different.
 
 As discussed in Chapter 8, the "outer" Y mode here uses a different tree from that used in key frames, repeated here for convenience.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const tree_index ymode_tree [2 * (num_ymodes - 1)] =
@@ -16,23 +17,31 @@ const tree_index ymode_tree [2 * (num_ymodes - 1)] =
    -TM_PRED, -B_PRED    /* "11" subtree:  TM_PRED = "110", B_PRED = "111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The probability table used to decode this tree is variable. As described in [Chapter 9](#h-9), it (along with the similarly-treated UV table) can be updated by field J of the frame header. Similar to the coefficient-decoding probabilities, such updates are cumulative and affect all ensuing frames until the next key frame or explicit update. The default probabilities for the Y and UV tables are
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Prob ymode_prob [num_ymodes - 1] = { 112, 86, 140, 37};
 Prob uv_mode_prob [num_uv_modes - 1] = { 162, 101, 204};
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 These defaults must be restored after detection of a key frame.
 
 Just as for key frames, if the Y mode is `B_PRED`, there next comes an encoding of the `intra_bpred` mode used by each of the sixteen Y subblocks. These encodings use the same tree as does that for key frames but, in place of the contexts used in key frames, use the single fixed probability table
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob bmode_prob [num_intra_bmodes - 1] = {
     120, 90, 79, 133, 87, 85, 80, 111, 151
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Last comes the chroma mode, again coded using the same tree as that for key frames, this time using the dynamic `uv_mode_prob` table described above.
 

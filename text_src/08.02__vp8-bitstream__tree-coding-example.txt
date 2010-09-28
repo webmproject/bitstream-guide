@@ -1,6 +1,6 @@
 
 
-#### 8.2 Tree Coding Example
+#### 8.2 Tree Coding Example                                 {#h-08-02}
 
 As a multi-part example, without getting too far into the semantics of macroblock decoding (which is of course taken up below), we look at the "mode" coding for intra-predicted macroblocks.
 
@@ -53,6 +53,7 @@ const tree_index uv_mode_tree [2 * (num_uv_modes - 1)] =
 const Prob pretend_its_huffman [num_ymodes - 1] = { 128, 128, 128, 128};
 Ymode = (intra_mbmode) treed_read( d, ymode_tree, pretend_its_huffman);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 Since it greatly facilitates re-use of reference code and since there is no real reason to do otherwise, it is strongly suggested that any decoder implementation use exactly the same enumeration values and probability table layouts as described in this document (and in the reference code) for all tree-coded data in VP8.
 

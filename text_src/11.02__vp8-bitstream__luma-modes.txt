@@ -1,9 +1,10 @@
 
 
-#### 11.2 Luma Modes
+#### 11.2 Luma Modes                                         {#h-11-02}
 
 
 First comes the luma specification of type `intra_mbmode`, coded using the `kf_ymode_tree`, as described in Chapter 8 and repeated here for convenience:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -28,17 +29,23 @@ const tree_index kf_ymode_tree [2 * (num_ymodes - 1)] =
    -H_PRED, -TM_PRED    /* "11" subtree: H_PRED = "110", TM_PRED = "111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 For key frames, the Y mode is decoded using a fixed probability array as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob kf_ymode_prob [num_ymodes - 1] = { 145, 156, 163, 128};
 Ymode = (intra_mbmode) treed_read( d, kf_ymode_tree, kf_ymode_prob);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 `d` is of course the `bool_decoder` being used to read the first data partition.
 
 If the Ymode is `B_PRED`, it is followed by a (tree-coded) mode for each of the 16 Y subblocks. The 10 subblock modes and their coding tree as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -76,6 +83,8 @@ const tree_index bmode_tree [2 * (num_intra_bmodes - 1)] =
          -B_HD_PRED, -B_HU_PRED /* HD = "11111110", HU = "11111111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The first four modes are smaller versions of the similarly-named 16x16 modes above, albeit with slightly different numbering. The last six "diagonal" modes are unique to luma subblocks.
 

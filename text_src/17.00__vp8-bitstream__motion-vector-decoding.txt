@@ -1,6 +1,6 @@
 
 
-### Chapter 17: Motion Vector Decoding
+### Chapter 17: Motion Vector Decoding                       {#h-17-00}
 
 
 As discussed above, motion vectors appear in two places in the VP8 datastream: applied to whole macroblocks in `NEWMV` mode and applied to subsets of macroblocks in `NEW4x4` mode. The format of the vectors is identical in both cases.

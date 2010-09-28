@@ -1,6 +1,6 @@
 
 
-#### 9.5 Token Partition and Partition Data Offsets
+#### 9.5 Token Partition and Partition Data Offsets          {#h-09-05}
 
 
 VP8 allows DCT coefficients to be packed into multiple partitions besides the first partition with header and per-macroblock prediction information, so the decoder can perform parallel decoding in an efficient manner. There are two bits `L(2)` used to indicate the number of coefficient data partitions within a compressed frame. The two bits are defined in the following table:

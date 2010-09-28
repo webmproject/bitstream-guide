@@ -1,6 +1,6 @@
 
 
-#### 15.2 Simple Filter
+#### 15.2 Simple Filter                                      {#h-15-02}
 
 
 Having described the overall procedure of, and pixels affected by, the loop filter, we turn our attention to the treatment of individual segments straddling edges. We begin by describing the simple filter, which, as the reader might guess, is somewhat simpler than the normal filter.
@@ -13,14 +13,18 @@ Most of the filtering arithmetic is done using 8-bit signed operands (having a r
 
 Sums and other temporaries need to be "clamped" to a valid signed 8-bit range:
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int8 c( int v)
 {
     return (int8) (v < -128 ? -128 : (v < 128 ? v : 127));
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Since pixel values themselves are unsigned 8-bit numbers, we need to convert between signed and unsigned values:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Convert pixel value (0 <= v <= 255) to an 8-bit signed number. */
@@ -29,12 +33,17 @@ int8 u2s( Pixel v) { return (int8) (v - 128);}
 /* Clamp, then convert signed number back to pixel value. */
 Pixel s2u( int v) { return (Pixel) ( c(v) + 128);}
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Filtering is often predicated on absolute-value thresholds. The following function is the equivalent of the standard library function `abs`, whose prototype is found in the standard header file `stdlib.h`. For us, the argument `v` is always the difference between two pixels and lies in the range [[ -255 <= v <= +255 ]].
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int abs( int v) { return v < 0?  -v : v;}
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 An actual implementation would of course use inline functions or macros to accomplish these trivial procedures (which are used by both the normal and simple loop filters). An optimal implementation would probably express them in machine language, perhaps using SIMD vector instructions. On many SIMD processors, the saturation accomplished by the above clamping function is often folded into the arithmetic instructions themselves, obviating the explicit step taken here.
 
@@ -43,6 +52,7 @@ To simplify the specification of relative pixel positions, we use the word befor
 Given an edge, a segment, and a limit value, the simple loop filter computes a value based on the four pixels that straddle the edge (two either side). If that value is below a supplied limit, then, very roughly speaking, the two pixel values are brought closer to each other, "shaving off" something like a quarter of the difference. The same procedure is used for all segments straddling any type of edge, regardless of the nature (inter-macroblock, inter-subblock, luma, or chroma) of the edge; only the limit value depends on the edge-type.
 
 The exact procedure (for a single segment) is as follows; the subroutine common_adjust is used by both the simple filter presented here and the normal filters discussed in [Section 15.3](#h-15.3).
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int8 common_adjust(
@@ -92,6 +102,7 @@ int8 common_adjust(
     return a;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,6 +117,8 @@ void simple_segment(
         common_adjust( 1, P1, P0, Q0, Q1);   /* use outer taps */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 We make a couple of remarks about the rounding procedure above. When `b` is zero (that is, when the "fractional part" of `a` is not 1/2 ), we are (except for clamping) adding the same number to `p0` as we are subtracting from `q0`. This preserves the average value of `p0` and `q0` but the resulting difference between `p0` and `q0` is always even; in particular, the smallest non-zero gradation [[ +-1 ]] is not possible here.
 

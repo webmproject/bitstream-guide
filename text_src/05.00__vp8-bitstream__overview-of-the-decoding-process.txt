@@ -1,6 +1,6 @@
 
 
-### Chapter 5: Overview of the Decoding Process
+### Chapter 5: Overview of the Decoding Process              {#h-05-00}
 
 A VP8 decoder needs to maintain four YUV frame buffers whose resolutions are at least equal to that of the encoded image. These buffers hold the current frame being reconstructed, the immediately previous reconstructed frame, the most recent golden frame, and the most recent altref frame.
 

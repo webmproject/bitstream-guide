@@ -1,6 +1,6 @@
 
 
-#### 7.1 Underlying Theory of Coding
+#### 7.1 Underlying Theory of Coding                         {#h-07-01}
 
 The basic idea used by the bool coder is to consider the entire data stream (either of the partitions in our case) as the binary expansion of a single number [[ x ]] with [[ 0 <= x < 1 ]]. The bits (or bytes) in [[ x ]] are of course written from high to low order and if [[ b[j] (B[j]) ]] is the [[ j^(th) ]] bit (byte) in the partition, the value [[ x ]] is simply the sum (starting with [[ j = 1 ]]) of [[ pow(2, -j) * b[j] ]] or [[ pow(256, -j) * B[j] ]].
 

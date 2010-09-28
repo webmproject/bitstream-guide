@@ -1,6 +1,6 @@
 
 
-### Chapter 4: Overview of Compressed Data Format
+### Chapter 4: Overview of Compressed Data Format            {#h-04-00}
 
 The input to a VP8 decoder is a sequence of compressed frames whose order matches their order in time. Issues such as the duration of frames, the corresponding audio, and synchronization are generally provided by the playback environment and are irrelevant to the decoding process itself, however, to aid in fast seeking a start code is included in the header of each key frame.
 

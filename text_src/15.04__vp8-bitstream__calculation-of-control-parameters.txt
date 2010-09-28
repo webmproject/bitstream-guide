@@ -1,6 +1,6 @@
 
 
-#### 15.4 Calculation of Control Parameters
+#### 15.4 Calculation of Control Parameters                  {#h-15-04}
 
 
 We conclude the discussion of loop filtering by showing how the thresholds supplied to the procedures above are derived from the two control parameters `sharpness_level` (an unsigned 3-bit number having maximum value 7) and `loop_filter_level` (an unsigned 6-bit number having maximum value 63).
@@ -9,6 +9,7 @@ While the `sharpness_level` is constant over the frame, individual macroblocks m
 
 Both the simple and normal filters disable filtering if a value derived from the four pixels that straddle the edge (2 either side) exceeds a threshold / limit value.
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Luma and Chroma use the same inter-macroblock edge limit */
 uint8 mbedge_limit = ((loop_filter_level + 2) * 2) + interior_limit;
@@ -16,8 +17,11 @@ uint8 mbedge_limit = ((loop_filter_level + 2) * 2) + interior_limit;
 /* Luma and Chroma use the same inter-subblock edge limit */
 uint8 sub_bedge_limit = (loop_filter_level * 2) + interior_limit;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The remaining thresholds are used only by the normal filters. The filter-disabling interior difference limit is the same for all edges (luma, chroma, inter-subblock, inter-macroblock) and is given by the following.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 uint8 interior_limit = loop_filter_level;
@@ -31,8 +35,11 @@ if( sharpness_level)
 if( !interior_limit)
     interior_limit = 1;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 Finally, we give the derivation of the high edge-variance threshold, which is also the same for all edge types.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 uint8 hev_threshold = 0;
@@ -54,4 +61,5 @@ else                                /* current frame is an interframe */
         hev_threshold = 1;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

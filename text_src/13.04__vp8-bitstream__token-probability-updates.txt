@@ -1,6 +1,6 @@
 
 
-#### 13.4 Token Probability Updates
+#### 13.4 Token Probability Updates                          {#h-13-04}
 
 
 As mentioned above, the token-decoding probabilities may change from frame to frame. After detection of a key frame, they are of course set to their defaults shown in Section 13.5; this must occur before decoding the remainder of the header, as both key frames and interframes may adjust these probabilities.
@@ -8,6 +8,7 @@ As mentioned above, the token-decoding probabilities may change from frame to fr
 The layout and semantics of the coefficient probability update record (Section I of the frame header) are straightforward. For each position in the `coef_probs` array there occurs a fixed-probability bool indicating whether or not the corresponding probability should be updated. If the bool is true, there follows a `P(8)` replacing that probability. Note that updates are cumulative, that is, a probability updated on one frame is in effect for all ensuing frames until the next key frame, or until the probability is explicitly updated by another frame.
 
 The algorithm to effect the foregoing is simple:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int i = 0;  do {
@@ -23,8 +24,11 @@ int i = 0;  do {
  } while( ++j < 8);
 } while( ++i < 4);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The (constant) update probabilities are as follows (they may also be found in the reference decoder file `coef_update_probs.c`).
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob coef_update_probs [4] [8] [3] [num_dct_tokens-1] =
@@ -199,4 +203,5 @@ const Prob coef_update_probs [4] [8] [3] [num_dct_tokens-1] =
  }
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

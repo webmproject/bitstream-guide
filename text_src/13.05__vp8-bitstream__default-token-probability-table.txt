@@ -1,9 +1,10 @@
 
 
-#### 13.5 Default Token Probability Table
+#### 13.5 Default Token Probability Table                    {#h-13-05}
 
 
 The default token probabilities are as follows.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob default_coef_probs [4] [8] [3] [num_dct_tokens - 1] =
@@ -178,4 +179,5 @@ const Prob default_coef_probs [4] [8] [3] [num_dct_tokens - 1] =
  }
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

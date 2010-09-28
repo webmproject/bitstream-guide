@@ -1,6 +1,6 @@
 
 
-#### 7.3 Actual Implementation
+#### 7.3 Actual Implementation                               {#h-07-03}
 
 The C code below gives complete implementations of the encoder and decoder described above. While they are logically identical to the "bit-at-a-time" versions, they internally buffer a couple of extra bytes of the bitstream. This allows I/O to be done (more practically) a byte at a time and drastically reduces the number of carries the encoder has to propagate into the already-written data.
 
@@ -181,4 +181,4 @@ int32 read_signed_literal( bool_decoder *d, int num_bits)
   return v;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+{:lang="c"}

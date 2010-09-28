@@ -1,6 +1,6 @@
 
 
-#### 9.1 Uncompressed Data Chunk
+#### 9.1 Uncompressed Data Chunk                             {#h-09-01}
 
 The uncompressed data chunk comprises a common (for key frames and interframes) 3-byte frame tag that contains four fields, as follows:
 
@@ -31,6 +31,8 @@ Start code byte 2     0x2a
 16 bits       :       (2 bits Horizontal Scale << 14) | Width (14 bits)
 16 bits       :       (2 bits Vertical Scale << 14) | Height (14 bits)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The following source code segment illustrates validation of the start code and reading the width, height and scale factors for a key frame.
 
@@ -41,6 +43,8 @@ unsigned char *c = pbi->Source+3;
 if(c[0]!=0x9d||c[1]!=0x01||c[2]!=0x2a)
     return -1;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 where `pbi->source` points to the beginning of the frame. 
 
@@ -52,6 +56,8 @@ pc->horiz_scale = swap2(*(unsigned short*)(c+3))>>14;
 pc->Height     = swap2(*(unsigned short*)(c+5))&0x3fff;
 pc->vert_scale  = swap2(*(unsigned short*)(c+5))>>14;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 where `swap2` macro takes care of the endian on different platform: 
 
@@ -64,6 +70,8 @@ where `swap2` macro takes care of the endian on different platform:
   # define swap2(d) d
 #endif
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 While each frame is encoded as a raster scan of 16x16 macroblocks, the frame dimensions are not necessarily evenly divisible by 16. In this case, write `ew = 16 - (width & 15)` and `eh = 16 - (height & 15)` for the excess width and height, respectively. Although they are encoded, the last `ew` columns and `eh` rows are not actually part of the image and should be discarded before final output. However, these "excess pixels" should be maintained in the internal reconstruction buffer used to predict ensuing frames.
 

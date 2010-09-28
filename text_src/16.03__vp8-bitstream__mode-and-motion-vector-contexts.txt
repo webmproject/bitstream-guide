@@ -1,6 +1,6 @@
 
 
-#### 16.3 Mode and Motion Vector Contexts
+#### 16.3 Mode and Motion Vector Contexts                    {#h-16-03}
 
 
 The probability table used to decode the `mv_ref`, along with three reference motion vectors used by the selected mode, is calculated via a survey of the already-decoded motion vectors in (up to) 3 nearby macroblocks. 
@@ -13,13 +13,13 @@ As is the case with many contexts used by VP8, it is possible for macroblocks ne
 
 Much of the process is more easily described in C than in English. The reference code for this can be found in `findnearmv.c`.  The calculation of reference vectors, probability table, and, finally, the inter-prediction mode itself is implemented as follows.
 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef union 
 {
     unsigned int as_int;
     MV           as_mv;
 } int_mv;        /* facilitates rapid equality tests */
-
 
 
 static void mv_bias(MODE_INFO *x,int refframe, int_mv *mvp, int * ref_frame_sign_bias )
@@ -34,6 +34,8 @@ static void mv_bias(MODE_INFO *x,int refframe, int_mv *mvp, int * ref_frame_sign
     mvp->as_mv = xmv;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void vp8_clamp_mv(MV *mv, const MACROBLOCKD *xd) 
@@ -49,6 +51,7 @@ void vp8_clamp_mv(MV *mv, const MACROBLOCKD *xd)
         mv->row = xd->mb_to_bottom_edge + RIGHT_BOTTOM_MARGIN;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 In the function `vp8_find_near_mvs()`, the vectors "nearest" and "near" are used by the corresponding modes.
@@ -163,6 +166,7 @@ void vp8_find_near_mvs
     vp8_clamp_mv(best_mv, xd); //TODO: move this up before the copy
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 The `mv_ref` probability table (`mv_ref_p`) is then derived from the census as follows.
@@ -179,6 +183,7 @@ const int vp8_mode_contexts[6][4] =
   { 234,   188,   128,    28,   },
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -191,6 +196,7 @@ vp8_prob *vp8_mv_ref_probs(vp8_prob mv_ref_p[VP8_MVREFS-1], int cnt[4])
     return p;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 Once `mv_ref_p` is established, the `mv_ref` is decoded as usual.
@@ -199,6 +205,7 @@ Once `mv_ref_p` is established, the `mv_ref` is decoded as usual.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   mvr = (mv_ref) treed_read( d, mv_ref_tree, mv_ref_p); 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 For the first four inter-coding modes, the same motion vector is used for all the Y subblocks. The first three modes use an implicit motion vector.

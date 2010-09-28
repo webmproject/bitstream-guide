@@ -1,6 +1,6 @@
 
 
-#### 14.5 Summation of Predictor and Residue
+#### 14.5 Summation of Predictor and Residue                 {#h-14-05}
 
 
 Finally, the prediction and residue signals are summed to form the reconstructed macroblock, which, except for loop filtering (taken up next), completes the decoding process.

@@ -1,6 +1,6 @@
 
 
-### Chapter 15: Loop Filter
+### Chapter 15: Loop Filter                                  {#h-15-00}
 
 
 Loop filtering is the last stage of frame reconstruction and the next-to-last stage of the decoding process. The loop filter is applied to the entire frame after the summation of predictor and residue described in Chapter 14.

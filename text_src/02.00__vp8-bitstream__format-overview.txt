@@ -1,6 +1,6 @@
 
 
-### Chapter 2: Format Overview
+### Chapter 2: Format Overview                               {#h-02-00}
 
 VP8 works exclusively with an 8-bit YUV 4:2:0 image format. In this format, each 8-bit pixel in the two chroma planes (U and V) corresponds positionally to a 2x2 block of 8-bit luma pixels in the Y plane; coordinates of the upper left corner of the Y block are of course exactly twice the coordinates of the corresponding chroma pixels. When we refer to pixels or pixel distances without specifying a plane, we are implicitly referring to the Y plane or to the complete image, both of which have the same (full) resolution.
 

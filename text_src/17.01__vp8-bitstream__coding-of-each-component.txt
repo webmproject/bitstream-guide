@@ -1,6 +1,6 @@
 
 
-#### 17.1 Coding of Each Component
+#### 17.1 Coding of Each Component                           {#h-17-01}
 
 
 Each component is a signed integer [[ "V" ]] representing a vertical or horizontal luma displacement of [[ "V" ]] quarter-pixels (and a chroma displacement of [[ "V" ]] eighth-pixels). The absolute value of [[ "V" ]], if non-zero, is followed by a boolean sign. [[ "V" ]] may take any value between -255 and +255, inclusive.
@@ -8,6 +8,7 @@ Each component is a signed integer [[ "V" ]] representing a vertical or horizont
 The absolute value [[ "A" ]] is coded in one of two different ways according to its size. For [[ 0 <= "A" <= 7 ]], [[ "A" ]] is tree-coded, and for [[ 8 <= "A" <= 255 ]], the bits in the binary expansion of [[ "A" ]] are coded using independent boolean probabilities. The coding of [[ "A" ]] begins with a bool specifying which range is in effect.
 
 Decoding a motion vector component then requires a 17-position probability table, whose offsets, along with the procedure used to decode components, are as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -69,4 +70,5 @@ int read_mvcomponent( bool_decoder *d, const MV_CONTEXT *mvc)
     return A && read_bool( r, p [MVPsign]) ?  -A : A;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 

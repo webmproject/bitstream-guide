@@ -1,6 +1,6 @@
 
 
-### Chapter 8: Compressed Data Components
+### Chapter 8: Compressed Data Components                    {#h-08-00}
 
 At the lowest level, VP8's compressed data is simply a sequence of probabilistically-encoded bools. Most of this data is composed of (slightly) larger semantic units fashioned from bools, which we describe here.
 

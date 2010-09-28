@@ -1,21 +1,21 @@
 
 
-#### A.1 Uncompressed Data Chunk
+#### A.1 Uncompressed Data Chunk                             {#h-0a-01}
 
-<div class="col1-pre" markdown="1">
 
 | Frame Tag                                             | Type  |
 |-------------------------------------------------------|-------|
-|INDENT00 `frame_tag`                                   | f(24) |
-|INDENT01 if (key_frame) {                              |       |
-|INDENT10 `start_code`                                  | f(24) |
-|INDENT10 `horizontal_size_code`                        | f(16) |
-|INDENT10 `vertical_size_code`                          | f(16) |
-|INDENT01 }                                             |       |
+| `frame_tag`                                           | f(24) |
+| `if (key_frame) {`                                    |       |
+| `    start_code`                                      | f(24) |
+| `    horizontal_size_code`                            | f(16) |
+| `    vertical_size_code`                              | f(16) |
+| `}`                                                   |       |
+{:.col1-pre}
 
-</div>
 
 The 3-byte frame tag can be parsed as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 unsigned char *c = pbi->Source;
@@ -29,7 +29,10 @@ show_frame = (tmp >> 4) & 0x1;
 first_part_size = (tmp >> 5) & 0x7FFFF;
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-, where
+{:lang="c"}
+
+
+Where:
 
   * `key_frame` indicates if the current frame is a key frame or not
   * `version` determines the bitstream version
@@ -38,6 +41,7 @@ first_part_size = (tmp >> 5) & 0x7FFFF;
 
 The `start_code` is a constant 3-byte pattern having value 0x9d012a. The latter part of the
 uncompressed chunk (after the `start_code`) can be parsed as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 unsigned char *c = pbi->Source + 6;
@@ -52,5 +56,6 @@ tmp = (c[3] << 8) | c[2];
 
 height = tmp & 0x3FFF;
 vertical_scale = tmp >> 14;
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+

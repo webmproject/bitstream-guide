@@ -1,6 +1,6 @@
 
 
-#### 15.3 Normal Filter
+#### 15.3 Normal Filter                                      {#h-15-03}
 
 
 The normal loop filter is a refinement of the simple loop filter; all of the general discussion above applies here as well. In particular, the functions `c`, `u2s`, `s2u`, `abs`, and `common_adjust` are used by both the normal and simple filters.
@@ -36,6 +36,7 @@ int filter_yes(
         &&  abs(q3 - q2) <= I  &&  abs(q2 - q1) <= I  &&  abs(q1 - q0) <= I;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,6 +51,7 @@ int hev(
     return abs(p1 - p0) > threshold  ||  abs(q1 - q0) > threshold;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
 
 The subblock filter is a variant of the simple filter. In fact, if we have high edge variance, the adjustment is exactly as for the simple filter. Otherwise, the simple adjustment (without outer taps) is applied and the two pixels one step in from the edge pixels are adjusted by roughly half the amount by which the two edge pixels are adjusted; since the edge adjustment here is essentially 3/8 the edge difference, the inner adjustment is approximately 3/16 the edge difference.
@@ -78,8 +80,11 @@ void subblock_filter(
     }
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
+
 
 The inter-macroblock filter has potentially wider scope. If the edge variance is high, it performs the simple adjustment (using the outer taps, just like the simple filter and the corresponding case of the normal subblock filter). If the edge variance is low, we begin with the same basic filter calculation and apply multiples of it to pixel pairs symmetric about the edge; the magnitude of adjustment decays as we move away from the edge and six of the pixels in the segment are affected.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void MBfilter(
@@ -127,4 +132,5 @@ void MBfilter(
 
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+{:lang="c"}
 
