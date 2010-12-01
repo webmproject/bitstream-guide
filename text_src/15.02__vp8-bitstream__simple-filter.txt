@@ -113,7 +113,7 @@ void simple_segment(
     Pixel *Q0,          /* pixel after edge */
     const Pixel *Q1     /* pixel after Q0 */
 ) {
-    if( (abs(*P0 - *Q0)*2 + abs(P1-Q1)/2) <= edge_limit))
+    if( (abs(*P0 - *Q0)*2 + abs(*P1-*Q1)/2) <= edge_limit))
         common_adjust( 1, P1, P0, Q0, Q1);   /* use outer taps */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

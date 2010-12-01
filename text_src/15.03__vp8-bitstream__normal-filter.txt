@@ -110,19 +110,19 @@ void MBfilter(
                So this a, used to adjust the pixels adjacent to the edge,
                is something like 3/7 the edge difference. */
 
-            int8 a = c( 27*w + 63) >> 7;
+            int8 a = c( (27*w + 63) >> 7);
 
             *Q0 = s2u( q0 - a);  *P0 = s2u( p0 + a);
 
             /* Next two are adjusted by 2/7 the edge difference */
 
-            a = c( 18*w + 63) >> 7;
+            a = c( (18*w + 63) >> 7);
 
             *Q1 = s2u( q1 - a);  *P1 = s2u( p1 + a);
 
             /* Last two are adjusted by 1/7 the edge difference */
 
-            a = c( 9*w + 63) >> 7;
+            a = c( (9*w + 63) >> 7);
 
             *Q2 = s2u( q2 - a);  *P2 = s2u( p2 + a);
 
