@@ -15,10 +15,12 @@ After the reference frame selector comes the mode (or motion vector reference) a
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
 {
-    mv_nearest = num_ymodes, /* use "nearest" motion vector for entire MB */
+    mv_nearest = num_ymodes, /* use "nearest" motion vector 
+                                for entire MB */
     mv_near,                 /* use "next nearest" "" */
     mv_zero,                 /* use zero "" */
-    mv_new,                  /* use explicit offset from implicit "" */
+    mv_new,                  /* use explicit offset from 
+                                implicit "" */
     mv_split,                /* use multiple motion vectors */
 
     num_mv_refs = mv_split + 1 - mv_nearest

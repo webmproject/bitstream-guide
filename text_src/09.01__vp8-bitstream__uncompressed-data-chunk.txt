@@ -28,8 +28,8 @@ Start code byte 0     0x9d
 Start code byte 1     0x01
 Start code byte 2     0x2a
 
-16 bits       :       (2 bits Horizontal Scale << 14) | Width (14 bits)
-16 bits       :       (2 bits Vertical Scale << 14) | Height (14 bits)
+16 bits      :     (2 bits Horizontal Scale << 14) | Width (14 bits)
+16 bits      :     (2 bits Vertical Scale << 14) | Height (14 bits)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 

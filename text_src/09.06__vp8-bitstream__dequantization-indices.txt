@@ -10,13 +10,18 @@ The first 7-bit index gives the dequantization table index for Y plane AC coeffi
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 yac_qi     = L(7);           /* Y ac index always specified */
-ydc_delta  = F? delta(): 0;  /* Y dc delta specified if flag is true */
+ydc_delta  = F? delta(): 0;  /* Y dc delta specified if 
+                                flag is true */
 
-y2dc_delta = F? delta(): 0;  /* Y2 dc delta specified if flag is true */
-y2ac_delta = F? delta(): 0;  /* Y2 ac delta specified if flag is true */
+y2dc_delta = F? delta(): 0;  /* Y2 dc delta specified if 
+                                flag is true */
+y2ac_delta = F? delta(): 0;  /* Y2 ac delta specified if 
+                                flag is true */
 
-uvdc_delta = F? delta(): 0;  /* chroma dc delta specified if flag is true */
-uvac_delta = F? delta(): 0;  /* chroma ac delta specified if flag is true */
+uvdc_delta = F? delta(): 0;  /* chroma dc delta specified 
+                                if flag is true */
+uvac_delta = F? delta(): 0;  /* chroma ac delta specified 
+                                if flag is true */
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 

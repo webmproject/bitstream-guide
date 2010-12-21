@@ -17,10 +17,11 @@ int avg( int c1, int c2, int c3, int c4)
 {
     int s = c1 + c2 + c3 + c4;
 
-    /* The shift divides by 8 (not 4) because chroma pixels have half
-       the diameter of luma pixels.  The handling of negative motion vector
-       components is slightly cumbersome because, strictly speaking,
-       right shifts of negative numbers are not well-defined in C. */
+    /* The shift divides by 8 (not 4) because chroma pixels 
+       have half the diameter of luma pixels.  The handling 
+       of negative motion vector components is slightly 
+       cumbersome because, strictly speaking, right shifts 
+       of negative numbers are not well-defined in C. */
 
     return s >= 0 ?  (s + 4) >> 3 : -( (-s + 4) >> 3);
 }
@@ -41,3 +42,4 @@ Furthermore, if the version number in the frame tag specifies only full-pel chro
 Earlier in this document we described the `vp8_clamp_mv()` function to limit "nearest" and "near" motion vector predictors inside specified margins within the frame boundaries. Additional clamping is performed for `NEW_MV` macroblocks, for which the final motion vector is clamped again after combining the "best" predictor and the differential vector decoded from the stream. 
 
 However, the secondary clamping is not performed for `SPLIT_MV` macroblocks, meaning that any subblock's motion vector within the `SPLIT_MV` macroblock may point outside the clamping zone. These non-clamped vectors are also used when determining the decoding tree context for subsequent subblocks' modes in the `vp8_mvCont()` function.
+

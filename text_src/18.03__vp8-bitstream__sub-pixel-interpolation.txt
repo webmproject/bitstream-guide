@@ -34,15 +34,15 @@ const int BilinearFilters[8][6] =
     { 0, 0,  16, 112, 0, 0 }
 };
 
-const int filters [8] [6] = {           /* indexed by displacement */
-    { 0,  0,  128,    0,   0,  0 },     /* degenerate whole-pixel */
-    { 0, -6,  123,   12,  -1,  0 },     /* 1/8 */
-    { 2, -11, 108,   36,  -8,  1 },     /* 1/4 */
-    { 0, -9,   93,   50,  -6,  0 },     /* 3/8 */
-    { 3, -16,  77,   77, -16,  3 },     /* 1/2 is symmetric */
-    { 0, -6,   50,   93,  -9,  0 },     /* 5/8 = reverse of 3/8 */
-    { 1, -8,   36,  108, -11,  2 },     /* 3/4 = reverse of 1/4 */
-    { 0, -1,   12,  123,  -6,  0 }      /* 7/8 = reverse of 1/8 */
+const int filters [8] [6] = {        /* indexed by displacement */
+    { 0,  0,  128,    0,   0,  0 },  /* degenerate whole-pixel */
+    { 0, -6,  123,   12,  -1,  0 },  /* 1/8 */
+    { 2, -11, 108,   36,  -8,  1 },  /* 1/4 */
+    { 0, -9,   93,   50,  -6,  0 },  /* 3/8 */
+    { 3, -16,  77,   77, -16,  3 },  /* 1/2 is symmetric */
+    { 0, -6,   50,   93,  -9,  0 },  /* 5/8 = reverse of 3/8 */
+    { 1, -8,   36,  108, -11,  2 },  /* 3/4 = reverse of 1/4 */
+    { 0, -1,   12,  123,  -6,  0 }   /* 7/8 = reverse of 1/8 */
 };
 
 
@@ -51,7 +51,8 @@ const int filters [8] [6] = {           /* indexed by displacement */
 
 Pixel interp(
     const int fil[6],   /* filter to apply */
-    const Pixel *p,     /* origin (rounded "before") in prediction area */
+    const Pixel *p,     /* origin (rounded "before") in 
+                           prediction area */
     const int s         /* size of one forward step "" */
 ) {
     int32 a = 0;
@@ -63,20 +64,26 @@ Pixel interp(
         p += s;
     }  while( ++i < 6);
 
-    return clamp255( (a + 64) >> 7);    /* round to nearest 8-bit value */
+    return clamp255( (a + 64) >> 7);    /* round to nearest 
+                                           8-bit value */
 }
 
 
-/* First do horizontal interpolation, producing intermediate buffer. */
+/* First do horizontal interpolation, producing intermediate 
+   buffer. */
 
 void Hinterp(
-    Pixel temp[9][4],   /* 9 rows of 4 (intermediate) destination values */
-    const Pixel *p,     /* subblock origin in prediction frame */
-    int s,              /* vertical stride to be used in prediction frame */
+    Pixel temp[9][4],   /* 9 rows of 4 (intermediate) 
+                           destination values */
+    const Pixel *p,     /* subblock origin in prediction 
+                           frame */
+    int s,              /* vertical stride to be used in 
+                           prediction frame */
     uint hfrac,         /* 0 <= horizontal displacement <= 7 */
     uint bicubic        /* 1=bicubic filter, 0=bilinear */
 ) {
-    const int * const fil = bicubic ? filters [hfrac] : BilinearFilters[hfrac];
+    const int * const fil = bicubic ? filters [hfrac] : 
+      BilinearFilters[hfrac];
 
     int r = 0;  do              /* for each row */
     {
@@ -96,18 +103,20 @@ void Hinterp(
 
 
 void Vinterp(
-    Pixel final[4][4],      /* 4 rows of 4 (final) destination values */
+    Pixel final[4][4],  /* 4 rows of 4 (final) destination values */
     const Pixel temp[9][4],
-    uint vfrac,             /* 0 <= vertical displacement <= 7 */
+    uint vfrac,         /* 0 <= vertical displacement <= 7 */
     uint bicubic        /* 1=bicubic filter, 0=bilinear */
 ) {
-    const int * const fil = bicubic ? filters [vfrac] : BilinearFilters[vfrac];
+    const int * const fil = bicubic ? filters [vfrac] : 
+      BilinearFilters[vfrac];
 
     int r = 0;  do              /* for each row */
     {
         int c = 0;  do          /* for each destination sample */
         {   
-            /* Pixel separation = one vertical step = width of array = 4 */
+            /* Pixel separation = one vertical step = width 
+               of array = 4 */
 
             final[r][c] = interp( fil, temp[r] + c, 4);
         }

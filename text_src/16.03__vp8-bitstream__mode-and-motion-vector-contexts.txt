@@ -22,11 +22,13 @@ typedef union
 } int_mv;        /* facilitates rapid equality tests */
 
 
-static void mv_bias(MODE_INFO *x,int refframe, int_mv *mvp, int * ref_frame_sign_bias )
+static void mv_bias(MODE_INFO *x,int refframe, int_mv *mvp, 
+  int * ref_frame_sign_bias )
 {
     MV xmv;
     xmv = x->mbmi.mv.as_mv;
-    if ( ref_frame_sign_bias[x->mbmi.ref_frame] != ref_frame_sign_bias[refframe] )
+    if ( ref_frame_sign_bias[x->mbmi.ref_frame] != 
+      ref_frame_sign_bias[refframe] )
     {
         xmv.row*=-1;
         xmv.col*=-1;
@@ -119,7 +121,8 @@ void vp8_find_near_mvs
             int_mv this_mv;
 
             this_mv.as_int = aboveleft->mbmi.mv.as_int;
-            mv_bias(aboveleft, refframe, &this_mv, ref_frame_sign_bias);
+            mv_bias(aboveleft, refframe, &this_mv, 
+              ref_frame_sign_bias);
 
             if(this_mv.as_int != mv->as_int) {
                 (++mv)->as_int = this_mv.as_int;
@@ -163,7 +166,8 @@ void vp8_find_near_mvs
 
     vp8_clamp_mv(nearest, xd);
     vp8_clamp_mv(near, xd);
-    vp8_clamp_mv(best_mv, xd); //TODO: move this up before the copy
+    vp8_clamp_mv(best_mv, xd); //TODO: move this up before 
+                                 the copy
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
@@ -187,7 +191,8 @@ const int vp8_mode_contexts[6][4] =
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-vp8_prob *vp8_mv_ref_probs(vp8_prob mv_ref_p[VP8_MVREFS-1], int cnt[4])
+vp8_prob *vp8_mv_ref_probs(vp8_prob mv_ref_p[VP8_MVREFS-1], 
+  int cnt[4])
 {
     mv_ref_p[0] = vp8_mode_contexts [cnt[0]] [0];
     mv_ref_p[1] = vp8_mode_contexts [cnt[1]] [1];

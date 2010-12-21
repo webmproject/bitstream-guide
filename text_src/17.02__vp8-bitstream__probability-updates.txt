@@ -11,8 +11,8 @@ In detail, the probabilities should then be managed as follows.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/* Never-changing table of update probabilities for each individual
-   probability used in decoding motion vectors. */
+/* Never-changing table of update probabilities for each 
+   individual probability used in decoding motion vectors. */
 
 const MV_CONTEXT vp8_mv_update_probs[2] =
 { 
@@ -50,7 +50,8 @@ const MV_CONTEXT default_mv_context[2] =
   }
 };
 
-/* Current MV decoding probabilities, set to above defaults every key frame. */
+/* Current MV decoding probabilities, set to above defaults 
+   every key frame. */
 
 MV_CONTEXT mvc [2];     /* always row, then column */
 
@@ -66,18 +67,20 @@ MV read_mv( bool_decoder *d)
     return v;
 }
 
-/* Procedure for updating MV decoding probabilities, called every interframe
-   with "d" at the appropriate position in the frame header. */
+/* Procedure for updating MV decoding probabilities, called 
+   every interframe with "d" at the appropriate position in 
+   the frame header. */
 
 void update_mvcontexts( bool_decoder *d)
 {
     int i = 0;
-    do {                                    /* component = row, then column */
-        const Prob *up = mv_update_probs[i];  /* update probs for component */
-        Prob *p = mvc[i];                   /* start decode tbl "" */
-        Prob * const pstop = p + MVPcount;  /* end decode tbl "" */
+    do {                      /* component = row, then column */
+        const Prob *up = mv_update_probs[i];    /* update probs 
+                                                   for component */
+        Prob *p = mvc[i];                  /* start decode tbl "" */
+        Prob * const pstop = p + MVPcount; /* end decode tbl "" */
         do {
-            if( read_bool( d, *up++))        /* update this position */
+            if( read_bool( d, *up++))     /* update this position */
             {
                 const Prob x = read_literal( d, 7);
 

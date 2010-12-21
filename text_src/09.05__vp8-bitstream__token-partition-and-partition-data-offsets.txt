@@ -16,6 +16,7 @@ When the number of partitions is greater than one, offsets are embedded in the b
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Offset/size  =  (uint32)(byte0) + ((uint32)(byte1)<<8) + ((uint32)(byte2)<<16);
+Offset/size  =  (uint32)(byte0) + ((uint32)(byte1)<<8) 
+  + ((uint32)(byte2)<<16);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

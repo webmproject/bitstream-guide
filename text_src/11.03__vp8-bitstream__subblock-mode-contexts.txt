@@ -19,7 +19,8 @@ The dependence of subblock mode probability on the nearby subblock mode context 
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes-1];
+const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] 
+  [num_intra_bmodes-1];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
@@ -28,7 +29,8 @@ The outer two dimensions of this array are indexed by the already-coded subblock
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Bmode = (intra_bmode) treed_read( d, bmode_tree, kf_bmode_prob [A] [L]);
+Bmode = (intra_bmode) treed_read( d, bmode_tree, kf_bmode_prob 
+  [A] [L]);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 

@@ -237,3 +237,4 @@
 
   * `mv_prob_update_flag` indicates if the corresponding MV decoding probability is updated in the current frame ([17.2](#h-17-02))
   * `prob` is the updated probability ([17.2](#h-17-02))
+

@@ -12,3 +12,4 @@ Definition of syntax element coding types can be found in [Chapter 8](#h-08-00).
   * `L(n)`, n-bit number encoded as n booleans (with equal probability of being `0` or `1`)
   * `B(p)`, bool with probability `p` of being `0`
   * `T`, tree-encoded value 
+

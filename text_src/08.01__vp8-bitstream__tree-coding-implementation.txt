@@ -18,12 +18,13 @@ Here is C code implementing the foregoing. The advantages of our data structure 
 typedef int8 tree_index;
 typedef const tree_index Tree[];
 
-/* Read and return a tree-coded value at the current decoder position. */
+/* Read and return a tree-coded value at the current decoder 
+   position. */
 
 int treed_read(
-  bool_decoder * const d,      /* bool_decoder always returns a 0 or 1 */
-  Tree t,                     /* tree specification */
-  const Prob p[]              /* corresponding interior node probabilities */
+  bool_decoder * const d, /* bool_decoder always returns a 0 or 1 */
+  Tree t,                 /* tree specification */
+  const Prob p[]     /* corresponding interior node probabilities */
 ) {
   register tree_index i = 0;   /* begin at root */
 
@@ -31,7 +32,7 @@ int treed_read(
 
   while( ( i = t[ i + read_bool( d, p[i>>1]) ] ) > 0) {}
 
-  return -i;      /* return value is negation of nonpositive index */
+  return -i;     /* return value is negation of nonpositive index */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}

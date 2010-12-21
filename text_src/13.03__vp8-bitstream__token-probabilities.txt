@@ -73,8 +73,8 @@ int absValue;
 int extraBits;
 bool prevCoeffWasZero = false;
 bool currentBlockHasCoeffs = false;
-/* base coeff abs values per each category, elem #0 is DCT_VAL_CATEGORY1,
- * #1 is DCT_VAL_CATEGORY2 etc */
+/* base coeff abs values per each category, elem #0 is 
+   DCT_VAL_CATEGORY1, * #1 is DCT_VAL_CATEGORY2 etc */
 int categoryBase[6] = { 5, 7, 11, 19, 35, 67 };
 
 /* Determine plane to use */
@@ -87,9 +87,10 @@ else                                      plane = 3;
 if( plane == 1 )
     firstCoeff++;
 
-/* Determine whether neighbour 4x4 blocks have coeffiecients. This is dependant
- * of the plane we are currently decoding; i.e. we check only coefficients from
- * same plane as current block. */
+/* Determine whether neighbour 4x4 blocks have coeffiecients. 
+   This is dependant of the plane we are currently decoding; 
+   i.e. we check only coefficients from same plane as current 
+   block. */
 if( **left_neighbor_block_has_coefficients(plane)** )
     ctx3++;
 if( **above_neighbor_block_has_coefficients(plane)** )
@@ -102,7 +103,8 @@ for( i = firstCoeff ; i < 16 ; ++i )
 
     /* skip first code (dct_eob) if previous token was DCT_0 */
     if( prevCoeffWasZero )
-        token = treed_read ( d, **coef_tree_without_eob**, probTable );
+        token = treed_read ( d, **coef_tree_without_eob**, 
+          probTable );
     else
         token = treed_read ( d, coef_tree, probTable );
 
@@ -140,7 +142,8 @@ for( i = firstCoeff ; i < 16 ; ++i )
 }
 
 /* Store current block status to decoder internals */
-**block_has_coefficients[currentMb][currentBlock]** = currentBlockHasCoeffs;
+**block_has_coefficients[currentMb][currentBlock]** = 
+  currentBlockHasCoeffs;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 

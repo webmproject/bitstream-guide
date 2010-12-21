@@ -19,11 +19,11 @@ Regardless of the chosen presentation, the calculation effected by any of the al
 All VP8 decoding algorithms use integer math. To facilitate specification of arithmetic precision, we define the following types.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-typedef   signed char  int8;    /* signed integer exactly 8 bits wide */
-typedef unsigned char uint8;    /* unsigned "" */
+typedef   signed char  int8; /* signed int exactly 8 bits wide */
+typedef unsigned char uint8; /* unsigned "" */
 
-typedef short int16;            /* signed integer exactly 16 bits wide */
-typedef unsigned int16 uint16;  /* unsigned "" */
+typedef short int16;         /* signed int exactly 16 bits wide */
+typedef unsigned int16 uint16; /* unsigned "" */
 
 /* int32 is a signed integer type at least 32 bits wide */
 
@@ -39,14 +39,15 @@ typedef unsigned int uint;
 
 /* While pixels themselves are 8-bit unsigned integers,
    pixel arithmetic often occurs at 16- or 32-bit precision and
-   the results need to be "saturated" or clamped to an 8-bit range. */
+   the results need to be "saturated" or clamped to an 8-bit 
+   range. */
 
 typedef uint8 Pixel;
 
 Pixel clamp255( int32 v) { return v < 0? 0 : (v < 255? v : 255);}
 
-/*  As is elaborated in the discussion of the bool_decoder below, VP8
-represents probabilities as unsigned 8-bit numbers. */
+/*  As is elaborated in the discussion of the bool_decoder below, 
+    VP8 represents probabilities as unsigned 8-bit numbers. */
 
 typedef uint8 Prob;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

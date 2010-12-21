@@ -27,7 +27,8 @@ Since pixel values themselves are unsigned 8-bit numbers, we need to convert bet
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/* Convert pixel value (0 <= v <= 255) to an 8-bit signed number. */
+/* Convert pixel value (0 <= v <= 255) to an 8-bit signed 
+   number. */
 int8 u2s( Pixel v) { return (int8) (v - 128);}
 
 /* Clamp, then convert signed number back to pixel value. */
@@ -51,7 +52,7 @@ To simplify the specification of relative pixel positions, we use the word befor
 
 Given an edge, a segment, and a limit value, the simple loop filter computes a value based on the four pixels that straddle the edge (two either side). If that value is below a supplied limit, then, very roughly speaking, the two pixel values are brought closer to each other, "shaving off" something like a quarter of the difference. The same procedure is used for all segments straddling any type of edge, regardless of the nature (inter-macroblock, inter-subblock, luma, or chroma) of the edge; only the limit value depends on the edge-type.
 
-The exact procedure (for a single segment) is as follows; the subroutine common_adjust is used by both the simple filter presented here and the normal filters discussed in [Section 15.3](#h-15.3).
+The exact procedure (for a single segment) is as follows; the subroutine common_adjust is used by both the simple filter presented here and the normal filters discussed in [Section 15.3](#h-15-03).
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,13 +68,15 @@ int8 common_adjust(
     cint8 q0 = u2s( *Q0);
     cint8 q1 = u2s( *Q1);
 
-    /* Disregarding clamping, when "use_outer_taps" is false, "a" is 3*(q0-p0).
-       Since we are about to divide "a" by 8, in this case we end up
-       multiplying the edge difference by 5/8.
+    /* Disregarding clamping, when "use_outer_taps" is false, 
+       "a" is 3*(q0-p0). Since we are about to divide "a" by 
+       8, in this case we end up multiplying the edge 
+       difference by 5/8.
 
        When "use_outer_taps" is true (as for the simple filter),
-       "a" is p1 - 3*p0 + 3*q0 - q1, which can be thought of as a refinement
-       of 2*(q0 - p0) and the adjustment is something like (q0 - p0)/4. */
+       "a" is p1 - 3*p0 + 3*q0 - q1, which can be thought of as 
+       a refinement of 2*(q0 - p0) and the adjustment is 
+       something like (q0 - p0)/4. */
 
     int8 a = c( ( use_outer_taps? c(p1 - q1) : 0 ) + 3*(q0 - p0) );
 
@@ -92,10 +95,11 @@ int8 common_adjust(
 
     *Q0 = s2u( q0 - a);
 
-    /* Add "a" (with adjustment "b") to p0, "bringing it closer" to q0.
+    /* Add "a" (with adjustment "b") to p0, "bringing it closer" 
+       to q0.
 
-       The clamp of "a+b", while present in the reference decoder, is
-       superfluous; we have -16 <= a <= 15 at this point. */
+       The clamp of "a+b", while present in the reference decoder, 
+       is superfluous; we have -16 <= a <= 15 at this point. */
 
     *P0 = s2u( p0 + c( a + b));
 
@@ -107,7 +111,8 @@ int8 common_adjust(
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void simple_segment(
-    uint8 edge_limit,    /* do nothing if edge difference exceeds limit */
+    uint8 edge_limit,   /* do nothing if edge difference 
+                           exceeds limit */
     const Pixel *P1,    /* pixel before P0 */
     Pixel *P0,          /* pixel before edge */
     Pixel *Q0,          /* pixel after edge */

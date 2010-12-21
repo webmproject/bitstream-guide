@@ -12,7 +12,8 @@ Both the simple and normal filters disable filtering if a value derived from the
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Luma and Chroma use the same inter-macroblock edge limit */
-uint8 mbedge_limit = ((loop_filter_level + 2) * 2) + interior_limit;
+uint8 mbedge_limit = ((loop_filter_level + 2) * 2) + 
+  interior_limit;
 
 /* Luma and Chroma use the same inter-subblock edge limit */
 uint8 sub_bedge_limit = (loop_filter_level * 2) + interior_limit;
@@ -44,14 +45,14 @@ Finally, we give the derivation of the high edge-variance threshold, which is al
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 uint8 hev_threshold = 0;
 
-if( we_are_decoding_akey_frame)         /* current frame is a key frame */
+if( we_are_decoding_akey_frame)   /* current frame is a key frame */
 {
     if( loop_filter_level >= 40)
         hev_threshold = 2;
     else if( loop_filter_level >= 15)
         hev_threshold = 1;
 }
-else                                /* current frame is an interframe */
+else                            /* current frame is an interframe */
 {
     if( loop_filter_level >= 40)
         hev_threshold = 3;

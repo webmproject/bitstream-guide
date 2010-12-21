@@ -94,3 +94,4 @@
   * `token` defines the value of the coefficient, the value range of the coefficient or the end of block ([13.2](#h-13-02))
   * `extra_bits` determine the value of the coefficient within the value range defined by `token` ([13.2](#h-13-02))
   * `sign` indicates the sign of the coefficient ([13.2](#h-13-02))
+

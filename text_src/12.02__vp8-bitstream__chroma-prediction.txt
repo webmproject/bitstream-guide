@@ -20,8 +20,8 @@ we are averaging either 16 or 8 pixel values to get a single prediction value th
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-int sum;    /* sum of 8 or 16 pixels at (at least) 16-bit precision */
-int shf;    /* base 2 logarithm of the number of pixels (3 or 4) */
+int sum;  /* sum of 8 or 16 pixels at (at least) 16-bit precision */
+int shf;  /* base 2 logarithm of the number of pixels (3 or 4) */
 
 Pixel DCvalue = (sum + (1 << (shf-1))) >> shf;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,9 +38,12 @@ In this mode, we propagate the horizontal differences between pixels in A (start
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void TMpred(
     Pixel b[8][8],      /* chroma (U or V) prediction block */
-    const Pixel A[8],   /* row of already-constructed pixels above block */
-    const Pixel L[8],   /* column of "" just to the left of block */
-    const Pixel P       /* pixel just to the left of A and above L*/
+    const Pixel A[8],   /* row of already-constructed pixels 
+                           above block */
+    const Pixel L[8],   /* column of "" just to the left of 
+                           block */
+    const Pixel P       /* pixel just to the left of A and 
+                           above L*/
 ) {
     int r = 0;          /* row */
     do {

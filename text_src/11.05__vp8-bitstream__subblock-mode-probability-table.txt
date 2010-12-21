@@ -7,7 +7,8 @@ Finally, here is the fixed probability table used to decode subblock modes in ke
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] [num_intra_bmodes-1] =
+const Prob kf_bmode_prob [num_intra_bmodes] [num_intra_bmodes] 
+  [num_intra_bmodes-1] =
 {
   {
     { 231, 120,  48,  89, 115, 113, 120, 152, 112},

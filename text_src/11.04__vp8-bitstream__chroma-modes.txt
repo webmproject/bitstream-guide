@@ -10,8 +10,10 @@ After the Y mode (and optional subblock mode) specification comes the chroma mod
 const tree_index uv_mode_tree [2 * (num_uv_modes - 1)] =
 {
  -DC_PRED, 2,           /* root: DC_PRED = "0", "1" subtree */
-  -V_PRED, 4,           /* "1" subtree:  V_PRED = "10", "11" subtree */
-   -H_PRED, -TM_PRED    /* "11" subtree: H_PRED = "110", TM_PRED = "111" */
+  -V_PRED, 4,           /* "1" subtree:  V_PRED = "10", 
+                           "11" subtree */
+   -H_PRED, -TM_PRED    /* "11" subtree: H_PRED = "110", 
+                           TM_PRED = "111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
@@ -22,7 +24,8 @@ As for the Y modes (in a key frame), the chroma modes are coded using a fixed, c
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob kf_uv_mode_prob [num_uv_modes - 1] = { 142, 114, 183};
-uv_mode = (intra_mbmode) treed_read( d, uv_mode_tree, kf_uv_mode_prob);
+uv_mode = (intra_mbmode) treed_read( d, uv_mode_tree, 
+  kf_uv_mode_prob);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
