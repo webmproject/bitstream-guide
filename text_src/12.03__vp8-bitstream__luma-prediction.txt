@@ -63,9 +63,8 @@ void subblock_intra_predict(
     /* First four modes are similar to corresponding 
        full-block modes. */
 
-    case B_DC_PRED: /* like 16x16 DC_PRED except out-of-frame */
-    {               /* prediction pixels are always taken to 
-                       be 128 */
+    case B_DC_PRED:
+    {
         int v = 4;      /* DC sum/avg, 4 is rounding adjustment */
         int i = 0;  do { v += A[i] + L[i];}  while( ++i < 4);
         v >>= 3;        /* averaging 8 pixels */
