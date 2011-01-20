@@ -107,7 +107,7 @@ void flush_bool_encoder( bool_encoder *e)
 typedef struct {
   uint8   *input;     /* pointer to next compressed data byte */
   uint32  range;      /* always identical to encoder's range */
-  uint32  value;      /* contains at least 24 significant bits */
+  uint32  value;      /* contains at least 8 significant bits */
   int     bit_count;  /* # of bits shifted out of 
                          value, at most 7 */
 } bool_decoder;
@@ -119,8 +119,8 @@ void init_bool_decoder( bool_decoder *d, uint8 *start_partition)
 {
   {
     int i = 0;
-    d->value = 0;           /* value = first 24 input bytes */
-    while( ++i <= 24)
+    d->value = 0;           /* value = first 2 input bytes */
+    while( ++i <= 2)
       d->value = (d->value << 8)  |  *start_partition++;
   }
 
