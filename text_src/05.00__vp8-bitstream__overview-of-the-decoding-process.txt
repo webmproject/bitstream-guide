@@ -47,7 +47,7 @@ Each of the eight chroma subblocks is handled similarly. Their motion vectors ar
 
 After all the macroblocks have been generated (predicted and corrected with the DCT/WHT residue), a filtering step (the _loop filter_) is applied to the entire frame. The purpose of the loop filter is to reduce blocking artifacts at the boundaries between macroblocks and between subblocks of the macroblocks. The term loop filter is used because this filter is part of the "coding loop," that is, it affects the reconstructed frame buffers that are used to predict ensuing frames. This is distinguished from the postprocessing filters discussed earlier which affect only the viewed video and do not "feed into" subsequent frames.
 
-Next, if signaled in the data, the current frame (or individual macroblocks within the current frame) may replace the golden frame prediction buffer and/or the altref frame buffer.
+Next, if signaled in the data, the current frame may replace the golden frame prediction buffer and/or the altref frame buffer.
 
 The halos of the frame buffers are next filled as specified above. Finally, at least as far as decoding is concerned, the (references to) the "current" and "last" frame buffers should be exchanged in preparation for the next frame.
 

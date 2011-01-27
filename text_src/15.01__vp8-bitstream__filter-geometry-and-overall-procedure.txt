@@ -28,9 +28,9 @@ In step 1, for each of the three blocks MY, MU, and MV, we filter each of the (1
 
 In step 4, we filter across the (three luma and one each for U and V) vertical subblock edges described above, this time using the inter-subblock filter and controls.
 
-Step 2 and 4 are skipped for macroblocks that satisfy the following two conditions:
+Step 2 and 4 are skipped for macroblocks that satisfy both of the following two conditions:
 
-  1. Macroblock coding mode is neither `B_PRED` nor `SPLTMV`;
+  1. Macroblock coding mode is neither `B_PRED` nor `SPLTMV`; and
   2. There is no DCT coefficient coded for the whole macroblock.
   
 For these macroblocks, loop filtering for edges between subblocks internal to a macroblock is effectively skipped. This skip strategy significantly reduces VP8 loop-filtering complexity.

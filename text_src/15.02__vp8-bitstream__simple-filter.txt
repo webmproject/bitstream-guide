@@ -83,7 +83,7 @@ int8 common_adjust(
     /* b is used to balance the rounding of a/8 in the case where
        the "fractional" part "f" of a/8 is exactly 1/2. */
 
-    cint8 b = (a & 7)==4 ? -1 : 0;
+    cint8 b = (c(a + 37)) >> 3;
 
     /* Divide a by 8, rounding up when f >= 1/2.
        Although not strictly part of the "C" language,
@@ -101,7 +101,7 @@ int8 common_adjust(
        The clamp of "a+b", while present in the reference decoder, 
        is superfluous; we have -16 <= a <= 15 at this point. */
 
-    *P0 = s2u( p0 + c( a + b));
+    *P0 = s2u( p0 + b);
 
     return a;
 }

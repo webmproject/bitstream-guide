@@ -81,9 +81,9 @@ const tree_index bmode_tree [2 * (num_intra_bmodes - 1)] =
   -B_TM_PRED, 4,                  /* B_TM_PRED = "10" */
    -B_VE_PRED, 6,                 /* B_VE_PRED = "110" */
     8, 12,
-     -B_HE_PRED, 10,              /* B_HE_PRED = "1110" */
-      -B_RD_PRED, -B_VR_PRED,     /* B_RD_PRED = "111100", 
-                                     B_VR_PRED = "111101" */
+     -B_HE_PRED, 10,              /* B_HE_PRED = "11100" */
+      -B_RD_PRED, -B_VR_PRED,     /* B_RD_PRED = "111010", 
+                                     B_VR_PRED = "111011" */
      -B_LD_PRED, 14,              /* B_LD_PRED = "111110" */
        -B_VL_PRED, 16             /* B_VL_PRED = "1111110" */
          -B_HD_PRED, -B_HU_PRED   /* HD = "11111110", 
