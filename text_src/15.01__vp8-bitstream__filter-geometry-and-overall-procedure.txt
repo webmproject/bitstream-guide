@@ -11,14 +11,14 @@ We call this collection of pixels associated to an edge position a segment; the 
 
 As a consequence, adjacent subblock edges within a macroblock may be concatenated and processed in their entirety. There is a single 8-pixel long vertical edge horizontally centered in each of the U and V blocks (the concatenation of upper and lower 4-pixel edges between chroma subblocks), and three 16-pixel long vertical edges at horizontal positions 1/4, 1/2, and 3/4 the width of the luma macroblock, each representing the concatenation of four 4-pixel sub-edges between pairs of Y subblocks.
 
-The macroblocks comprising the frame are processed in the usual raster-scan order. Each macroblock is "responsible for" the inter-macroblock edges immediately above and left of it (but not the edges below and right of it), as well as the edges between its subblocks. 
+The macroblocks comprising the frame are processed in the usual raster-scan order. Each macroblock is "responsible for" the inter-macroblock edges immediately above and left of it (but not the edges below and right of it), as well as the edges between its subblocks.
 
 For each macroblock M, there are four filtering steps, which are, (almost) in order:
 
-  1. If M is not on the leftmost column of macroblocks, filter 
+  1. If M is not on the leftmost column of macroblocks, filter
      across the left (vertical) inter-macroblock edge of M.
   2. Filter across the vertical subblock edges within M.
-  3. If M is not on the topmost row of macroblocks, filter across 
+  3. If M is not on the topmost row of macroblocks, filter across
      the top (horizontal) inter-macroblock edge of M.
   4. Filter across the horizontal subblock edges within M.
 
@@ -32,7 +32,7 @@ Step 2 and 4 are skipped for macroblocks that satisfy both of the following two 
 
   1. Macroblock coding mode is neither `B_PRED` nor `SPLTMV`; and
   2. There is no DCT coefficient coded for the whole macroblock.
-  
+
 For these macroblocks, loop filtering for edges between subblocks internal to a macroblock is effectively skipped. This skip strategy significantly reduces VP8 loop-filtering complexity.
 
 Edges between macroblocks and those between subblocks are treated with different control parameters (and, in the case of the normal filter, with different algorithms); luma and chroma edges are also treated with different control parameters. Except for pixel addressing, there is no distinction between the treatment of vertical and horizontal edges. Luma edges are always 16 pixels long, chroma edges are always 8 pixels long, and the segments straddling an edge are treated identically; this of course facilitates vector processing.

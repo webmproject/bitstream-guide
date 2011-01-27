@@ -13,7 +13,7 @@ typedef struct {
   uint8 *output;  /* ptr to next byte to be written */
   uint32 range;   /* 128 <= range <= 255 */
   uint32 bottom;  /* minimum value of remaining output */
-  int bit_count;  /* # of shifts before an output byte 
+  int bit_count;  /* # of shifts before an output byte
                      is available */
 } bool_encoder;
 
@@ -28,10 +28,10 @@ void init_bool_encoder( bool_encoder *e, uint8 *start_partition)
   e->bit_count = 24;
 }
 
-/* Encoding very rarely produces a carry that must be propagated 
-   to the already-written output. The arithmetic guarantees that 
-   the propagation will never go beyond the beginning of the 
-   output. Put another way, the encoded value x is always less 
+/* Encoding very rarely produces a carry that must be propagated
+   to the already-written output. The arithmetic guarantees that
+   the propagation will never go beyond the beginning of the
+   output. Put another way, the encoded value x is always less
    than one. */
 
 void add_one_to_output( uint8 *q)
@@ -41,13 +41,13 @@ void add_one_to_output( uint8 *q)
   ++*q;
 }
 
-/* Main function writes a bool_value whose probability of being 
+/* Main function writes a bool_value whose probability of being
    zero is (expected to be) prob/256. */
 
 void write_bool( bool_encoder *e, Prob prob, int bool_value)
 {
-  /* split is approximately (range * prob) / 256  and, 
-     crucially, is strictly bigger than zero and strictly 
+  /* split is approximately (range * prob) / 256  and,
+     crucially, is strictly bigger than zero and strictly
      smaller than range */
 
   uint32 split = 1 + ( ((e->range - 1) * prob) >> 8);
@@ -78,7 +78,7 @@ void write_bool( bool_encoder *e, Prob prob, int bool_value)
   }
 }
 
-/* Call this function (exactly once) after encoding the last 
+/* Call this function (exactly once) after encoding the last
    bool value for the partition being written */
 
 void flush_bool_encoder( bool_encoder *e)
@@ -100,19 +100,19 @@ void flush_bool_encoder( bool_encoder *e)
 }
 
 /* Decoder state exactly parallels that of the encoder.
-   "value", together with the remaining input, equals the 
-   complete encoded number x less the left endpoint of the 
+   "value", together with the remaining input, equals the
+   complete encoded number x less the left endpoint of the
    current coding interval. */
 
 typedef struct {
   uint8   *input;     /* pointer to next compressed data byte */
   uint32  range;      /* always identical to encoder's range */
   uint32  value;      /* contains at least 8 significant bits */
-  int     bit_count;  /* # of bits shifted out of 
+  int     bit_count;  /* # of bits shifted out of
                          value, at most 7 */
 } bool_decoder;
 
-/* Call this function before reading any bools from the 
+/* Call this function before reading any bools from the
    partition.*/
 
 void init_bool_decoder( bool_decoder *d, uint8 *start_partition)
@@ -129,13 +129,13 @@ void init_bool_decoder( bool_decoder *d, uint8 *start_partition)
   d->bit_count = 0;         /* have not yet shifted out any bits */
 }
 
-/* Main function reads a bool encoded at probability prob/256, 
-   which of course must agree with the probability used when the 
+/* Main function reads a bool encoded at probability prob/256,
+   which of course must agree with the probability used when the
    bool was written. */
 
 int read_bool( bool_decoder *d, Prob prob)
 {
-  /* range and split are identical to the corresponding values 
+  /* range and split are identical to the corresponding values
      used by the encoder when this bool was written */
 
   uint32  split = 1 + ( ((d->range - 1) * prob) >> 8);
@@ -162,8 +162,8 @@ int read_bool( bool_decoder *d, Prob prob)
   return retval;
 }
 
-/* Convenience function reads a "literal", that is, a "num_bits" 
-   wide unsigned value whose bits come high- to low-order, with 
+/* Convenience function reads a "literal", that is, a "num_bits"
+   wide unsigned value whose bits come high- to low-order, with
    each bit encoded at probability 128 (i.e., 1/2). */
 
 uint32 read_literal( bool_decoder *d, int num_bits)

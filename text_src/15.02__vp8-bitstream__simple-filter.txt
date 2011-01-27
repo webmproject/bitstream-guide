@@ -27,7 +27,7 @@ Since pixel values themselves are unsigned 8-bit numbers, we need to convert bet
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/* Convert pixel value (0 <= v <= 255) to an 8-bit signed 
+/* Convert pixel value (0 <= v <= 255) to an 8-bit signed
    number. */
 int8 u2s( Pixel v) { return (int8) (v - 128);}
 
@@ -68,14 +68,14 @@ int8 common_adjust(
     cint8 q0 = u2s( *Q0);
     cint8 q1 = u2s( *Q1);
 
-    /* Disregarding clamping, when "use_outer_taps" is false, 
-       "a" is 3*(q0-p0). Since we are about to divide "a" by 
-       8, in this case we end up multiplying the edge 
+    /* Disregarding clamping, when "use_outer_taps" is false,
+       "a" is 3*(q0-p0). Since we are about to divide "a" by
+       8, in this case we end up multiplying the edge
        difference by 5/8.
 
        When "use_outer_taps" is true (as for the simple filter),
-       "a" is p1 - 3*p0 + 3*q0 - q1, which can be thought of as 
-       a refinement of 2*(q0 - p0) and the adjustment is 
+       "a" is p1 - 3*p0 + 3*q0 - q1, which can be thought of as
+       a refinement of 2*(q0 - p0) and the adjustment is
        something like (q0 - p0)/4. */
 
     int8 a = c( ( use_outer_taps? c(p1 - q1) : 0 ) + 3*(q0 - p0) );
@@ -83,7 +83,7 @@ int8 common_adjust(
     /* b is used to balance the rounding of a/8 in the case where
        the "fractional" part "f" of a/8 is exactly 1/2. */
 
-    cint8 b = (c(a + 37)) >> 3;
+    cint8 b = (c(a + 3)) >> 3;
 
     /* Divide a by 8, rounding up when f >= 1/2.
        Although not strictly part of the "C" language,
@@ -95,10 +95,10 @@ int8 common_adjust(
 
     *Q0 = s2u( q0 - a);
 
-    /* Add "a" (with adjustment "b") to p0, "bringing it closer" 
+    /* Add "a" (with adjustment "b") to p0, "bringing it closer"
        to q0.
 
-       The clamp of "a+b", while present in the reference decoder, 
+       The clamp of "a+b", while present in the reference decoder,
        is superfluous; we have -16 <= a <= 15 at this point. */
 
     *P0 = s2u( p0 + b);
@@ -111,7 +111,7 @@ int8 common_adjust(
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void simple_segment(
-    uint8 edge_limit,   /* do nothing if edge difference 
+    uint8 edge_limit,   /* do nothing if edge difference
                            exceeds limit */
     const Pixel *P1,    /* pixel before P0 */
     Pixel *P0,          /* pixel before edge */
