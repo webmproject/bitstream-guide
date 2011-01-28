@@ -120,7 +120,7 @@ void init_bool_decoder( bool_decoder *d, uint8 *start_partition)
   {
     int i = 0;
     d->value = 0;           /* value = first 2 input bytes */
-    while( ++i <= 3)
+    while( ++i <= 2)
       d->value = (d->value << 8)  |  *start_partition++;
   }
 
