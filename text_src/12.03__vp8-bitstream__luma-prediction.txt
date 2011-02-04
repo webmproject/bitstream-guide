@@ -15,7 +15,7 @@ For the purpose of subblock intra-prediction, the pixels immediately to the left
 
 Because entire macroblocks (as opposed to their constituent subblocks) are reconstructed in raster-scan order, for subblocks lying along the right edge (and not along the top row) of the current macroblock, the four "extra" prediction pixels in A above and to the right of B have not yet actually been constructed.
 
-Subblocks 7, 11, and 15 are affected. All three of these subblocks use the same extra pixels as does subblock 3 (at the upper right corner of the macroblock), namely the 4 pixels immediately above and to the right of subblock 3. Writing `(R,C)` for a frame buffer position offset from the upper left corner of the current macroblock by R rows and C columns, the extra pixels for all the right-edge subblocks (3, 7, 11, and 15) are at positions (-1,16), (-1,17), (-1,18), and (-1,19).
+Subblocks 7, 11, and 15 are affected. All three of these subblocks use the same extra pixels as does subblock 3 (at the upper right corner of the macroblock), namely the 4 pixels immediately above and to the right of subblock 3. Writing `(R,C)` for a frame buffer position offset from the upper left corner of the current macroblock by R rows and C columns, the extra pixels for all the right-edge subblocks (3, 7, 11, and 15) are at positions (-1,16), (-1,17), (-1,18), and (-1,19). For the right-most macroblock in each macroblock row except the top row, the extra pixels shall use the same value as the pixel at position (-1, 15), which is the right-most visible pixel on the line immediately above the macroblock row. For the top macroblock row, all the extra pixels assume a value of 127.
 
 The details of the prediction modes are most easily described in code.
 
