@@ -5,7 +5,7 @@
 
 This subsection contains probability and value information for implementing segment adaptive adjustments to default decoder behaviors. The data in this section is used in the decoding of the ensuing per-segment information and applies to the entire frame. When segment adaptive adjustments are enabled, each macroblock will be assigned a segment ID. Macroblocks with the same segment ID belong to same segment, and have the same adaptive adjustments over default baseline values for the frame. The adjustments can be quantization level or loop filter strength.
 
-The context for decoding this feature is provided by section B of the frame header. It contains:
+The context for decoding this feature at macroblock level is provided by a subsection in the frame header, which contains::
 
   1. A `segmentation_enabled` Flag which if `1` (`0`), enables (disables) the feature for this frame. The remaining fields occur if the feature is enabled.
   2. `L(1)` indicates if the segment map is updated for the current frame (`update_mb_segmentaton_map`)

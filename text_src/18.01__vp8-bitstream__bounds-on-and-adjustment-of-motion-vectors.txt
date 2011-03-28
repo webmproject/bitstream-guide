@@ -3,7 +3,7 @@
 #### 18.1 Bounds on and Adjustment of Motion Vectors         {#h-18-01}
 
 
-It is possible within the VP8 format for a block or macroblock to have an arbitrarily large motion vectors, due to the fact that each motion vector is differentially encoded without any clamp from a neighboring block or macroblock.
+Since each motion vector is differentially encoded from a neighboring block or macroblock and the only clamp is to ensure that the referenced motion vector represents a valid location inside a reference frame buffer, it is technically possible within the VP8 format for a block or macroblock to have arbitrarily large motion vectors, up to the size of the input image plus the extended border areas. For practical reasons, VP8 imposes a motion vector size range limit of [-4096, 4095] full pixels, regardless of image size (VP8 defines 14 raw bits for width and height; 16383x16383 is the maximum possible image size). Bitstream-compliant encoders and decoders shall enforce this limit.
 
 Because the motion vectors applied to the chroma subblocks have 1/8 pixel resolution, the synthetic pixel calculation, outlined in Chapter 5 and detailed below, uses this resolution for the luma subblocks as well. In accordance, the stored luma motion vectors are all doubled, each component of each luma vector becoming an even integer in the range -2046 to +2046, inclusive.
 
@@ -18,7 +18,7 @@ int avg( int c1, int c2, int c3, int c4)
     int s = c1 + c2 + c3 + c4;
 
     /* The shift divides by 8 (not 4) because chroma pixels 
-       have half the diameter of luma pixels.  The handling 
+       have twice the diameter of luma pixels.  The handling 
        of negative motion vector components is slightly 
        cumbersome because, strictly speaking, right shifts 
        of negative numbers are not well-defined in C. */
@@ -27,7 +27,6 @@ int avg( int c1, int c2, int c3, int c4)
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
-
 
 Furthermore, if the version number in the frame tag specifies only full-pel chroma motion vectors, then the fractional parts of both components of the vector are truncated to zero, as illustrated in the following pseudo-code (assuming 3 bits of fraction for both luma and chroma vectors):
 

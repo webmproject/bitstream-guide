@@ -3,7 +3,7 @@
 #### 14.3 Implementation of the WHT Inversion                {#h-14-03}
 
 
-As previously discussed (see Chapters 2 and 13), for macroblocks encoded using prediction modes other than `B_PRED` and `SPLITMV`, the DC values derived from the DCT transform on the 16 Y blocks are collected to construct a 25th block of a macroblock(16 Y, 4 U, 4 V constitute the 24 blocks). This 25th block is transformed using a Walsh-Hadamard transform (WHT). 
+As previously discussed (see Chapters 2 and 13), for macroblocks encoded using prediction modes other than `B_PRED` and `SPLITMV`, the DC values derived from the DCT transform on the 16 Y blocks are collected to construct a 25th block of a macroblock (16 Y, 4 U, 4 V constitute the 24 blocks). This 25th block is transformed using a Walsh-Hadamard transform (WHT). 
 
 The inputs to the inverse WHT (that is, the dequantized coefficients), the intermediate "horizontally detransformed" signal, and the completely detransformed residue signal are all stored as arrays of 16-bit signed integers. 
 

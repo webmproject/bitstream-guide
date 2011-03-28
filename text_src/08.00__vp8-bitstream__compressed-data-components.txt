@@ -8,7 +8,7 @@ We sometimes use these descriptions in C expressions within data format specific
 
 | Call            | Alt.   | Return
 | --------------- | ------ | ------------------------------------- 
-| `Bool(p)`       | `B(p)` | Bool with probability `p` of being `0`. Abbreviated `B(p)`. Return value of `read_bool(d, p)`.
+| `Bool(p)`       | `B(p)` | Bool with probability [[ p//256 ]] of being `0`. Return value of `read_bool(d, p)`.
 | `Flag`          | `F`    | A one-bit flag (same thing as a `B(128)` or an `L(1)`). Abbreviated `F`. Return value of `read_bool(d, 128)`.
 | `Lit(n)`        | `L(n)` | Unsigned n-bit number encoded as n flags (a "literal"). Abbreviated `L(n)`. The bits are read from high to low order. Return value of `read_literal(d, n)`.
 | `SignedLit(n)`  |        | Signed n-bit number encoded similarly to an `L(n)`. Return value of `read_signed_literal(d, n)`. These are rare.

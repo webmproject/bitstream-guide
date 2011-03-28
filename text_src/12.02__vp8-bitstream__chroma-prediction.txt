@@ -32,7 +32,36 @@ Because the summands are all valid pixels, no "clamp" is necessary in the calcul
 
 The remaining "True Motion" (`TM_PRED`) chroma mode gets its name from an older technique of video compression used by On2 Technologies, to which it bears some relation. In addition to the row "A" and column "L", `TM_PRED` uses the pixel "P" above and to the left of the chroma block.
 
-In this mode, we propagate the horizontal differences between pixels in A (starting from P), using the pixels from L to start each row. The exact algorithm is as follows.
+The following figure gives an example of how `TM_PRED` works:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| P   | A0  | A1  | A2  | A3  | A4  | A5  | A6  | A7  |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L0  | X00 | X01 | X02 | X03 | X04 | X05 | X06 | X07 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L1  | X10 | X11 | X12 | X13 | X14 | X15 | X16 | X17 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L2  | X20 | X21 | X22 | X23 | X24 | X25 | X26 | X27 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L3  | X30 | X31 | X32 | X33 | X34 | X35 | X36 | X37 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L4  | X40 | X41 | X42 | X43 | X44 | X45 | X46 | X47 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L5  | X50 | X51 | X52 | X53 | X54 | X55 | X56 | X57 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L6  | X60 | X61 | X62 | X63 | X64 | X65 | X66 | X67 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| L7  | X70 | X71 | X72 | X73 | X74 | X75 | X76 | X77 |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Where P, As and Ls represent reconstructed pixel values from previously coded blocks, and X00 through X77 represent predicted values for the current block. `TM_PRED` uses the following equation to calculate [[ X_ij ]]:
+
+  [[ X_ij = L_i + A_j - P (i, j=0, 1, 2, 3) ]]
+
+The exact algorithm is as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

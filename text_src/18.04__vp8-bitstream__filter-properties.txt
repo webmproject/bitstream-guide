@@ -17,7 +17,7 @@ Another basic fact about approximations to "truly correct" subsampling is that, 
 
 The filters chosen by VP8 were chosen, within the constraints of 4 or 6 taps and 7-bit precision, to do the best possible job of handling the low spatial frequencies near the zero<sup>th</sup> DC frequency along with introducing no resonances (places where the absolute value of the frequency response exceeds one).
 
-The justification for the foregoing has two parts. First, resonances can produce extremely objectionable visible artifacts when, as often happens in actual compressed video streams, filters are applied repeatedly. Second, the vast majority of energy in real-world images lies near DC and not at the high-end; also, roughly speaking, human perception tends to be more sensitive at these lower spatial frequencies.
+The justification for the foregoing has two parts. First, resonances can produce extremely objectionable visible artifacts when, as often happens in actual compressed video streams, filters are applied repeatedly. Second, the vast majority of energy in real-world images lies near DC and not at the high-end.
 
 To get slightly more specific, the filters chosen by VP8 are the best resonance-free 4- or 6-tap filters possible, where "best" describes the frequency response near the origin: the response at 0 is required to be 1 and the graph of the response at 0 is as flat as possible.
 

@@ -6,9 +6,7 @@ VP8 works exclusively with an 8-bit YUV 4:2:0 image format. In this format, each
 
 As is usually the case, the pixels are simply a large array of bytes stored in rows from top to bottom, each row being stored from left to right. This "left to right" then "top to bottom" raster-scan order is reflected in the layout of the compressed data as well.
 
-Provision has been made for the support of two different YUV color formats in the VP8 bitstream header, however only one format is supported in the first release of VP8.
-
-The YUV formats differ in terms of their conversion to and from RGB color space. The first corresponds to the traditional YUV color space similar to the YCrCb color space defined in ITU-R BT.601. The second (currently unsupported) format corresponds to a new YUV color space whose digital conversion to and from RGB can be implemented without multiplications and divides. The VP8 Decoder should decode and pass the information on to the processes that convert the YUV output to RGB color space.
+Provision has been made in the VP8 bitstream header for the support of a secondary YUV color format, in the form of a reserved bit.
 
 Occasionally, at very low datarates, a compression system may decide to reduce the resolution of the input signal to facilitate efficient compression. The VP8 data format supports this via optional upscaling of its internal reconstruction buffer prior to output (this is completely distinct from the optional postprocessing discussed earlier, which has nothing to do with decoding per se). This upsampling restores the video frames to their original resolution. In other words, the compression/decompression system can be viewed as a "black box", where the input and output is always at a given resolution. The compressor might decide to "cheat" and process the signal at a lower resolution. In that case, the decompressor needs the ability to restore the signal to its original resolution.
 

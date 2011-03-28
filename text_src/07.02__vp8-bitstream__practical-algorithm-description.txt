@@ -22,7 +22,7 @@ Using an unsigned 16-bit multiply followed by an unsigned right shift, we calcul
 
 [[ "split" ]] is approximately [[ ( "prob" / 256 ) * "range" ]] and lies within the bounds [[ 1 <= "split" <=  "range" - 1 ]]. These bounds ensure the correctness of the decoding procedure described below.
 
-If [[ "val" ]] is false, we leave the left interval endpoint [[ "bottom" ]] alone and reduce [[ "range" ]], replacing it by [[ "split" ]]. If [[ "val" ]] is true, we move up the left endpoint to [[ "bottom" + "split" ]], propagating any carry to the already-written value [[ "w" ]] (this is where we need the ability to add 1 to [[ "w" ]]), and reduce [[ "range" ]] to [[ "range" - "split" ]].
+If the incoming boolean [[ "val" ]] to be encoded is false, we leave the left interval endpoint [[ "bottom" ]] alone and reduce [[ "range" ]], replacing it by [[ "split" ]]. If the incoming [[ "val" ]] is true, we move up the left endpoint to [[ "bottom" + "split" ]], propagating any carry to the already-written value [[ "w" ]] (this is where we need the ability to add 1 to [[ "w" ]]), and reduce [[ "range" ]] to [[ "range" - "split" ]].
 
 Regardless of the value encoded, [[ "range" ]] has been reduced and now has the bounds [[ 1 <= "range" <= 254 ]]. If [[ "range" < 128 ]], the encoder doubles it and shifts the high-order bit out of [[ "bottom" ]] to the output as it also doubles [[ "bottom" ]], repeating this process one bit at a time until [[ 128 <= "range" <= 255 ]]. Once this is completed, the encoder is ready to accept another bool, maintaining the constraints described above.
 
