@@ -34,13 +34,16 @@ first_part_size = (tmp >> 5) & 0x7FFFF;
 
 Where:
 
-  * `key_frame` indicates if the current frame is a key frame or not
-  * `version` determines the bitstream version
-  * `show_frame` indicates if the current frame is meant to be displayed or not
-  * `first_part_size` determines the size of the first partition (control partition)
+  * `key_frame` indicates if the current frame is a key frame or not.
+  * `version` determines the bitstream version.
+  * `show_frame` indicates if the current frame is meant to be displayed
+    or not.
+  * `first_part_size` determines the size of the first partition
+    (control partition), excluding the uncompressed data chunk.
 
-The `start_code` is a constant 3-byte pattern having value 0x9d012a. The latter part of the
-uncompressed chunk (after the `start_code`) can be parsed as follows:
+The `start_code` is a constant 3-byte pattern having value 0x9d012a. The
+latter part of the uncompressed chunk (after the `start_code`) can be
+parsed as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
