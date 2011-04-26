@@ -43,7 +43,7 @@ is a fixed mapping of position to "band".
 
 The third dimension is the trickiest. Roughly speaking, it measures the "local complexity" or extent to which nearby coefficients are non-zero.
 
-For the first coefficient (DC, unless the block type is 0), we consider the (already encoded) blocks within the same plane (Y2, Y, U, or V) above and to the left of the current block. The context index is then the number (0, 1 or 2) of these blocks that had at least one non-zero coefficient in their residue record.
+For the first coefficient (DC, unless the block type is 0), we consider the (already encoded) blocks within the same plane (Y2, Y, U, or V) above and to the left of the current block. The context index is then the number (0, 1 or 2) of these blocks that had at least one non-zero coefficient in their residue record. Specifically for Y2, because macroblocks above and to the left may or may not have a Y2 block, the block above is determined by the most recent macroblock in the same column that has a Y2 block, and the block to the left is determined by the most recent macroblock in the same row that has a Y2 block.
 
 Beyond the first coefficient, the context index is determined by the absolute value of the most recently decoded coefficient (necessarily within the current block) and is `0` if the last coefficient was a zero, `1` if it was plus or minus one, and `2` if its absolute value exceeded one.
 
