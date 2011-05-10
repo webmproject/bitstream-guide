@@ -53,7 +53,7 @@ const tree_index coef_tree [2 * (num_dct_tokens - 1)] =
 {:lang="c"}
 
 
-While in general all DCT coefficients are decoded using the same tree, decoding of certain DCT coefficients may skip the first branch, whose preceding coefficient is a `DCT_0`. This makes use of the fact that in any block last non zero coefficient before the end of the block is not `0`, therefore no `dct_eob` follows a `DCT_0` coefficient in any block.
+In general, all DCT coefficients are decoded using the same tree. However, if the preceding coefficient is a `DCT_0`, decoding will skip the first branch since it is not possible for `dct_eob` to follow a `DCT_0`.
 
 The tokens `dct_cat1` ... `dct_cat6` specify ranges of unsigned values, the value within the range being formed by adding an unsigned offset (whose width is 1, 2, 3, 4, 5, or 11 bits, respectively) to the base of the range, using the following algorithm and fixed probability tables.
 
