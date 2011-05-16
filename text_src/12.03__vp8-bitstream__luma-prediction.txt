@@ -45,9 +45,6 @@ Pixel avg2( Pixel x, Pixel y) { return (x + y + 1) >> 1;}
 
 Pixel avg2p( const Pixel *p) { return avg2( p[0], p[1]);}
 
-/* Main function.  Out-of-frame pixels in A or L should be set 
-   to 128. */
-
 void subblock_intra_predict(
     Pixel B[4][4],     /* Y subblock prediction buffer */
     const Pixel *A,    /* A[0]...A[7] = above row, A[-1] = P */
