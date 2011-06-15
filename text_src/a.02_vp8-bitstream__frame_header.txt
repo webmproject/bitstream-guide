@@ -172,18 +172,22 @@
 | `  y_dc_delta_magnitude`                     | L(4)  |
 | `  y_dc_delta_sign`                          | L(1)  |
 | `}`                                          |       |
+| `y2_dc_delta_present`                        | L(1)  |
 | `if (y2_dc_delta_present) {`                 |       |
 | `  y2_dc_delta_magnitude`                    | L(4)  |
 | `  y2_dc_delta_sign`                         | L(1)  |
 | `}`                                          |       |
+| `y2_ac_delta_present`                        | L(1)  |
 | `if (y2_ac_delta_present) {`                 |       |
 | `  y2_ac_delta_magnitude`                    | L(4)  |
 | `  y2_ac_delta_sign`                         | L(1)  |
 | `}`                                          |       |
+| `uv_dc_delta_present`                        | L(1)  |
 | `if (uv_dc_delta_present) {`                 |       |
 | `  uv_dc_delta_magnitude`                    | L(4)  |
 | `  uv_dc_delta_sign`                         | L(1)  |
 | `}`                                          |       |
+| `uv_ac_delta_present`                        | L(1)  |
 | `if (uv_ac_delta_present) {`                 |       |
 | `  uv_ac_delta_magnitude`                    | L(4)  |
 | `  uv_ac_delta_sign`                         | L(1)  |
