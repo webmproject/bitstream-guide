@@ -5,5 +5,5 @@
 
 Given an inter-prediction specification for the current macroblock, that is, a reference frame together with a motion vector for each of the sixteen Y subblocks, we describe the calculation of the prediction buffer for the macroblock. Frame reconstruction is then completed via the previously-described processes of residue summation ([Chapter 14](#h-14-00)) and loop filtering ([Chapter 15](#h-15-00)).
 
-The management of inter-predicted subblocks may be found in the reference decoder file `reconinter.c`; sub-pixel interpolation is implemented in `filter_c.c`.
+The management of inter-predicted subblocks and sub-pixel interpolation may be found in the reference decoder file `predict.c`.
 

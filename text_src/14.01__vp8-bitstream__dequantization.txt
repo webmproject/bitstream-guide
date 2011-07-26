@@ -5,7 +5,7 @@
 
 After decoding the DCTs/WHTs as described above, each (quantized) coefficient in each subblock is multiplied by one of six dequantization factors, the choice of factor depending on the plane (Y2, Y, or chroma) and position (DC = coefficient zero, AC = any other coefficient). If the current macroblock has overridden the quantization level (as described in Chapter 10) then the six factors are looked up from two dequantization tables with appropriate scaling and clamping using the single index supplied by the override. Otherwise, the frame-level dequantization factors (as described in Section 9.6) are used. In either case, the multiplies are computed and stored using 16-bit signed integers.
 
-The two dequantization tables, which may also be found in the reference decoder file `quant_common.c`, are as follows.
+The two dequantization tables, which may also be found in the reference decoder file `dequant_data.h`, are as follows.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,5 +40,5 @@ static const int ac_qlookup[QINDEX_RANGE] =
 {:lang="c"}
 
 
-Lookup values from the above two tables are directly used the DC and AC coefficients in Y1 respectively. For Y2 and chroma, values from above tables undergo either a scaling process or clamping processing before the multiplies. Details to these scaling and clamping can be found related lookup functions in `quant_common.c`.
+Lookup values from the above two tables are directly used the DC and AC coefficients in Y1 respectively. For Y2 and chroma, values from above tables undergo either a scaling process or clamping processing before the multiplies. Details to these scaling and clamping can be found related lookup functions in `dixie.c`.
 

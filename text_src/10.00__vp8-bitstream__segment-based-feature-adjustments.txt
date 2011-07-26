@@ -21,5 +21,5 @@ const tree_index mb_segment_tree [2 * (4-1)] =
 
 ... combined with a 3-entry probability table `mb_segment_tree_probs[3]`. The macroblock's `segment_id` is used later in the decoding process to look into the `segment_feature_data` table and determine how the quantizer and loop filter levels are adjusted.
 
-The decoding of `segment_id`, together with the parsing of intra-prediction modes (which is taken up next), is implemented in the reference decoder file `demode.c`.
+The decoding of `segment_id`, together with the parsing of intra-prediction modes (which is taken up next), is implemented in the reference decoder file `modemv.c`.
 

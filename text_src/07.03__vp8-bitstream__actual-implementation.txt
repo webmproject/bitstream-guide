@@ -4,7 +4,7 @@
 
 The C code below gives complete implementations of the encoder and decoder described above. While they are logically identical to the "bit-at-a-time" versions, they internally buffer a couple of extra bytes of the bitstream. This allows I/O to be done (more practically) a byte at a time and drastically reduces the number of carries the encoder has to propagate into the already-written data.
 
-Another (logically equivalent) implementation may be found in the reference decoder files `dboolhuff.h` and `dboolhuff.c`.
+Another (logically equivalent) implementation may be found in the reference decoder files `bool_decoder.h`.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Encoder first */

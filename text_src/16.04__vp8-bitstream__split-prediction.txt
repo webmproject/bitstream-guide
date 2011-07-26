@@ -116,5 +116,5 @@ The first two sub-prediction modes simply copy the already-coded motion vectors 
 
 NEW4x4 is exactly like NEWMV except applied only to the current subset. It is followed by a 2-dimensional motion vector offset (described in the next chapter) that is added to the best vector returned by the earlier call to find_near_mvs to form the motion vector in effect for the subset.
 
-Parsing of both inter-prediction modes and motion vectors (described next) can be found in the reference decoder file `decodemv.c`.
+Parsing of both inter-prediction modes and motion vectors (described next) can be found in the reference decoder file `modemv.c`.
 

@@ -5,7 +5,7 @@
 
 The prediction processes for the first four 16x16 luma modes (`DC_PRED`, `V_PRED`, `H_PRED`, and `TM_PRED`) are essentially identical to the corresponding chroma prediction processes described above, the only difference being that we are predicting a single 16x16 luma block instead of two 8x8 chroma blocks.
 
-Thus, the row "A" and column "L" here contain 16 pixels, the DC prediction is calculated using 16 or 32 pixels (and shf is 4 or 5), and we of course fill the entire prediction buffer, that is, 16 rows (or columns) containing 16 pixels each. The reference implementation of 16x16 luma prediction is also in `reconintra.c`.
+Thus, the row "A" and column "L" here contain 16 pixels, the DC prediction is calculated using 16 or 32 pixels (and shf is 4 or 5), and we of course fill the entire prediction buffer, that is, 16 rows (or columns) containing 16 pixels each. The reference implementation of 16x16 luma prediction is also in `predict.c`.
 
 In the remaining luma mode (`B_PRED`), each 4x4 Y subblock is independently predicted using one of ten modes (listed, along with their encodings, in Chapter 11).
 

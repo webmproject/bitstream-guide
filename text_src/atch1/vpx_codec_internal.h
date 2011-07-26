@@ -9,7 +9,7 @@
  */
 
 
-/*!\file decoder_impl.h
+/*!\file vpx_codec_internal.h
  * \brief Describes the decoder algorithm interface for algorithm
  *        implementations.
  *

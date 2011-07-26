@@ -70,30 +70,30 @@ static const unsigned int bands_x[16] =
 #undef X
 static const struct extrabits extrabits[MAX_ENTROPY_TOKENS] =
 {
-    {  0, -1, {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //ZERO_TOKEN
-    {  1, 0,  {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //ONE_TOKEN
-    {  2, 0,  {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //TWO_TOKEN
-    {  3, 0,  {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //THREE_TOKEN
-    {  4, 0,  {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //FOUR_TOKEN
-    {  5, 0,  { 159,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //DCT_VAL_CATEGORY1
-    {  7, 1,  { 145, 165,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //DCT_VAL_CATEGORY2
-    { 11, 2,  { 140, 148, 173,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //DCT_VAL_CATEGORY3
-    { 19, 3,  { 135, 140, 155, 176,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, //DCT_VAL_CATEGORY4
-    { 35, 4,  { 130, 134, 141, 157, 180,   0,
-                  0,   0,   0,   0,   0,   0   } }, //DCT_VAL_CATEGORY5
-    { 67, 10, { 129, 130, 133, 140, 153, 177,
-                196, 230, 243, 254, 254,   0   } }, //DCT_VAL_CATEGORY6
-    {  0, -1, {   0,   0,   0,   0,   0,   0,
-                  0,   0,   0,   0,   0,   0   } }, // EOB TOKEN
+    { 0, -1, {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //ZERO_TOKEN
+    { 1, 0,  {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //ONE_TOKEN
+    { 2, 0,  {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //TWO_TOKEN
+    { 3, 0,  {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //THREE_TOKEN
+    { 4, 0,  {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //FOUR_TOKEN
+    { 5, 0,  {159,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //DCT_VAL_CATEGORY1
+    { 7, 1,  {145, 165,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //DCT_VAL_CATEGORY2
+    {11, 2,  {140, 148, 173,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //DCT_VAL_CATEGORY3
+    {19, 3,  {135, 140, 155, 176,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, //DCT_VAL_CATEGORY4
+    {35, 4,  {130, 134, 141, 157, 180,   0,
+                0,   0,   0,   0,   0,   0 } }, //DCT_VAL_CATEGORY5
+    {67, 10, {129, 130, 133, 140, 153, 177,
+              196, 230, 243, 254, 254,   0 } }, //DCT_VAL_CATEGORY6
+    { 0, -1, {  0,   0,   0,   0,   0,   0,
+                0,   0,   0,   0,   0,   0 } }, // EOB TOKEN
 };
 static const unsigned int zigzag[16] =
 {
@@ -117,7 +117,7 @@ static const unsigned int zigzag[16] =
             goto branch; \
         }\
         else \
-            goto BLOCK_FINISHED; /*for malformed input */\
+            goto BLOCK_FINISHED; /* for malformed input */\
     }
 
 #define DECODE_SIGN_WRITE_COEFF_AND_CHECK_EXIT(val) \
@@ -132,7 +132,8 @@ static const unsigned int zigzag[16] =
 
 
 #define DECODE_EXTRABIT_AND_ADJUST_VAL(t,bits_count)\
-    val += bool_get(bool, extrabits[t].probs[bits_count]) << bits_count;
+    val += bool_get(bool, extrabits[t].probs[bits_count]) << \
+    bits_count;
 
 
 static int
@@ -148,8 +149,8 @@ decode_mb_tokens(struct bool_decoder  *bool,
     int            c, t, v;
     int            val, bits_count;
     int            eob_mask;
-    short         *b_tokens;   /* tokens for this block */
-    unsigned char *type_probs; /* probabilities for this block type */
+    short         *b_tokens;   // tokens for this block
+    unsigned char *type_probs; // probabilities for this block type
     unsigned char *prob;
     short         *dqf;
 
@@ -187,7 +188,8 @@ BLOCK_LOOP:
 
 DO_WHILE:
     prob += bands_x[c];
-    DECODE_AND_BRANCH_IF_ZERO(prob[EOB_CONTEXT_NODE], BLOCK_FINISHED);
+    DECODE_AND_BRANCH_IF_ZERO(prob[EOB_CONTEXT_NODE],
+      BLOCK_FINISHED);
 
 CHECK_0_:
     DECODE_AND_LOOP_IF_ZERO(prob[ZERO_CONTEXT_NODE], CHECK_0_);
@@ -206,7 +208,8 @@ CHECK_0_:
 
     do
     {
-        DECODE_EXTRABIT_AND_ADJUST_VAL(DCT_VAL_CATEGORY6, bits_count);
+        DECODE_EXTRABIT_AND_ADJUST_VAL(DCT_VAL_CATEGORY6,
+          bits_count);
         bits_count -- ;
     }
     while (bits_count >= 0);
@@ -357,8 +360,8 @@ vp8_dixie_tokens_process_row(struct vp8_decoder_ctx *ctx,
                              unsigned int            num_cols)
 {
     struct token_decoder *tokens = &ctx->tokens[partition];
-    short                *coeffs = tokens->coeffs + 25 * 16 * start_col;
-    unsigned int          col;
+    short              coeffs = tokens->coeffs + 25 * 16 * start_col;
+    unsigned int       col;
     token_entropy_ctx_t  *above = ctx->above_token_entropy_ctx
                                   + start_col;
     token_entropy_ctx_t  *left = &tokens->left_token_entropy_ctx;
@@ -423,10 +426,12 @@ vp8_dixie_tokens_init(struct vp8_decoder_ctx *ctx)
 
         free(ctx->above_token_entropy_ctx);
         ctx->above_token_entropy_ctx =
-            calloc(ctx->mb_cols, sizeof(*ctx->above_token_entropy_ctx));
+            calloc(ctx->mb_cols,
+            sizeof(*ctx->above_token_entropy_ctx));
 
         if (!ctx->above_token_entropy_ctx)
-            vpx_internal_error(&ctx->error, VPX_CODEC_MEM_ERROR, NULL);
+            vpx_internal_error(&ctx->error,
+            VPX_CODEC_MEM_ERROR, NULL);
     }
 }
 

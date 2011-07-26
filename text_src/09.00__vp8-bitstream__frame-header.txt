@@ -2,5 +2,5 @@
 
 ### Chapter 9: Frame Header                                  {#h-09-00}
 
-The uncompressed data chunk at the start of each frame and the first part of the first data partition contains information pertaining to the frame as a whole. We list the fields in the order of occurrence, giving details for some of the fields. Other details are postponed until a more logical point in our overall description. Most of the header decoding occurs in the reference decoder file `decodeframe.c`.
+The uncompressed data chunk at the start of each frame and the first part of the first data partition contains information pertaining to the frame as a whole. We list the fields in the order of occurrence, giving details for some of the fields. Other details are postponed until a more logical point in our overall description. Most of the header decoding occurs in the reference decoder file `dixie.c`.
 

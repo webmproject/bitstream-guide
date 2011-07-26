@@ -196,7 +196,8 @@ filter_mb_h_edge(unsigned char *src,
 
     for (i = 0; i < 8 * size; i++)
     {
-        if (normal_threshold(src, stride, edge_limit, interior_limit))
+        if (normal_threshold(src, stride, edge_limit,
+                             interior_limit))
         {
             if (high_edge_variance(src, stride, hev_threshold))
                 filter_common(src, stride, 1);
@@ -221,7 +222,8 @@ filter_subblock_h_edge(unsigned char *src,
 
     for (i = 0; i < 8 * size; i++)
     {
-        if (normal_threshold(src, stride, edge_limit, interior_limit))
+        if (normal_threshold(src, stride, edge_limit,
+                             interior_limit))
             filter_common(src, stride,
                           high_edge_variance(src, stride,
                                              hev_threshold));
@@ -506,9 +508,12 @@ filter_row_simple(struct vp8_decoder_ctx *ctx,
 
             if (filter_subblocks)
             {
-                filter_h_edge_simple(y + 4 * stride, stride, b_limit);
-                filter_h_edge_simple(y + 8 * stride, stride, b_limit);
-                filter_h_edge_simple(y + 12 * stride, stride, b_limit);
+                filter_h_edge_simple(y + 4 * stride, stride,
+                                     b_limit);
+                filter_h_edge_simple(y + 8 * stride, stride,
+                                     b_limit);
+                filter_h_edge_simple(y + 12 * stride, stride,
+                                     b_limit);
             }
         }
 

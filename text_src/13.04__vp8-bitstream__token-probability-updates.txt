@@ -27,7 +27,7 @@ int i = 0;  do {
 {:lang="c"}
 
 
-The (constant) update probabilities are as follows (they may also be found in the reference decoder file `coef_update_probs.c`).
+The (constant) update probabilities are as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

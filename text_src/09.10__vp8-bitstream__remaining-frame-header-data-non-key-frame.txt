@@ -15,5 +15,5 @@
 | `X`       | Motion vector probability update. The details will be given after the discussion of motion vector decoding.
 
 
-Decoding of this portion (only) of the frame header is handled in the reference decoder file `decodemv.c`.
+Decoding of this portion of the frame header is handled in the reference decoder file `dixie.c`.
 

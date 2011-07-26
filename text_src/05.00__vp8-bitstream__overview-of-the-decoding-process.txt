@@ -55,7 +55,7 @@ Various processes may be required (or desired) before viewing the generated fram
 
 While the basic ideas of prediction and correction used by VP8 are straightforward, many of the details are quite complex. The management of probabilities is particularly elaborate. Not only do the various modes of intra-prediction and motion vector specification have associated probabilities but they, together with the coding of DCT coefficients and motion vectors, often base these probabilities on a variety of contextual information (calculated from what has been decoded so far), as well as on explicit modification via the frame header.
 
-The "top-level" of decoding and frame reconstruction is implemented in the reference decoder files `onyxd_if.c` and `decodframe.c`.
+The "top-level" of decoding and frame reconstruction is implemented in the reference decoder files `dixie.c`.
 
 This concludes our summary of decoding and reconstruction; we continue by discussing the individual aspects in more depth.
 

@@ -88,7 +88,7 @@ void TMpred(
 
 Note that the process could equivalently be described as propagating the vertical differences between pixels in L (starting from P), using the pixels from A to start each column.
 
-An implementation of chroma intra-prediction may be found in the reference decoder file `reconintra.c`.
+An implementation of chroma intra-prediction may be found in the reference decoder file `predict.c`.
 
 Unlike `DC_PRED`, for macroblocks on the top row or left edge `TM_PRED` does use the out-of-bounds values of `127` and `129` (respectively) defined for `V_PRED` and `H_PRED`.
 

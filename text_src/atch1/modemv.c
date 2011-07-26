@@ -118,7 +118,8 @@ decode_kf_mb_mode(struct mb_info      *this,
 
         for (i = 0; i < 16; i++)
         {
-            enum prediction_mode a = above_block_mode(this, above, i);
+            enum prediction_mode a = above_block_mode(this, above,
+                                                      i);
             enum prediction_mode l = left_block_mode(this, left, i);
             enum prediction_mode b;
 
@@ -142,8 +143,8 @@ decode_intra_mb_mode(struct mb_info         *this,
                      struct vp8_entropy_hdr *hdr,
                      struct bool_decoder    *bool)
 {
-    /* Like decode_kf_mb_mode, but with probabilities transmitted in the
-     * bitstream and no context on the above/left block mode.
+    /* Like decode_kf_mb_mode, but with probabilities transmitted in
+     * the bitstream and no context on the above/left block mode.
      */
     int y_mode, uv_mode;
 
@@ -157,7 +158,8 @@ decode_intra_mb_mode(struct mb_info         *this,
         {
             enum prediction_mode b;
 
-            b = bool_read_tree(bool, b_mode_tree, default_b_mode_probs);
+            b = bool_read_tree(bool, b_mode_tree,
+                               default_b_mode_probs);
             this->split.modes[i] = b;
         }
     }
@@ -175,7 +177,8 @@ static int
 read_mv_component(struct bool_decoder *bool,
                   const unsigned char  mvc[MV_PROB_CNT])
 {
-    enum {IS_SHORT, SIGN, SHORT, BITS = SHORT + 8 - 1, LONG_WIDTH = 10};
+    enum {IS_SHORT, SIGN, SHORT, BITS = SHORT + 8 - 1,
+          LONG_WIDTH = 10};
     int x = 0;
 
     if (bool_get(bool, mvc[IS_SHORT])) /* Large */
@@ -262,7 +265,8 @@ submv_ref(struct bool_decoder *bool, union mv l, union mv a)
     else if (lez)
         ctx = SUBMVREF_LEFT_ZED;
 
-    return bool_read_tree(bool, submv_ref_tree, submv_ref_probs2[ctx]);
+    return bool_read_tree(bool, submv_ref_tree,
+                          submv_ref_probs2[ctx]);
 }
 
 
@@ -417,7 +421,8 @@ decode_split_mv(struct mb_info         *this,
     const int *partition;
     int        j, k, mask, partition_id;
 
-    partition_id = bool_read_tree(bool, split_mv_tree, split_mv_probs);
+    partition_id = bool_read_tree(bool, split_mv_tree,
+                                  split_mv_probs);
     partition = mv_partitions[partition_id];
     this->base.partitioning = partition_id;
 
@@ -501,8 +506,8 @@ decode_mvs(struct vp8_decoder_ctx       *ctx,
                            ? 2 + bool_get(bool, hdr->prob_gf)
                            : 1;
 
-    find_near_mvs(this, this - 1, above, ctx->reference_hdr.sign_bias,
-                  near_mvs, mv_cnts);
+    find_near_mvs(this, this - 1, above,
+                  ctx->reference_hdr.sign_bias, near_mvs, mv_cnts);
     probs[0] = mv_counts_to_probs[mv_cnts[0]][0];
     probs[1] = mv_counts_to_probs[mv_cnts[1]][1];
     probs[2] = mv_counts_to_probs[mv_cnts[2]][2];
@@ -539,7 +544,8 @@ decode_mvs(struct vp8_decoder_ctx       *ctx,
         union mv          chroma_mv[4] = {{{0}}};
 
         clamped_best_mv = clamp_mv(near_mvs[BEST], bounds);
-        decode_split_mv(this, left, above, hdr, &clamped_best_mv, bool);
+        decode_split_mv(this, left, above, hdr, &clamped_best_mv,
+                        bool);
         this->base.mv = this->split.mvs[15];
 
         for (b = 0; b < 16; b++)
@@ -624,7 +630,8 @@ int                     num_cols)
         else
         {
             if (bool_get(bool, ctx->entropy_hdr.prob_inter))
-                decode_mvs(ctx, this, this - 1, above, &bounds, bool);
+                decode_mvs(ctx, this, this - 1, above, &bounds,
+                           bool);
             else
                 decode_intra_mb_mode(this, &ctx->entropy_hdr, bool);
 

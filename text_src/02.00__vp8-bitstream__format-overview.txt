@@ -20,5 +20,5 @@ Pixels are always treated, at a minimum, at the level of subblocks, which may be
 
 The DCT and WHT always operate at a 4x4 resolution. The DCT is used for the 16Y, 4U and 4V subblocks. The WHT is used (with some but not all prediction modes) to encode a 4x4 array comprising the average intensities of the 16 Y subblocks of a macroblock. These average intensities are, up to a constant normalization factor, nothing more that the zero<sup>th</sup> DCT coefficients of the Y subblocks. This "higher-level" WHT is a substitute for the explicit specification of those coefficients, in exactly the same way as the DCT of a subblock substitutes for the specification of the pixel values comprising the subblock.  We consider this 4x4 array as a _second-order_ subblock called Y2, and think of a macroblock as containing 24 "real" subblocks and, sometimes, a 25th "virtual" subblock. This is dealt with further in Chapter 13.
 
-The frame layout used by the reference decoder may be found in the file `yv12config.h`.
+The frame layout used by the reference decoder may be found in the file `vpx_image.h`.
 

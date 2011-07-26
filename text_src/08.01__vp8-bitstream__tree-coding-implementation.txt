@@ -37,5 +37,5 @@ int treed_read(
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Tree-based decoding is implemented in the reference decoder file `tree_reader.h`.
+Tree-based decoding is implemented in the reference decoder file `bool_decoder.h`.
 
