@@ -47,7 +47,7 @@ extern "C" {
 
         /*!\brief The given bitstream is not supported.
          *
-         * The bitstream was unable to be parsed at the highest 
+         * The bitstream was unable to be parsed at the highest
          * level. The decoder is unable to proceed. This error \ref
          * SHOULD be treated as fatal to the stream.
          */
@@ -458,7 +458,7 @@ extern "C" {
      * The following functions are required to be implemented for all
      * decoders that advertise the VPX_DEC_CAP_PUT_SLICE capability.
      * Calling these functions for codecs that don't advertise this
-     * capability will result in an error code being returned, 
+     * capability will result in an error code being returned,
      * usually VPX_DEC_ERROR
      * @{
      */

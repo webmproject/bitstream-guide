@@ -53,7 +53,7 @@ high_edge_variance(unsigned char *pixels,
                    int            stride,
                    int            hev_threshold)
 {
-    return ABS(p1 - p0) > hev_threshold || 
+    return ABS(p1 - p0) > hev_threshold ||
            ABS(q1 - q0) > hev_threshold;
 }
 

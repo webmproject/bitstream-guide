@@ -58,10 +58,10 @@ extern "C" {
                                      gggbbbbb rrrrrggg */
         VPX_IMG_FMT_RGB555_LE,  /**< 16 bit per pixel,
                                      gggbbbbb 0rrrrrgg */
-        VPX_IMG_FMT_YV12    = VPX_IMG_FMT_PLANAR | 
+        VPX_IMG_FMT_YV12    = VPX_IMG_FMT_PLANAR |
           VPX_IMG_FMT_UV_FLIP | 1, /**< planar YVU */
         VPX_IMG_FMT_I420    = VPX_IMG_FMT_PLANAR | 2,
-        VPX_IMG_FMT_VPXYV12 = VPX_IMG_FMT_PLANAR | 
+        VPX_IMG_FMT_VPXYV12 = VPX_IMG_FMT_PLANAR |
           VPX_IMG_FMT_UV_FLIP | 3, /** < planar 4:2:0 format with
                                          vpx color space */
         VPX_IMG_FMT_VPXI420 = VPX_IMG_FMT_PLANAR | 4   /** < planar
@@ -71,7 +71,7 @@ extern "C" {
 
 #if !defined(VPX_CODEC_DISABLE_COMPAT) || !VPX_CODEC_DISABLE_COMPAT
 /** \deprecated Use #VPX_IMG_FMT_PLANAR */
-#define IMG_FMT_PLANAR         VPX_IMG_FMT_PLANAR 
+#define IMG_FMT_PLANAR         VPX_IMG_FMT_PLANAR
 /** \deprecated Use #VPX_IMG_FMT_UV_FLIP */
 #define IMG_FMT_UV_FLIP        VPX_IMG_FMT_UV_FLIP
 /** \deprecated Use #VPX_IMG_FMT_HAS_ALPHA */

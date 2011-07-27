@@ -380,7 +380,7 @@ unsigned char k_mv_entropy_update_probs[2][MV_PROB_CNT] =
 static const
 unsigned char k_default_mv_probs[2][MV_PROB_CNT] =
 {
-    {                                                  // row 
+    {                                                  // row
         162,                                           // is short
         128,                                           // sign
         225, 146, 172, 147, 214,  39, 156,             // short tree

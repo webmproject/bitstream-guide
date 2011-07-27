@@ -151,7 +151,7 @@ extern "C" {
      * Performs high level parsing of the bitstream. Construction of
      * a decoder context is not necessary. Can be used to determine
      * if the bitstream is of the proper format, and to extract
-     * information from the stream. 
+     * information from the stream.
      *
      * \param[in]      iface   Pointer to the alogrithm interface
      * \param[in]      data    Pointer to a block of data to parse
