@@ -13,7 +13,7 @@ The baseline frame level parameters controlling the loop filter are defined in t
 
 Loop filtering is one of the more computationally-intensive aspects of VP8 decoding. This is the reason for the existence of the optional, less-demanding simple filter type.
 
-Note carefully that loop filtering should be skipped entirely if loop_filter_level at either the frame header level or macroblock override level is `0`.  In no case should the loop filter be run with a value of `0`; it should instead be skipped.
+Note carefully that loop filtering must be skipped entirely if loop_filter_level at either the frame header level or macroblock override level is `0`.  In no case should the loop filter be run with a value of `0`; it should instead be skipped.
 
 To facilitate efficient implementation, the VP8 decoding algorithms generally, and the loop filter especially, were designed with SIMD ("Single Instruction Multiple Datum" or "integer vector") processors in mind. The reference decoder implementation of loop filtering (found in `loopfilter.c`) is, in effect, a portable SIMD specification of the loop filtering algorithms intended to simplify a realization on an actual SIMD processor.
 
