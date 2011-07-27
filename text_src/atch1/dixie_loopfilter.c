@@ -292,6 +292,11 @@ calculate_filter_parameters(struct vp8_decoder_ctx *ctx,
                 ctx->segment_hdr.lf_level[mbi->base.segment_id];
     }
 
+    if (filter_level > 63)
+        filter_level = 63;
+    else if (filter_level < 0)
+        filter_level = 0;
+
     if (ctx->loopfilter_hdr.delta_enabled)
     {
         filter_level +=
