@@ -13,13 +13,7 @@ The baseline frame level parameters controlling the loop filter are defined in t
 
 Loop filtering is one of the more computationally-intensive aspects of VP8 decoding. This is the reason for the existence of the optional, less-demanding simple filter type.
 
-Note carefully that loop filtering must be skipped entirely if loop_filter_level at either the frame header level or macroblock override level is `0`.  In no case should the loop filter be run with a value of `0`; it should instead be skipped.
-
-To facilitate efficient implementation, the VP8 decoding algorithms generally, and the loop filter especially, were designed with SIMD ("Single Instruction Multiple Datum" or "integer vector") processors in mind. The reference decoder implementation of loop filtering (found in `loopfilter.c`) is, in effect, a portable SIMD specification of the loop filtering algorithms intended to simplify a realization on an actual SIMD processor.
-
-Unfortunately, the approach taken there does not lead to maximal efficency (restricted to the C language, that is) and, as far as a pure algorithm specification is concerned, is in places obscure. For example, various aspects of filtering are conditioned on absolute differences lying below certain thresholds. An ordinary C implementation would simply discriminate amongst these behaviors using if statements. The reference decoder instead effects this by "masking arithmetic", that is, using "and" operations to (conditionally) zero-out values to be added or subtracted to pixels. Furthermore, the structure holding the various threshold values is artificially parallelized. While this mimics closely the approach taken in vector-processor machine language, it is not how one usually programs in C.
-
-In this document, we take a different approach and present the algorithms in a more straightforward, idiomatic, and terse C style. Together with the reference version, we hope to provide the "best of both worlds", that is, a pure algorithm specification here and a strong suggestion as to an optimal actual implementation in `loopfilter.c`.
+Note carefully that loop filtering must be skipped entirely if `loop_filter_level` at either the frame header level or macroblock override level is `0`.  In no case should the loop filter be run with a value of `0`; it should instead be skipped.
 
 We begin by discussing the aspects of loop filtering that are independent of the controlling parameters and type of filter chosen.
 

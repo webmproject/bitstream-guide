@@ -3,7 +3,7 @@
 #### 15.1 Filter Geometry and Overall Procedure              {#h-15-01}
 
 
-The Y, U, and V planes are processed independently and, except for the values of certain control parameters (derived from the `loop_filter_level` and `sharpness_level`), identically.
+The Y, U, and V planes are processed independently and identically.
 
 The loop filter acts on the edges between adjacent macroblocks and on the edges between adjacent subblocks of a macroblock. All such edges are horizontal or vertical. For each pixel position on an edge, a small number (two or three) of pixels adjacent to either side of the position are examined and possibly modified. The displacements of these pixels are at a right angle to the edge orientation, that is, for a horizontal edge, we treat the pixels immediately above and below the edge position, for a vertical edge, we treat the pixels immediately to the left and right of the edge.
 
@@ -35,7 +35,7 @@ Step 2 and 4 are skipped for macroblocks that satisfy both of the following two 
 
 For these macroblocks, loop filtering for edges between subblocks internal to a macroblock is effectively skipped. This skip strategy significantly reduces VP8 loop-filtering complexity.
 
-Edges between macroblocks and those between subblocks are treated with different control parameters (and, in the case of the normal filter, with different algorithms); luma and chroma edges are also treated with different control parameters. Except for pixel addressing, there is no distinction between the treatment of vertical and horizontal edges. Luma edges are always 16 pixels long, chroma edges are always 8 pixels long, and the segments straddling an edge are treated identically; this of course facilitates vector processing.
+Edges between macroblocks and those between subblocks are treated with different control parameters (and, in the case of the normal filter, with different algorithms). Except for pixel addressing, there is no distinction between the treatment of vertical and horizontal edges. Luma edges are always 16 pixels long, chroma edges are always 8 pixels long, and the segments straddling an edge are treated identically; this of course facilitates vector processing.
 
 Because many pixels belong to segments straddling two or more edges, and so will be filtered more than once, the order in which edges are processed given above must be respected by any implementation. Within a single edge, however, the segments straddling that edge are disjoint and the order in which these segments are processed is immaterial.
 
