@@ -37,7 +37,7 @@ Start code byte 2     0x2a
 The following source code segment illustrates validation of the start code and reading the width, height and scale factors for a key frame.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-unsigned char *c = pbi->Source+3;
+unsigned char *c = pbi->source+3;
 
 // vet via sync code
 if(c[0]!=0x9d||c[1]!=0x01||c[2]!=0x2a)

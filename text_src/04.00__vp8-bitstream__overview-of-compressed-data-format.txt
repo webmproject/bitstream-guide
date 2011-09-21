@@ -25,5 +25,5 @@ All partitions are decoded using separate instances of the boolean entropy decod
 
 A related matter is that seeking within a partition is not supported. The data must be decompressed and processed (or at least stored) in the order in which it occurs in the partition.
 
-While this document specifies the ordering of the partition data correctly, the details and semantics of this data are discussed in a more logical fashion to facilitate comprehension. For example, the frame header contains updates to many probability tables used in decoding per-macroblock data. The latter is often described before the layouts of the probabilities and their updates, even though this is the opposite of their order in the bitstream.
+While this document specifies the ordering of the partition data correctly, the details and semantics of this data are discussed in a more logical fashion to facilitate comprehension. For example, the frame header contains updates to many probability tables used in decoding per-macroblock data. The per-macroblock data is often described before the layouts of the probabilities and their updates, even though this is the opposite of their order in the bitstream.
 

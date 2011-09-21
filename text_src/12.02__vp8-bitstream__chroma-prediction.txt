@@ -15,8 +15,7 @@ DC prediction (`DC_PRED`) fills the 8x8 chroma block with a single value. In the
 
 Otherwise, if the current macroblock lies on the top row of the frame, the average of the 8 pixels in L is used; if it lies in the left column of the frame, the average of the 8 pixels in A is used.  Note that the averages used in these exceptional cases are not the same as those that would be arrived at by using the out-of-bounds A and L values defined for V_PRED and H_PRED. In the case of the leftmost macroblock on the top row of the frame the 8x8 block is simply filled with the constant value `128`.
 
-For `DC_PRED`, apart from the exceptional case of the top left macroblock, 
-we are averaging either 16 or 8 pixel values to get a single prediction value that fills the 8x8 block. The rounding is done as follows:
+For `DC_PRED`, apart from the exceptional case of the top-left macroblock, we are averaging either 16 or 8 pixel values to get a single prediction value that fills the 8x8 block. The rounding is done as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

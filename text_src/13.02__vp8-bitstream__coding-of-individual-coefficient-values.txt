@@ -32,7 +32,7 @@ typedef enum
 }
 dct_token;
 
-const tree_index coef_tree [2 * (num_dct_tokens - 1)] =
+const tree_index coeff_tree [2 * (num_dct_tokens - 1)] =
 {
  -dct_eob, 2,               /* eob = "0"   */
   -DCT_0, 4,                /* 0   = "10"  */

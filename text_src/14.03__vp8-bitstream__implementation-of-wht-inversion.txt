@@ -90,5 +90,5 @@ void vp8_short_inv_walsh4x4_1_c(short *input, short *output)
 
 It should be noted, a conforming decoder should implement the inverse transform using exactly the same rounding to achieve bit-wise matching output to the output of the process specified by the above "C" source code. 
 
-The reference decoder WHT inversion may be found in the files `invtrans.c` and `idctllm.c`.
+The reference decoder WHT inversion may be found in the file `idct_add.c`.
 

@@ -17,7 +17,6 @@ We sometimes use these descriptions in C expressions within data format specific
 | `F? X`          |        | A flag which, if true, is followed by a piece of data `X`.
 | `F? X:Y`        |        | A flag which, if true, is followed by `X` and, if false, is followed by `Y`. Also used to express a value where `Y` is an implicit default (not encoded in the data stream), as in [[ F? P(8):255 ]], which expresses an optional probability: if the flag is true, the probability is specified as an 8-bit literal, while if the flag is false, the probability defaults to `255`.
 | `B(p)? X`       | `B(p)? X:Y` | Variants of the above using a boolean indicator whose probability is not necessarily `128`.
-| `X`             |        | Multi-component field, the specifics of which will be given at a more appropriate point in the discussion.
 | `T`             |        | Tree-encoded value from small alphabet.
 
 The last type requires elaboration. We often wish to encode something whose value is restricted to a small number of possibilities (the alphabet).

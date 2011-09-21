@@ -467,7 +467,7 @@ extern "C" {
      *
      * This callback is invoked by the decoder to notify the
      * application of the availability of partially decoded image
-     * data. The
+     * data.
      */
     typedef void (*vpx_dec_put_slice_cb_fn_t)(void        *user_priv,
             const vpx_image_t      *img,

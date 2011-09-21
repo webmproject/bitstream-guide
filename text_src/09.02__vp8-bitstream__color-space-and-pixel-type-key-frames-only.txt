@@ -1,6 +1,6 @@
 
 
-#### 9.2 Color Space and Pixel Type (Key Frames-only)        {#h-09-02}
+#### 9.2 Color Space and Pixel Type (Key Frames Only)        {#h-09-02}
 
 
 | Field  | Value

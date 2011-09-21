@@ -37,8 +37,8 @@ decode_entropy_header(struct vp8_decoder_ctx    *ctx,
 
     /* Read coefficient probability updates */
     for (i = 0; i < BLOCK_TYPES; i++)
-        for (j = 0; j < COEF_BANDS; j++)
-            for (k = 0; k < PREV_COEF_CONTEXTS; k++)
+        for (j = 0; j < COEFF_BANDS; j++)
+            for (k = 0; k < PREV_COEFF_CONTEXTS; k++)
                 for (l = 0; l < ENTROPY_NODES; l++)
                     if (bool_get(bool,
                                  k_coeff_entropy_update_probs

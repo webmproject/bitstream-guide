@@ -1,6 +1,6 @@
 static const
-unsigned char k_coeff_entropy_update_probs[BLOCK_TYPES][COEF_BANDS]
-[PREV_COEF_CONTEXTS]
+unsigned char k_coeff_entropy_update_probs[BLOCK_TYPES][COEFF_BANDS]
+[PREV_COEFF_CONTEXTS]
 [ENTROPY_NODES] =
 {
     {
@@ -185,8 +185,8 @@ unsigned char k_default_uv_mode_probs       [] =
 
 
 static const
-unsigned char k_default_coeff_probs [BLOCK_TYPES][COEF_BANDS]
-[PREV_COEF_CONTEXTS][ENTROPY_NODES] =
+unsigned char k_default_coeff_probs [BLOCK_TYPES][COEFF_BANDS]
+[PREV_COEFF_CONTEXTS][ENTROPY_NODES] =
 {
     { /* block type 0 */
         { /* coeff band 0 */

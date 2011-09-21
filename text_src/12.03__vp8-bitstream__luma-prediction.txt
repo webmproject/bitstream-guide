@@ -49,7 +49,7 @@ void subblock_intra_predict(
     Pixel B[4][4],     /* Y subblock prediction buffer */
     const Pixel *A,    /* A[0]...A[7] = above row, A[-1] = P */
     const Pixel *L,    /* L[0]...L[3] = left column, L[-1] = P */
-    intra_bmode mode   /* enum is in section 11.1 above */
+    intra_bmode mode   /* enum is in section 11.2 above */
 ) {
     Pixel E[9];        /* 9 already-constructed edge pixels */
     E[0] = L[3];  E[1] = L[2];  E[2] = L[1];  E[3] = L[0];
@@ -217,5 +217,5 @@ void subblock_intra_predict(
 
 
 The reference decoder implementation of subblock intra-prediction may be found 
-in `reconintra4x4.c`.
+in `predict.c`.
 

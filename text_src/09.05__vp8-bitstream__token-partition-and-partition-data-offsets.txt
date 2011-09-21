@@ -12,7 +12,7 @@ VP8 allows DCT coefficients to be packed into multiple partitions besides the fi
 | 1       | 0       | 4
 | 1       | 1       | 8
 
-Offsets are embedded in the bitstream to provide the decoder direct access to token partitions. If the number of data partitions is greater then 1, the size of each partition (except the last) is written in 3 bytes (24 bits). The size of the last partition is the remainder of the data not used by any of the previous partitions. The partitioned data are consecutive in the bitstream, so the size can also be used to calculate the offset of each partition. The following pseudo code illustrates how the size/offset is defined by the three bytes in the bitstream.
+Offsets are embedded in the bitstream to provide the decoder direct access to token partitions. If the number of data partitions is greater then 1, the size of each partition (except the last) is written in 3 bytes (24 bits). The size of the last partition is the remainder of the data not used by any of the previous partitions. The partitioned data are consecutive in the bitstream, so the size can also be used to calculate the offset of each partition. The following pseudocode illustrates how the size/offset is defined by the three bytes in the bitstream.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

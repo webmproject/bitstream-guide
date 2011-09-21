@@ -154,7 +154,7 @@ extern "C" {
 #define PLANE_V          VPX_PLANE_V
 #define PLANE_ALPHA      VPX_PLANE_ALPHA
 #endif
-        unsigned char *planes[4];  /**< pointer to the top left pixel
+        unsigned char *planes[4];  /**< pointer to the top-left pixel
         q                               for each plane */
         int    stride[4];  /**< stride between rows for each plane */
 

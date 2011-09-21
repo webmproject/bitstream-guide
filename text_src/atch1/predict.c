@@ -1421,7 +1421,7 @@ vp8_dixie_predict_process_row(struct vp8_decoder_ctx *ctx,
 
     if (col == ctx->mb_cols)
     {
-        /* Extend the last row by four pixels for intra prediction.
+        /* Extend the last row by four pixels for intra-prediction.
          * This will be propagated later by copy_down.
          */
         uint32_t *extend = (uint32_t *)(img.y + 15 * img.stride);

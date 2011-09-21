@@ -14,8 +14,8 @@
 |------------------------  ----------------------|-------|
 | `if (segmentation_map_update) {`               |       |
 | `  segment_id`                                 | T     |
-| `if (mb_no_coeff_skip) {`                      |       |
-| `  mb_coeff_skip`                              | B(p)  |
+| `if (mb_no_skip_coeff) {`                      |       |
+| `  mb_skip_coeff`                              | B(p)  |
 | `}`                                            |       |
 | `if (!key_frame) {`                            |       |
 | `  is_inter_mb`                                | B(p)  |
@@ -54,7 +54,7 @@
 
 
   * `segment_id` indicates to which segment the macroblock belongs ([10](#h-10-00))
-  * `mb_coeff_skip` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-11-01))
+  * `mb_skip_coeff` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-11-01))
   * `is_inter_mb` indicates if the macroblock is intra or inter coded ([16](#h-16-00))
   * `mb_ref_frame_sel1` selects the reference frame to be used; last frame (0), golden/alternate (1) ([16.2](#h-16-02))
   * `mb_ref_frame_sel2` selects whether the golden (0) or alternate reference frame (1) is used ([16.2](#h-16-02))
@@ -68,7 +68,7 @@
 
 | residual_data()                                       | Type  |
 | ----------------------------------------------------- | ----- |
-| `if (!mb_coeff_skip) {`                               |       |
+| `if (!mb_skip_coeff) {`                               |       |
 | `  if ( (is_inter_mb && mv_mode != SPLITMV) \|\|`     |       |
 | `       (!is_inter_mb && intra_y_mode != B_PRED) ) {` |       |
 | `    residual_block() /* Y2 */`                       |       |

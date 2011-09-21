@@ -7,7 +7,7 @@ The probability specification for the token tree (unlike that for the "extra bit
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Prob coef_probs [4] [8] [3] [num_dct_tokens-1];
+Prob coeff_probs [4] [8] [3] [num_dct_tokens-1];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
@@ -23,7 +23,7 @@ The next dimension is selected by the position of the coefficient being decoded.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-coef_bands [c]
+coeff_bands [c]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
@@ -32,7 +32,7 @@ where
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const int coef_bands [16] = {
+const int coeff_bands [16] = {
      0, 1, 2, 3, 6, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +57,7 @@ Before decoding any residue, these maintained predictors may simply be cleared, 
 
 The fourth, and final, dimension of the token probability array is of course indexed by (half) the position in the token tree structure, as are all tree probability arrays.
 
-The below pseudo-code illustrates the decoding process. Note that criteria, functions, etc. delimited with `**` are either dependent on decoder architecture or are elaborated on elsewhere in this document.
+The below pseudocode illustrates the decoding process. Note that criteria, functions, etc. delimited with `**` are either dependent on decoder architecture or are elaborated on elsewhere in this document.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,15 +98,15 @@ if( **above_neighbor_block_has_coefficients(plane)** )
 
 for( i = firstCoeff ; i < 16 ; ++i )
 {
-    ctx2 = coef_bands[i];
-    probTable = coef_probs[plane][ctx2][ctx3];
+    ctx2 = coeff_bands[i];
+    probTable = coeff_probs[plane][ctx2][ctx3];
 
     /* skip first code (dct_eob) if previous token was DCT_0 */
     if( prevCoeffWasZero )
-        token = treed_read ( d, **coef_tree_without_eob**, 
+        token = treed_read ( d, **coeff_tree_without_eob**, 
           probTable );
     else
-        token = treed_read ( d, coef_tree, probTable );
+        token = treed_read ( d, coeff_tree, probTable );
 
     if( token == dct_eob )
         break;
@@ -148,5 +148,5 @@ for( i = firstCoeff ; i < 16 ; ++i )
 {:lang="c"}
 
 
-While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `detokenize.c`.
+While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `tokens.c`.
 

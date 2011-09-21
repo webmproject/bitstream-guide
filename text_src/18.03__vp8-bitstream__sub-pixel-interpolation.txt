@@ -13,7 +13,7 @@ Otherwise, at least one of the fractional displacements is non-zero. We then syn
 
 The two interpolations are essentially identical. Each uses an (at most) six-tap filter (the choice of which of course depends on the one-dimensional offset). Thus, every calculated pixel references at most three pixels before (above or to-the-left of) it and at most three pixels after (below or to-the-right of) it. The horizontal interpolation must calculate two extra rows above and three extra rows below the 4x4 block, to provide enough samples for the vertical interpolation to proceed.
 
-Depending on the reconstruction filter type given in the field `Version Number` in the frame tag, either a bicubic or a bilinear tap set is used.
+Depending on the reconstruction filter type given in the field `version number` in the frame tag, either a bicubic or a bilinear tap set is used.
 
 The exact implementation of subsampling is as follows.
 

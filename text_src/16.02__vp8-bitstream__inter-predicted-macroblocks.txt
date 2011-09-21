@@ -7,7 +7,7 @@ Otherwise (when the above bool is true), we are using inter-prediction (which of
 
 The next datum is then another bool, `B( prob_last)`, selecting the reference frame. If 0, the reference frame is previous frame (last frame); if 1, another bool (`prob_gf`) selects the reference frame between golden frame (0) or altref frame (1). The probabilities `prob_last` and `prob_gf` are set in field J of the frame header.
 
-Together with setting the reference frame, the purpose of inter-mode decoding is to set a motion vector for each of the sixteen Y subblocks of the current macroblock. This then defines the calculation of the inter-prediction buffer (detailed in Chapter 18). While the net effect of inter-mode decoding is straightforward, the implementation is somewhat complex; the (lossless) compression achieved by this method justifies the complexity.
+Together with setting the reference frame, the purpose of inter-mode decoding is to set a motion vector for each of the sixteen Y subblocks of the current macroblock.  These settings then define the calculation of the inter-prediction buffer (detailed in Chapter 18). While the net effect of inter-mode decoding is straightforward, the implementation is somewhat complex; the (lossless) compression achieved by this method justifies the complexity.
 
 After the reference frame selector comes the mode (or motion vector reference) applied to the macroblock as a whole, coded using the following enumeration and tree. Setting `mv_nearest = num_ymodes` is a convenience that allows a single variable to unambiguously hold an inter- or intraprediction mode.
 

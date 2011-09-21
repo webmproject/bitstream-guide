@@ -108,13 +108,13 @@ struct vp8_reference_hdr
 
 enum
 {
-    BLOCK_TYPES        = 4,
-    PREV_COEF_CONTEXTS = 3,
-    COEF_BANDS         = 8,
-    ENTROPY_NODES      = 11,
+    BLOCK_TYPES         = 4,
+    PREV_COEFF_CONTEXTS = 3,
+    COEFF_BANDS         = 8,
+    ENTROPY_NODES       = 11,
 };
-typedef unsigned char coeff_probs_table_t[BLOCK_TYPES][COEF_BANDS]
-[PREV_COEF_CONTEXTS]
+typedef unsigned char coeff_probs_table_t[BLOCK_TYPES][COEFF_BANDS]
+[PREV_COEFF_CONTEXTS]
 [ENTROPY_NODES];
 
 

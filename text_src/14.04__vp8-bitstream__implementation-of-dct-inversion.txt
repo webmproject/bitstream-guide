@@ -87,5 +87,5 @@ void short_idct4x4llm_c(short *input, short *output, int pitch)
 {:lang="c"}
 
 
-The reference decoder DCT inversion may be found in the files `invtrans.c` and `idctllm.c`.
+The reference decoder DCT inversion may be found in the file `idct_add.c`.
 

@@ -28,7 +28,7 @@ int avg( int c1, int c2, int c3, int c4)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Furthermore, if the version number in the frame tag specifies only full-pel chroma motion vectors, then the fractional parts of both components of the vector are truncated to zero, as illustrated in the following pseudo-code (assuming 3 bits of fraction for both luma and chroma vectors):
+Furthermore, if the version number in the frame tag specifies only full-pel chroma motion vectors, then the fractional parts of both components of the vector are truncated to zero, as illustrated in the following pseudocode (assuming 3 bits of fraction for both luma and chroma vectors):
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,7 +38,7 @@ Furthermore, if the version number in the frame tag specifies only full-pel chro
 {:lang="c"}
 
 
-Earlier in this document we described the `vp8_clamp_mv()` function to limit "nearest" and "near" motion vector predictors inside specified margins within the frame boundaries. Additional clamping is performed for `NEW_MV` macroblocks, for which the final motion vector is clamped again after combining the "best" predictor and the differential vector decoded from the stream. 
+Earlier in this document we described the `vp8_clamp_mv()` function to limit "nearest" and "near" motion vector predictors inside specified margins within the frame boundaries. Additional clamping is performed for `NEWMV` macroblocks, for which the final motion vector is clamped again after combining the "best" predictor and the differential vector decoded from the stream. 
 
-However, the secondary clamping is not performed for `SPLIT_MV` macroblocks, meaning that any subblock's motion vector within the `SPLIT_MV` macroblock may point outside the clamping zone. These non-clamped vectors are also used when determining the decoding tree context for subsequent subblocks' modes in the `vp8_mvCont()` function.
+However, the secondary clamping is not performed for `SPLITMV` macroblocks, meaning that any subblock's motion vector within the `SPLITMV` macroblock may point outside the clamping zone. These non-clamped vectors are also used when determining the decoding tree context for subsequent subblocks' modes in the `vp8_mvCont()` function.
 

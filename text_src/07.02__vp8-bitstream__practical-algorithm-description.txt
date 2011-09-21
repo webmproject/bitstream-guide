@@ -2,11 +2,11 @@
 
 #### 7.2 Practical Algorithm Description                     {#h-07-02}
 
-VP8's bool coder works with 8-bit probabilities [[ p ]]. The range of such [[ p ]] is [[ 0 <= p <= 255 ]]; the actual probability represented by [[ p ]] is [[ p//256 ]]. Also, the coder is designed so that decoding of a bool requires no more than an 8-bit comparison and so that the state of both the encoder and decoder can be easily represented using a small number of unsigned 16-bit integers.
+VP8's boolean coder works with 8-bit probabilities [[ p ]]. The range of such [[ p ]] is [[ 0 <= p <= 255 ]]; the actual probability represented by [[ p ]] is [[ p//256 ]]. Also, the coder is designed so that decoding of a bool requires no more than an 8-bit comparison and so that the state of both the encoder and decoder can be easily represented using a small number of unsigned 16-bit integers.
 
-The details are most easily understood if we first describe the algorithm using bit-at-a-time input and output. Aside from the ability to maintain a position in this bitstream and write/read bits, the encoder also needs the ability to add [[ 1 ]] to the bits already output; after writing [[ n ]] bits, adding [[ 1 ]] to the existing output is the same thing as adding [[ pow( 2, -n) ]] to [[ x ]].
+The details are most easily understood if we first describe the algorithm using bit-at-a-time input and output. Aside from the ability to maintain a position in this bitstream and write/read bits, the encoder also needs the ability to add [[ 1 ]] to the bits already output; after writing [[ n ]] bits, adding [[ 1 ]] to the existing output is the same thing as adding [[ pow(2, -n) ]] to [[ x ]].
 
-Together with the bit position, the encoder must maintain two unsigned 8-bit numbers which we call [[ "bottom" ]] and [[ "range" ]]. Writing [[ w ]] for the [[ n ]] bits already written and [[ S = pow( 2, - n - 8) ]] for the scale of the current bit position one byte out, we have the following constraint on all future values [[ v ]] of [[ w ]] (including the final value [[ v = x ]]):
+Together with the bit position, the encoder must maintain two unsigned 8-bit numbers which we call [[ "bottom" ]] and [[ "range" ]]. Writing [[ w ]] for the [[ n ]] bits already written and [[ S = pow(2, - n - 8) ]] for the scale of the current bit position one byte out, we have the following constraint on all future values [[ v ]] of [[ w ]] (including the final value [[ v = x ]]):
 
 [[ w + ( S * "bottom" ) <= v < w + ( S * ( "bottom" + "range" ) ) ]]
 

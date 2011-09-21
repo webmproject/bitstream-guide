@@ -229,7 +229,7 @@ typedef vpx_image_t*(*vpx_codec_get_frame_fn_t)(
     vpx_codec_iter_t     *iter);
 
 
-/*\brief e_xternal Memory Allocation memory map get iterator
+/*\brief External Memory Allocation memory map get iterator
  *
  * Iterates over a list of the memory maps requested by the decoder.
  * The iterator storage should be initialized to NULL to start the
@@ -246,7 +246,7 @@ typedef vpx_codec_err_t (*vpx_codec_get_mmap_fn_t)(
     vpx_codec_iter_t           *iter);
 
 
-/*\brief e_xternal Memory Allocation memory map set iterator
+/*\brief External Memory Allocation memory map set iterator
  *
  * Sets a memory descriptor inside the decoder instance.
  *
@@ -303,7 +303,7 @@ typedef const struct
 
 #define NOT_IMPLEMENTED 0
 
-/*!\brief Decoder algorithm interface interface
+/*!\brief Decoder algorithm interface
  *
  * All decoders \ref MUST expose a variable of this type.
  */
@@ -370,7 +370,6 @@ struct vpx_codec_priv
     } dec;
     struct
     {
-        int                         tbd;
         struct vpx_fixed_buf        cx_data_dst_buf;
         unsigned int                cx_data_pad_before;
         unsigned int                cx_data_pad_after;
@@ -415,7 +414,7 @@ struct vpx_codec_priv
 
 /* Internal Utility Functions
  *
- * The following functions are indended to be used inside algorithms
+ * The following functions are intended to be used inside algorithms
  * as utilities for manipulating vpx_codec_* data structures.
  */
 struct vpx_codec_pkt_list

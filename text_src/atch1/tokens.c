@@ -61,7 +61,7 @@ static const unsigned int above_context_index[25] =
     0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3,
     4, 5, 4, 5, 6, 7, 6, 7, 8
 };
-#define X(n) ((n) * PREV_COEF_CONTEXTS * ENTROPY_NODES)
+#define X(n) ((n) * PREV_COEFF_CONTEXTS * ENTROPY_NODES)
 static const unsigned int bands_x[16] =
 {
     X(0), X(1), X(2), X(3), X(6), X(4), X(5), X(6),

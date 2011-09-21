@@ -54,7 +54,7 @@ typedef uint8 Prob;
 {:lang="c"}
 
 
-We occasionally need to discuss mathematical functions involving honest-to-goodness "infinite precision" real numbers. The DCT is first described via the cosine function [[ cos ]]; the ratio of the lengths of the circumference and diameter of a circle is denoted [[ pi ]]; at one point, we take a (base [[ 1//2 ]]) logarithm denoted [[ log ]]; and [[ pow( x, y) ]] denotes [[ x ]] raised to the power [[ y ]]. If [[ x = 2 ]] and [[ y ]] is a small non-negative integer, [[ pow( 2, y) ]] may be expressed in C as `1 << y`.
+We occasionally need to discuss mathematical functions involving honest-to-goodness "infinite precision" real numbers. The DCT is first described via the cosine function [[ cos ]]; the ratio of the lengths of the circumference and diameter of a circle is denoted [[ pi ]]; at one point, we take a (base [[ 1//2 ]]) logarithm denoted [[ log ]]; and [[ pow(x, y) ]] denotes [[ x ]] raised to the power [[ y ]]. If [[ x = 2 ]] and [[ y ]] is a small non-negative integer, [[ pow(2, y) ]] may be expressed in C as `1 << y`.
 
 Finally, we sometimes need to divide signed integers by powers of two, that is, we occasionally right-shift signed numbers. The behavior of such shifts (i.e., the propagation of the sign bit) is, perhaps surprisingly, not defined by the C language itself and is left up to individual compilers. Because of the utility of this frequently needed operation, it is at least arguable that it should be defined by the language (to naturally propagate the sign bit) and, at a minimum, should be correctly implemented by any reasonable compiler. In the interest of strict portability, we attempt to call attention to these shifts when they arise.
 

@@ -18,7 +18,7 @@ The 3-byte frame tag can be parsed as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-unsigned char *c = pbi->Source;
+unsigned char *c = pbi->source;
 unsigned int tmp;
 
 tmp = (c[2] << 16) | (c[1] << 8) | c[0];
@@ -47,7 +47,7 @@ parsed as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-unsigned char *c = pbi->Source + 6;
+unsigned char *c = pbi->source + 6;
 unsigned int tmp;
 
 tmp = (c[1] << 8) | c[0];

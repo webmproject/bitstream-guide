@@ -7,7 +7,7 @@ The default token probabilities are as follows.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const Prob default_coef_probs [4] [8] [3] [num_dct_tokens - 1] =
+const Prob default_coeff_probs [4] [8] [3] [num_dct_tokens - 1] =
 {
  {
   {

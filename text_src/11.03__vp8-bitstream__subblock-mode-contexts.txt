@@ -13,7 +13,7 @@ The coding of subblock modes in key frames uses the modes already coded for the 
 
   4. Many macroblocks will of course be coded using a 16x16 luma prediction mode. For the purpose of predicting ensuing subblock modes (only), such macroblocks derive a subblock mode, constant throughout the macroblock, from the 16x16 luma mode as follows: `DC_PRED` uses `B_DC_PRED`, `V_PRED` uses `B_VE_PRED`, `H_PRED` uses `B_HE_PRED`, and `TM_PRED` uses `B_TM_PRED`.
 
-  5. Although we discuss interframe modes later, we remark here that, while interframes do use all the intra-coding modes described here and below, the subblock modes in an interframe are coded using a single constant probability array that does not depend on any context.
+  5. Although we discuss interframe modes later in Section 16, we remark here that, while interframes do use all the intra-coding modes described here and below, the subblock modes in an interframe are coded using a single constant probability array that does not depend on any context.
 
 The dependence of subblock mode probability on the nearby subblock mode context is most easily handled using a three-dimensional constant array:
 

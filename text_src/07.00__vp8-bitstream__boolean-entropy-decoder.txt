@@ -22,5 +22,5 @@ We give two simple examples. At one extreme, if [[ p=1//2 ]], then [[ log(p) = l
 
 Because most of the bools in the VP8 datastream have zero-probabilities nowhere near [[ 1//2 ]], the compression provided by the `bool_encoder` is critical to the performance of VP8.
 
-The bool coder used by VP8 is a variant of an arithmetic coder. An excellent discussion of arithmetic coding (and other lossless compression techniques) can be found in the book _Text Compression_ by Timothy C. Bell, John G. Cleary, and Ian H. Witten, published in 1990 by Prentice-Hall.
+The boolean coder used by VP8 is a variant of an arithmetic coder. An excellent discussion of arithmetic coding (and other lossless compression techniques) can be found in the book _Text Compression_ by Timothy C. Bell, John G. Cleary, and Ian H. Witten, published in 1990 by Prentice-Hall.
 

@@ -9,5 +9,5 @@ The summing procedure is fairly straightforward, having only a couple of details
 
 VP8 also supports a mode where the encoding of a bitstream guarantees all reconstructed pixel values between 0 and 255, compliant bitstreams of such requirements have the `clamp_type` bit in the frame header set to 1. In such case, the `clamp255` is no longer required.
 
-The summation process is the same, regardless of the (intra or inter) mode of prediction in effect for the macroblock. The reference decoder implementation of reconstruction may be found in the file `recon.c`.
+The summation process is the same, regardless of the (intra or inter) mode of prediction in effect for the macroblock. The reference decoder implementation of reconstruction may be found in the file `idct_add.c`.
 

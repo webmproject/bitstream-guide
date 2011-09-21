@@ -12,7 +12,7 @@ typedef enum
     DC_PRED, /* predict DC using row above and column to the left */
     V_PRED,  /* predict rows using row above */
     H_PRED,  /* predict columns using column to the left */
-    TM_PRED, /* propagate second differences a la "true motion" */
+    TM_PRED, /* propagate second differences a la "True Motion" */
 
     B_PRED,  /* each Y subblock is independently predicted */
 
@@ -64,5 +64,5 @@ Ymode = (intra_mbmode) treed_read( d, ymode_tree,
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Since it greatly facilitates re-use of reference code and since there is no real reason to do otherwise, it is strongly suggested that any decoder implementation use exactly the same enumeration values and probability table layouts as described in this document (and in the reference code) for all tree-coded data in VP8.
+Since it greatly facilitates re-use of reference code, and since there  is no real reason to do otherwise, it is strongly suggested that any decoder implementation use exactly the same enumeration values and  probability table layouts as those described in this document (and in  the reference code) for all tree-coded data in VP8.
 

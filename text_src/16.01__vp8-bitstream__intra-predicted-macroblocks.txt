@@ -22,7 +22,7 @@ const tree_index ymode_tree [2 * (num_ymodes - 1)] =
 {:lang="c"}
 
 
-The probability table used to decode this tree is variable. As described in [Chapter 9](#h-09-00), it (along with the similarly-treated UV table) can be updated by field J of the frame header. Similar to the coefficient-decoding probabilities, such updates are cumulative and affect all ensuing frames until the next key frame or explicit update. The default probabilities for the Y and UV tables are
+The probability table used to decode this tree is variable. As described in [Chapter 11](#h-11-00), it (along with the similarly-treated UV table) can be updated by field J of the frame header. Similar to the coefficient-decoding probabilities, such updates are cumulative and affect all ensuing frames until the next key frame or explicit update. The default probabilities for the Y and UV tables are
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

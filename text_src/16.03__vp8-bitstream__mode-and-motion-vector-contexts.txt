@@ -5,7 +5,7 @@
 
 The probability table used to decode the `mv_ref`, along with three reference motion vectors used by the selected mode, is calculated via a survey of the already-decoded motion vectors in (up to) 3 nearby macroblocks. 
 
-The algorithm generates a sorted list of distinct motion vectors adjacent to the search site. The `best_mv` is the vector with the highest score. The `nearest_mv` is the non-zero vector with the highest score. The `near_mv` is the non-zero vector with the next highest score. The number of motion vectors coded using the `SPLITMV` mode is scored using the same weighting and is returned with the scores of the best, nearest, and near vectors.
+The algorithm generates a sorted list of distinct motion vectors adjacent to the search site. The `best_mv` is the vector with the highest score. The `mv_nearest` is the non-zero vector with the highest score. The `mv_near` is the non-zero vector with the next highest score. The number of motion vectors coded using the `SPLITMV` mode is scored using the same weighting and is returned with the scores of the best, nearest, and near vectors.
 
 The three adjacent macroblocks above, left, and above-left are considered in order. If the macroblock is intra-coded, no action is taken. Otherwise, the motion vector is compared to other previously found motion vectors to determine if it has been seen before, and if so contributes its weight to that vector, otherwise enters a new vector in the list. The above and left vectors have twice the weight of the above-left vector.
 
@@ -60,7 +60,7 @@ In the function `vp8_find_near_mvs()`, the vectors "nearest" and "near" are used
 
 The vector `best_mv` is used as a base for explicitly-coded motion vectors.
 
-The first three entries in the return value `cnt` are (in order) weighted census values for "zero", "nearest", and "near" vectors. The final value indicates the extent to which `SPLIT_MV` was used by the neighboring macroblocks. The largest possible "weight" value in each case is 5.
+The first three entries in the return value `cnt` are (in order) weighted census values for "zero", "nearest", and "near" vectors. The final value indicates the extent to which `SPLITMV` was used by the neighboring macroblocks. The largest possible "weight" value in each case is 5.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
