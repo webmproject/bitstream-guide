@@ -14,3 +14,5 @@ Unlike some similar schemes (the older MPEG formats, for example), VP8 specifies
 
 It should be remarked that, in a complete video playback system, the displayed frames may or may not be identical to the reconstructed frames. Many systems apply a final level of filtering (commonly referred to as postprocessing) to the reconstructed frames prior to viewing. Such postprocessing has no effect on the decoding and reconstruction of subsequent frames (which are predicted using the completely-specified reconstructed frames) and is beyond the scope of this document. In practice, the nature and extent of this sort of postprocessing is dependent on both the taste of the user and on the computational facilities of the playback environment.
 
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in <xref target="RFC2119" />.
+

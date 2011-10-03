@@ -7,7 +7,7 @@ The second data partition consists of an encoding of the quantized DCT (and WHT)
 
 VP8 works exclusively with 4x4 DCTs and WHTs, applied to the 24 (or 25 with the Y2 subblock) 4x4 subblocks of a macroblock. The ordering of macroblocks within any of the "residue" partitions in general follows the same raster-scan as used in the first "prediction" partition.
 
-For all intra- and inter-prediction modes apart from `B_PRED` (intra: whose Y subblocks are independently predicted) and `SPLITMV` (inter) each macroblock's residue record begins with the Y2 component of the residue, coded using a WHT. `B_PRED` and `SPLIT_MV` coded macroblocks omit this WHT and specify the 0th DCT coefficient in each of the 16 Y subblocks.
+For all intra- and inter-prediction modes apart from `B_PRED` (intra: whose Y subblocks are independently predicted) and `SPLITMV` (inter) each macroblock's residue record begins with the Y2 component of the residue, coded using a WHT. `B_PRED` and `SPLITMV` coded macroblocks omit this WHT and specify the 0th DCT coefficient in each of the 16 Y subblocks.
 
 After the optional Y2 block, the residue record continues with 16 DCTs for the Y subblocks, followed by 4 DCTs for the U subblocks, ending with 4 DCTs for the V subblocks. The subblocks occur in the usual order.
 
