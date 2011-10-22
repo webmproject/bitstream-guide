@@ -1,19 +1,23 @@
 
 
-#### 16.4 Split Prediction                                   {#h-16-04}
+#### 16.4 Split Prediction                                 {#h-16-04}
 
 
-The remaining mode (`SPLITMV`) causes multiple vectors to be applied to the Y subblocks. It is immediately followed by a partition specification that determines how many vectors will be specified and how they will be assigned to the subblocks. The possible partitions, with indicated subdivisions and coding tree, are as follows.
+The remaining mode (`SPLITMV`) causes multiple vectors to be applied to
+the Y subblocks.  It is immediately followed by a partition
+specification that determines how many vectors will be specified and
+how they will be assigned to the subblocks.  The possible partitions,
+with indicated subdivisions and coding tree, are as follows.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
 {
     mv_top_bottom,   /* two pieces {0...7} and {8...15} */
-    mv_left_right,   /* {0,1,4,5,8,9,12,13} and 
+    mv_left_right,   /* {0,1,4,5,8,9,12,13} and
                         {2,3,6,7,10,11,14,15} */
-    mv_quarters,    /* {0,1,4,5}, {2,3,6,7}, {8,9,12,13}, 
+    mv_quarters,    /* {0,1,4,5}, {2,3,6,7}, {8,9,12,13},
                        {10,11,14,15} */
-    MV_16,          /* every subblock gets its own vector 
+    MV_16,          /* every subblock gets its own vector
                        {0} ... {15} */
 
     mv_num_partitions
@@ -24,7 +28,7 @@ const tree_index mvpartition_tree [2 * (mvnum_partition - 1)] =
 {
  -MV_16, 2,                         /* MV_16 = "0" */
   -mv_quarters, 4,                  /* mv_quarters = "10" */
-   -mv_top_bottom, -mv_left_right   /* top_bottom = "110", 
+   -mv_top_bottom, -mv_left_right   /* top_bottom = "110",
                                        left_right = "111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,23 +39,32 @@ The partition is decoded using a fixed, constant probability table:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const Prob mvpartition_probs [mvnum_partition - 1] = 
+const Prob mvpartition_probs [mvnum_partition - 1] =
   { 110, 111, 150};
-part = (MVpartition) treed_read( d, mvpartition_tree, 
+part = (MVpartition) treed_read( d, mvpartition_tree,
   mvpartition_probs);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
 
-After the partition come two (for `mv_top_bottom` or `mv_left_right`), four (for `mv_quarters`), or sixteen (for `MV_16`) subblock inter-prediction modes. These modes occur in the order indicated by the partition layouts (given as comments to the `MVpartition` enum) and are coded as follows. (As was done for the macroblock-level modes, we offset the mode enumeration so that a single variable may unambiguously hold either an intra- or inter-subblock mode.)
+After the partition come two (for `mv_top_bottom` or `mv_left_right`),
+four (for `mv_quarters`), or sixteen (for `MV_16`) subblock inter-
+prediction modes.  These modes occur in the order indicated by the
+partition layouts (given as comments to the `MVpartition` enum) and are
+coded as follows.  (As was done for the macroblock-level modes, we
+offset the mode enumeration so that a single variable may
+unambiguously hold either an intra- or inter-subblock mode.)
 
-Prior to decoding each subblock, a decoding tree context is chosen as illustrated in the code snippet below. The context is based on the immediate left and above subblock neighbors, and whether they are equal, are zero, or a combination of those.
+Prior to decoding each subblock, a decoding tree context is chosen as
+illustrated in the code snippet below.  The context is based on the
+immediate left and above subblock neighbors, and whether they are
+equal, are zero, or a combination of those.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
 {
-    LEFT4x4 = num_intra_bmodes,   /* use already-coded MV to 
+    LEFT4x4 = num_intra_bmodes,   /* use already-coded MV to
                                      my left */
     ABOVE4x4,             /* use already-coded MV above me */
     ZERO4x4,              /* use zero MV */
@@ -68,17 +81,17 @@ const tree_index sub_mv_ref_tree [2 * (num_sub_mv_ref - 1)] =
    -ZERO4X4, -NEW4X4    /* ZERO = "110", NEW = "111" */
 };
 
-/* Choose correct decoding tree context 
- * Function parameters are left subblock neighbor MV and above 
+/* Choose correct decoding tree context
+ * Function parameters are left subblock neighbor MV and above
  * subblock neighbor MV */
-int vp8_mvCont(MV *l, MV*a) 
+int vp8_mvCont(MV *l, MV*a)
 {
-    int lez = (l->row == 0 && l->col == 0);   /* left neighbour 
+    int lez = (l->row == 0 && l->col == 0);   /* left neighbor
                                                  is zero */
-    int aez = (a->row == 0 && a->col == 0);   /* above neighbour 
+    int aez = (a->row == 0 && a->col == 0);   /* above neighbor
                                                  is zero */
-    int lea = (l->row == a->row && l->col == a->col);  /* left 
-                             neighbour equals above neighbour */
+    int lea = (l->row == a->row && l->col == a->col);  /* left
+                             neighbor equals above neighbor */
 
     if(lea && lez)
         return SUBMVREF_LEFT_ABOVE_ZED; /* =4 */
@@ -102,19 +115,37 @@ const Prob sub_mv_ref_prob [5][num_sub_mv_ref - 1] = {
     { 106,145,1  },
     { 179,121,1  },
     { 223,1  ,34 },
-    { 208,1  ,1  } };
+    { 208,1  ,1  }
+ };
 
-    sub_ref = (sub_mv_ref) treed_read( d, sub_mv_ref_tree, 
+    sub_ref = (sub_mv_ref) treed_read( d, sub_mv_ref_tree,
       sub_mv_ref_prob[context]);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
 
-The first two sub-prediction modes simply copy the already-coded motion vectors used by the blocks above and to-the-left of the subblock at the upper left corner of the current subset (i.e., collection of subblocks being predicted). These prediction blocks need not lie in the current macroblock and, if the current subset lies at the top or left edges of the frame, need not lie in the frame. In this latter case, their motion vectors are taken to be zero, as are subblock motion vectors within an intra-predicted macroblock. Also, to ensure the correctness of prediction within this macroblock, all subblocks lying in an already-decoded subset of the current macroblock must have their motion vectors set.
+The first two sub-prediction modes simply copy the already-coded
+motion vectors used by the blocks above and to the left of the
+subblock at the upper left corner of the current subset (i.e.,
+collection of subblocks being predicted).  These prediction blocks
+need not lie in the current macroblock and, if the current subset
+lies at the top or left edges of the frame, need not lie in the
+frame.  In this latter case, their motion vectors are taken to be
+zero, as are subblock motion vectors within an intra-predicted
+macroblock.  Also, to ensure the correctness of prediction within
+this macroblock, all subblocks lying in an already-decoded subset of
+the current macroblock must have their motion vectors set.
 
-`ZERO4x4` uses a zero motion vector and predicts the current subset using the corresponding subset from the prediction frame.
+`ZERO4x4` uses a zero motion vector and predicts the current subset
+using the corresponding subset from the prediction frame.
 
-NEW4x4 is exactly like NEWMV except applied only to the current subset. It is followed by a 2-dimensional motion vector offset (described in the next chapter) that is added to the best vector returned by the earlier call to find_near_mvs to form the motion vector in effect for the subset.
+`NEW4x4` is exactly like `NEWMV` except that `NEW4x4` is applied only to
+the current subset.  It is followed by a two-dimensional motion
+vector offset (described in the next section) that is added to the
+best vector returned by the earlier call to `find_near_mvs` to form the
+motion vector in effect for the subset.
 
-Parsing of both inter-prediction modes and motion vectors (described next) can be found in the reference decoder file `modemv.c`.
+Parsing of both inter-prediction modes and motion vectors (described
+next) can be found in the reference decoder file `modemv.c`
+(Section 20.11).
 

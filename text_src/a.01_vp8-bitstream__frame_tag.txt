@@ -1,16 +1,17 @@
 
 
-#### A.1 Uncompressed Data Chunk                             {#h-0a-01}
+#### A.1 Uncompressed Data Chunk                           {#h-0a-01}
 
 
-| Frame Tag                                             | Type  |
-|-------------------------------------------------------|-------|
-| `frame_tag`                                           | f(24) |
-| `if (key_frame) {`                                    |       |
-| `    start_code`                                      | f(24) |
-| `    horizontal_size_code`                            | f(16) |
-| `    vertical_size_code`                              | f(16) |
-| `}`                                                   |       |
+| ---------------------------------------------- | ----- |
+| Frame Tag                                      | Type  |
+| ---------------------------------------------- | ----- |
+| frame_tag                                      | f(24) |
+| if (key_frame) {                               |       |
+|     start_code                                 | f(24) |
+|     horizontal_size_code                       | f(16) |
+|     vertical_size_code                         | f(16) |
+| }                                              |       |
 {:.col1-pre}
 
 
@@ -27,24 +28,26 @@ key_frame = tmp & 0x1;
 version = (tmp >> 1) & 0x7;
 show_frame = (tmp >> 4) & 0x1;
 first_part_size = (tmp >> 5) & 0x7FFFF;
-
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
 
 Where:
 
-  * `key_frame` indicates if the current frame is a key frame or not.
-  * `version` determines the bitstream version.
-  * `show_frame` indicates if the current frame is meant to be displayed
+  * `key_frame` indicates whether the current frame is a key frame
     or not.
+
+  * `version` determines the bitstream version.
+
+  * `show_frame` indicates whether the current frame is meant to be
+    displayed or not.
+
   * `first_part_size` determines the size of the first partition
     (control partition), excluding the uncompressed data chunk.
 
-The `start_code` is a constant 3-byte pattern having value 0x9d012a. The
-latter part of the uncompressed chunk (after the `start_code`) can be
-parsed as follows:
-
+The `start_code` is a constant 3-byte pattern having value 0x9d012a.
+The latter part of the uncompressed chunk (after the `start_code`) can
+be parsed as follows:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 unsigned char *c = pbi->source + 6;

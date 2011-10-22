@@ -1,11 +1,23 @@
 
 
-### Chapter 10: Segment-based Feature Adjustments            {#h-10-00}
+### Section 10: Segment-Based Feature Adjustments          {#h-10-00}
 
 
-Every macroblock may optionally override some of the default behaviors of the decoder. Specifically, VP8 uses segment-based adjustments to support changing quantizer level and loop filter level for a macroblock. When the segment-based adjustment feature is enabled for a frame, each macroblock within the frame is coded with a `segment_id`. This effectively segments all the macroblocks in the current frame into a number of different segments. Macroblocks within the same segment behave exactly the same for quantizer and loop filter level adjustments. 
+Every macroblock may optionally override some of the default
+behaviors of the decoder.  Specifically, VP8 uses segment-based
+adjustments to support changing quantizer level and loop filter level
+for a macroblock.  When the segment-based adjustment feature is
+enabled for a frame, each macroblock within the frame is coded with a
+`segment_id`.  This effectively segments all the macroblocks in the
+current frame into a number of different segments.  Macroblocks
+within the same segment behave exactly the same for quantizer and
+loop filter level adjustments. 
 
-If both the `segmentation_enabled` and `update_mb_segmentation_map` flags in subsection B of the frame header take a value of `1`, the prediction data for each (intra- or inter-coded) macroblock begins with a specification of `segment_id` for the current macroblock. It is decoded using this simple tree ...
+If both the `segmentation_enabled` and `update_mb_segmentation_map` flags
+in subsection B of the frame header take a value of `1`, the prediction
+data for each (intra- or inter-coded) macroblock begins with a
+specification of `segment_id` for the current macroblock.  It is
+decoded using this simple tree ...
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,7 +31,12 @@ const tree_index mb_segment_tree [2 * (4-1)] =
 {:lang="c"}
 
 
-... combined with a 3-entry probability table `mb_segment_tree_probs[3]`. The macroblock's `segment_id` is used later in the decoding process to look into the `segment_feature_data` table and determine how the quantizer and loop filter levels are adjusted.
+... combined with a 3-entry probability table,
+`mb_segment_tree_probs[3]`.  The macroblock's `segment_id` is used later
+in the decoding process to look into the `segment_feature_data` table
+and determine how the quantizer and loop filter levels are adjusted.
 
-The decoding of `segment_id`, together with the parsing of intra-prediction modes (which is taken up next), is implemented in the reference decoder file `modemv.c`.
+The decoding of `segment_id`, together with the parsing of intra-
+prediction modes (which is taken up next), is implemented in the
+reference decoder file `modemv.c`.
 

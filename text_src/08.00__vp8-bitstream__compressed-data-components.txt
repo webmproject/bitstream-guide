@@ -1,33 +1,63 @@
 
 
-### Chapter 8: Compressed Data Components                    {#h-08-00}
+### Section 8: Compressed Data Components                    {#h-08-00}
 
-At the lowest level, VP8's compressed data is simply a sequence of probabilistically-encoded bools. Most of this data is composed of (slightly) larger semantic units fashioned from bools, which we describe here.
+At the lowest level, VP8's compressed data is simply a sequence of
+probabilistically encoded bools.  Most of this data is composed of
+(slightly) larger semantic units fashioned from bools, which we
+describe here.
 
-We sometimes use these descriptions in C expressions within data format specifications. In this context, they refer to the return value of a call to an appropriate bool_decoder d, reading (as always) from its current reference point.
+We sometimes use these descriptions in C expressions within data
+format specifications.  In this context, they refer to the return
+value of a call to an appropriate bool_decoder d, reading (as always)
+from its current reference point.
+
 
 | Call            | Alt.   | Return
 | --------------- | ------ | ------------------------------------- 
-| `Bool(p)`       | `B(p)` | Bool with probability [[ p//256 ]] of being `0`. Return value of `read_bool(d, p)`.
+| `Bool(p)`       | `B(p)` | Bool with probability p/256 of being `0`.  Return value of `read_bool(d, p)`.
 | `Flag`          | `F`    | A one-bit flag (same thing as a `B(128)` or an `L(1)`). Abbreviated `F`. Return value of `read_bool(d, 128)`.
 | `Lit(n)`        | `L(n)` | Unsigned n-bit number encoded as n flags (a "literal"). Abbreviated `L(n)`. The bits are read from high to low order. Return value of `read_literal(d, n)`.
 | `SignedLit(n)`  |        | Signed n-bit number encoded similarly to an `L(n)`. Return value of `read_signed_literal(d, n)`. These are rare.
 | `P(8)`          |        | An 8-bit probability. No different from an `L(8)`, but we sometimes use this notation to emphasize that a probability is being coded.
-| `P(7)`          |        | A 7-bit specification of an 8-bit probability. Coded as an `L(7)` number `x`; the resulting 8-bit probability is [[ x ? x ]] << [[ 1 : 1 ]].
-| `F? X`          |        | A flag which, if true, is followed by a piece of data `X`.
-| `F? X:Y`        |        | A flag which, if true, is followed by `X` and, if false, is followed by `Y`. Also used to express a value where `Y` is an implicit default (not encoded in the data stream), as in [[ F? P(8):255 ]], which expresses an optional probability: if the flag is true, the probability is specified as an 8-bit literal, while if the flag is false, the probability defaults to `255`.
+| `P(7)`          |        | A 7-bit specification of an 8-bit probability. Coded as an `L(7)` number `x`; the resulting 8-bit probability is x ? x << 1 : 1.
+| `F? X`          |        | A flag that, if true, is followed by a piece of data `X`.
+| `F? X:Y`        |        | A flag that, if true, is followed by `X` and, if false, is followed by `Y`.  Also used to express a value where `Y` is an implicit default (not encoded in the data stream), as in F? P(8):255, which expresses an optional probability: If the flag is true, the probability is specified as an 8-bit literal, while if the flag is false, the probability defaults to `255`.
 | `B(p)? X`       | `B(p)? X:Y` | Variants of the above using a boolean indicator whose probability is not necessarily `128`.
 | `T`             |        | Tree-encoded value from small alphabet.
 
-The last type requires elaboration. We often wish to encode something whose value is restricted to a small number of possibilities (the alphabet).
 
-This is done by representing the alphabet as the leaves of a small binary tree. The (non-leaf) nodes of the tree have associated probabilities `p` and correspond to calls to `read_bool(d, p)`. We think of a zero as choosing the left branch below the node and a one as choosing the right branch.
+The last type requires elaboration.  We often wish to encode
+something whose value is restricted to a small number of
+possibilities (the alphabet).
 
-Thus every value (leaf) whose tree depth is `x` is decoded after exactly `x` calls to `read_bool`.
+This is done by representing the alphabet as the leaves of a small
+binary tree.  The (non-leaf) nodes of the tree have associated
+probabilities `p` and correspond to calls to `read_bool(d, p)`.  We think
+of a zero as choosing the left branch below the node and a one as
+choosing the right branch.
 
-A tree representing an encoding of an alphabet of `n` possible values always contains `n-1` non-leaf nodes, regardless of its shape (this is easily seen by induction on `n`).
+Thus, every value (leaf) whose tree depth is `x` is decoded after
+exactly `x` calls to `read_bool`.
 
-There are many ways that a given alphabet can be so represented. The choice of tree has little impact on datarate but does affect decoder performance. The trees used by VP8 are chosen to (on average) minimize the number of calls to `read_bool`. This amounts to shaping the tree so that more probable values have smaller tree depth than do less probable values.
+A tree representing an encoding of an alphabet of `n` possible values
+always contains `n-1` non-leaf nodes, regardless of its shape (this is
+easily seen by induction on `n`).
 
-Readers familiar with Huffman coding will notice that, given an alphabet together with probabilities for each value, the associated Huffman tree minimizes the expected number of calls to `read_bool`. Such readers will also realize that the coding method described here never results in higher datarates than does the Huffman method and, indeed, often results in much lower datarates. Huffman coding is, in fact, nothing more than a special case of this method in which each node probability is fixed at 128 (i.e., 1/2).
+There are many ways that a given alphabet can be so represented.  The
+choice of tree has little impact on datarate but does affect decoder
+performance.  The trees used by VP8 are chosen to (on average)
+minimize the number of calls to `read_bool`.  This amounts to shaping
+the tree so that values that are more probable have smaller tree
+depth than do values that are less probable.
+
+Readers familiar with Huffman coding will notice that, given an
+alphabet together with probabilities for each value, the associated
+Huffman tree minimizes the expected number of calls to `read_bool`.
+
+Such readers will also realize that the coding method described here
+never results in higher datarates than does the Huffman method and,
+indeed, often results in much lower datarates.  Huffman coding is, in
+fact, nothing more than a special case of this method in which each
+node probability is fixed at 128 (i.e., 1/2).
 

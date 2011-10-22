@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -378,7 +378,7 @@ find_near_mvs(const struct mb_info   *this,
             cnt[CNT_ZEROZERO] += 1;
     }
 
-    /* If we have three distinct MV's ... */
+    /* If we have three distinct MVs ... */
     if (cnt[CNT_SPLITMV])
     {
         /* See if above-left MV can be merged with NEAREST */
@@ -459,7 +459,7 @@ decode_split_mv(struct mb_info         *this,
             assert(0);
         }
 
-        /* Fill the MV's for this partition */
+        /* Fill the MVs for this partition */
         for (; k < 16; k++)
             if (j == partition[k])
             {

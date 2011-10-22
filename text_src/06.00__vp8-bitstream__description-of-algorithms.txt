@@ -1,22 +1,41 @@
 
 
-### Chapter 6: Description of Algorithms                     {#h-06-00}
+### Section 6: Description of Algorithms                   {#h-06-00}
 
-As the intent of this document, together with the reference decoder source code, is to specify a platform-independent procedure for the decoding and reconstruction of a VP8 video stream, many (small) algorithms must be described exactly.
+As the intent of this document, together with the reference decoder
+source code, is to specify a platform-independent procedure for the
+decoding and reconstruction of a VP8 video stream, many (small)
+algorithms must be described exactly.
 
-Due to its near-universality, terseness, ability to easily describe calculation at specific precisions, and the fact that On2's reference VP8 decoder is written in C, these algorithm fragments are written using the C programming language, augmented with a few simple definitions below.
+Due to its near-universality, terseness, ability to easily describe
+calculation at specific precisions, and the fact that On2's reference
+VP8 decoder is written in C, these algorithm fragments are written
+using the C programming language, augmented with a few simple
+definitions below.
 
-The standard (and best) reference for C is _The C Programming Language_, written by Brian W. Kernighan and Dennis M. Ritchie, and published by Prentice-Hall.
+The standard (and best) reference for C is [Kernighan].
 
-Many code fragments will be presented in this document. Some will be nearly identical to corresponding sections of the reference decoder; others will differ. Roughly speaking, there are three reasons for such differences:
+Many code fragments will be presented in this document.  Some will be
+nearly identical to corresponding sections of the reference decoder;
+others will differ.  Roughly speaking, there are three reasons for
+such differences:
 
-  1. For reasons of efficiency, the reference decoder version may be less obvious.
-  2. The reference decoder often uses large data structures to maintain context that need not be described or used here.
-  3. The authors of this document felt that a different expression of the same algorithm might facilitate exposition.
+  1. For reasons of efficiency, the reference decoder version may be
+     less obvious.
 
-Regardless of the chosen presentation, the calculation effected by any of the algorithms described here is identical to that effected by the corresponding portion of the reference decoder.
+  2. The reference decoder often uses large data structures to
+     maintain context that need not be described or used here.
 
-All VP8 decoding algorithms use integer math. To facilitate specification of arithmetic precision, we define the following types.
+  3. The authors of this document felt that a different expression of
+     the same algorithm might facilitate exposition.
+
+Regardless of the chosen presentation, the calculation effected by
+any of the algorithms described here is identical to that effected by
+the corresponding portion of the reference decoder.
+
+All VP8 decoding algorithms use integer math.  To facilitate
+specification of arithmetic precision, we define the following types.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef   signed char  int8; /* signed int exactly 8 bits wide */
@@ -39,14 +58,14 @@ typedef unsigned int uint;
 
 /* While pixels themselves are 8-bit unsigned integers,
    pixel arithmetic often occurs at 16- or 32-bit precision and
-   the results need to be "saturated" or clamped to an 8-bit 
+   the results need to be "saturated" or clamped to an 8-bit
    range. */
 
 typedef uint8 Pixel;
 
 Pixel clamp255( int32 v) { return v < 0? 0 : (v < 255? v : 255);}
 
-/*  As is elaborated in the discussion of the bool_decoder below, 
+/*  As is elaborated in the discussion of the bool_decoder below,
     VP8 represents probabilities as unsigned 8-bit numbers. */
 
 typedef uint8 Prob;
@@ -54,7 +73,22 @@ typedef uint8 Prob;
 {:lang="c"}
 
 
-We occasionally need to discuss mathematical functions involving honest-to-goodness "infinite precision" real numbers. The DCT is first described via the cosine function [[ cos ]]; the ratio of the lengths of the circumference and diameter of a circle is denoted [[ pi ]]; at one point, we take a (base [[ 1//2 ]]) logarithm denoted [[ log ]]; and [[ pow(x, y) ]] denotes [[ x ]] raised to the power [[ y ]]. If [[ x = 2 ]] and [[ y ]] is a small non-negative integer, [[ pow(2, y) ]] may be expressed in C as `1 << y`.
+We occasionally need to discuss mathematical functions involving
+honest-to-goodness "infinite precision" real numbers.  The DCT is
+first described via the cosine function cos; the ratio of the lengths
+of the circumference and diameter of a circle is denoted pi; at one
+point, we take a (base 1/2) logarithm, denoted log; and pow(x, y)
+denotes x raised to the power y.  If x = 2 and y is a small non-
+negative integer, pow(2, y) may be expressed in C as 1 << y.
 
-Finally, we sometimes need to divide signed integers by powers of two, that is, we occasionally right-shift signed numbers. The behavior of such shifts (i.e., the propagation of the sign bit) is, perhaps surprisingly, not defined by the C language itself and is left up to individual compilers. Because of the utility of this frequently needed operation, it is at least arguable that it should be defined by the language (to naturally propagate the sign bit) and, at a minimum, should be correctly implemented by any reasonable compiler. In the interest of strict portability, we attempt to call attention to these shifts when they arise.
+Finally, we sometimes need to divide signed integers by powers of
+two; that is, we occasionally right-shift signed numbers.  The
+behavior of such shifts (i.e., the propagation of the sign bit) is,
+perhaps surprisingly, not defined by the C language itself and is
+left up to individual compilers.  Because of the utility of this
+frequently needed operation, it is at least arguable that it should
+be defined by the language (to naturally propagate the sign bit) and,
+at a minimum, should be correctly implemented by any reasonable
+compiler.  In the interest of strict portability, we attempt to call
+attention to these shifts when they arise.
 

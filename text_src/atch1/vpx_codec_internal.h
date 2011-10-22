@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -40,7 +40,7 @@
  *       }
  *     </pre>
  *
- * Once initialized, the instance is manged using other functions
+ * Once initialized, the instance is managed using other functions
  * from the vpx_codec_* family.
  */
 #ifndef VPX_CODEC_INTERNAL_H
@@ -52,10 +52,11 @@
 /*!\brief Current ABI version number
  *
  * \internal
- * If this file is altered in any way that changes the ABI, this
- * value must be bumped.  Examples include, but are not limited to,
- * changing types, removing or reassigning enums,
- * adding/removing/rearranging fields to structures
+ * If this file is altered in any way that changes the Application
+ * Binary Interface (ABI), this value must be bumped.  Examples
+ * include, but are not limited to, changing types, removing or
+ * reassigning enums, adding/removing/rearranging fields to
+ * structures.
  */
 #define VPX_CODEC_INTERNAL_ABI_VERSION (3)
 
@@ -101,10 +102,10 @@ typedef vpx_codec_err_t (*vpx_codec_destroy_fn_t)(
  *
  * \param[in]      data    Pointer to a block of data to parse
  * \param[in]      data_sz Size of the data buffer
- * \param[in,out]  si      Pointer to stream info to update. The size
- *                         member \ref MUST be properly initialized,
- *                         but \ref MAY be clobbered by the
- *                         algorithm. This parameter \ref MAY be
+ * \param[in,out]  si      Pointer to stream info to update.  The
+ *                         size member \ref MUST be properly
+ *                         initialized, but \ref MAY be clobbered by
+ *                         the algorithm. This parameter \ref MAY be
  *                         NULL.
  *
  * \retval #VPX_CODEC_OK
@@ -121,11 +122,11 @@ typedef vpx_codec_err_t (*vpx_codec_peek_si_fn_t)(
  * decoding.
  *
  * \param[in]      ctx     Pointer to this instance's context
- * \param[in,out]  si      Pointer to stream info to update. The size
- *                         member \ref MUST be properly initialized,
- *                         but \ref MAY be clobbered by the
- *                         algorithm. This parameter \ref MAY be
- *                         NULL.
+ * \param[in,out]  si      Pointer to stream info to update.  The
+ *                         size member \ref MUST be properly
+ *                         initialized, but \ref MAY be clobbered by
+ *                         the algorithm.  This parameter \ref MAY
+ *                         be NULL.
  *
  * \retval #VPX_CODEC_OK
  *     Bitstream is parsable and stream information updated
@@ -136,7 +137,7 @@ typedef vpx_codec_err_t (*vpx_codec_get_si_fn_t)(
 
 /*!\brief control function pointer prototype
  *
- * This function is used to exchange algorithm specific data with the
+ * This function is used to exchange algorithm-specific data with the
  * decoder instance. This can be used to implement features specific
  * to a particular algorithm.
  *
@@ -147,11 +148,11 @@ typedef vpx_codec_err_t (*vpx_codec_get_si_fn_t)(
  * assign meanings to the control codes. Those details should be
  * specified in the algorithm's header file. In particular, the
  * ctrl_id parameter is guaranteed to exist in the algorithm's
- * control mapping table, and the data paramter may be NULL.
+ * control mapping table, and the data parameter may be NULL.
  *
  *
  * \param[in]     ctx       Pointer to this instance's context
- * \param[in]     ctrl_id   Algorithm specific control identifier
+ * \param[in]     ctrl_id   Algorithm-specific control identifier
  * \param[in,out] data      Data to exchange with algorithm instance.
  *
  * \retval #VPX_CODEC_OK
@@ -166,11 +167,11 @@ typedef vpx_codec_err_t (*vpx_codec_control_fn_t)(
  *
  * This structure stores the mapping between control identifiers and
  * implementing functions. Each algorithm provides a list of these
- * mappings. This list is searched by the vpx_codec_control() wrapper
- * function to determine which function to invoke. The special
- * value {0, NULL} is used to indicate end-of-list, and must be
- * present. The special value {0, <non-null>} can be used as a
- * catch-all mapping. This implies that ctrl_id values chosen by the
+ * mappings. This list is searched by the vpx_codec_control()
+ * wrapper function to determine which function to invoke.  The
+ * special value {0, NULL} is used to indicate end-of-list, and must
+ * be present.  The special value {0, <non-null>} can be used as a
+ * catch-all mapping.  This implies that ctrl_id values chosen by the
  * algorithm \ref MUST be non-zero.
  */
 typedef const struct
@@ -183,14 +184,14 @@ typedef const struct
  *
  * Processes a buffer of coded data. If the processing results in a
  * new decoded frame becoming available, #VPX_CODEC_CB_PUT_SLICE and
- * #VPX_CODEC_CB_PUT_FRAME events are generated as appropriate. This
- * function is called by the generic vpx_codec_decode() wrapper
+ * #VPX_CODEC_CB_PUT_FRAME events are generated as appropriate.
+ * This function is called by the generic vpx_codec_decode() wrapper
  * function, so plugins implementing this interface may trust the
  * input parameters to be properly initialized.
  *
  * \param[in] ctx         Pointer to this instance's context
- * \param[in] data        Pointer to this block of new coded data. If
- *                        NULL, a #VPX_CODEC_CB_PUT_FRAME event is
+ * \param[in] data        Pointer to this block of new coded data.
+ *                        If NULL, a #VPX_CODEC_CB_PUT_FRAME event is
  *                        posted for the previously decoded frame.
  * \param[in] data_sz     Size of the coded data, in bytes.
  *
@@ -237,7 +238,7 @@ typedef vpx_image_t*(*vpx_codec_get_frame_fn_t)(
  *
  * \param[in out] iter     Iterator storage, initialized to NULL
  *
- * \return Returns a pointer to an memory segment descriptor, or NULL
+ * \return Returns a pointer to a memory segment descriptor, or NULL
  *         to indicate end-of-list.
  */
 typedef vpx_codec_err_t (*vpx_codec_get_mmap_fn_t)(
@@ -353,7 +354,7 @@ typedef struct vpx_codec_priv_cb_pair
  * can be extended in one of two ways. First, a second, algorithm
  * specific structure can be allocated and the priv member pointed to
  * it. Alternatively, this structure can be made the first member of
- * the algorithm specific structure, and the pointer casted to the
+ * the algorithm-specific structure, and the pointer casted to the
  * proper type.
  */
 struct vpx_codec_priv

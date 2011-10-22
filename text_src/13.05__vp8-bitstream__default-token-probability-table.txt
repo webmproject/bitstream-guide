@@ -1,6 +1,6 @@
 
 
-#### 13.5 Default Token Probability Table                    {#h-13-05}
+#### 13.5 Default Token Probability Table                  {#h-13-05}
 
 
 The default token probabilities are as follows.

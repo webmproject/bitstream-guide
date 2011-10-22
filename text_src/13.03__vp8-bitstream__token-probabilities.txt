@@ -1,9 +1,13 @@
 
 
-#### 13.3 Token Probabilities                                {#h-13-03}
+#### 13.3 Token Probabilities                              {#h-13-03}
 
 
-The probability specification for the token tree (unlike that for the "extra bits" described above) is rather involved. It uses three pieces of context to index a large probability table, the contents of which may be incrementally modified in the frame header. The full (non-constant) probability table is laid out as follows.
+The probability specification for the token tree (unlike that for the
+"extra bits" described above) is rather involved.  It uses three
+pieces of context to index a large probability table, the contents of
+which may be incrementally modified in the frame header.  The full
+(non-constant) probability table is laid out as follows.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12,14 +16,21 @@ Prob coeff_probs [4] [8] [3] [num_dct_tokens-1];
 {:lang="c"}
 
 
-Working from the outside in, the outermost dimension is indexed by the type of plane being decoded:
+Working from the outside in, the outermost dimension is indexed by
+the type of plane being decoded:
 
   * `0` - Y beginning at coefficient 1 (i.e., Y after Y2)
+
   * `1` - Y2
+
   * `2` - U or V
+
   * `3` - Y beginning at coefficient 0 (i.e., Y in the absence of Y2).
 
-The next dimension is selected by the position of the coefficient being decoded. That position c steps by ones up to 15, starting from zero for block types 1, 2, or 3 and starting from one for block type 0. The second array index is then
+The next dimension is selected by the position of the coefficient
+being decoded.  That position, c, steps by ones up to 15, starting
+from zero for block types 1, 2, or 3 and starting from one for block
+type 0.  The second array index is then
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,7 +39,7 @@ coeff_bands [c]
 {:lang="c"}
 
 
-where
+Where:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,23 +52,65 @@ const int coeff_bands [16] = {
 
 is a fixed mapping of position to "band".
 
-The third dimension is the trickiest. Roughly speaking, it measures the "local complexity" or extent to which nearby coefficients are non-zero.
+The third dimension is the trickiest.  Roughly speaking, it measures
+the "local complexity" or extent to which nearby coefficients are
+non-zero.
 
-For the first coefficient (DC, unless the block type is 0), we consider the (already encoded) blocks within the same plane (Y2, Y, U, or V) above and to the left of the current block. The context index is then the number (0, 1 or 2) of these blocks that had at least one non-zero coefficient in their residue record. Specifically for Y2, because macroblocks above and to the left may or may not have a Y2 block, the block above is determined by the most recent macroblock in the same column that has a Y2 block, and the block to the left is determined by the most recent macroblock in the same row that has a Y2 block.
+For the first coefficient (DC, unless the block type is 0), we
+consider the (already encoded) blocks within the same plane (Y2, Y,
+U, or V) above and to the left of the current block.  The context
+index is then the number (0, 1, or 2) of these blocks that had at
+least one non-zero coefficient in their residue record.  Specifically
+for Y2, because macroblocks above and to the left may or may not have
+a Y2 block, the block above is determined by the most recent
+macroblock in the same column that has a Y2 block, and the block to
+the left is determined by the most recent macroblock in the same row
+that has a Y2 block.
 
-Beyond the first coefficient, the context index is determined by the absolute value of the most recently decoded coefficient (necessarily within the current block) and is `0` if the last coefficient was a zero, `1` if it was plus or minus one, and `2` if its absolute value exceeded one.
+Beyond the first coefficient, the context index is determined by the
+absolute value of the most recently decoded coefficient (necessarily
+within the current block) and is `0` if the last coefficient was a
+zero, `1` if it was plus or minus one, and `2` if its absolute value
+exceeded one.
 
-Note that the intuitive meaning of this measure changes as coefficients are decoded. For example, prior to the first token, a zero means that the neighbors are empty, suggesting that the current block may also be empty. After the first token, because an end-of-block token must have at least one non-zero value before it, a zero means that we just decoded a zero and hence guarantees that a non-zero coefficient will appear later in this block. However, this shift in meaning is perfectly okay because the complete context depends also on the coefficient band (and since band 0 is occupied exclusively by position 0).
+Note that the intuitive meaning of this measure changes as
+coefficients are decoded.  For example, prior to the first token, a
+zero means that the neighbors are empty, suggesting that the current
+block may also be empty.  After the first token, because an end-of-
+block token must have at least one non-zero value before it, a zero
+means that we just decoded a zero and hence guarantees that a non-
+zero coefficient will appear later in this block.  However, this
+shift in meaning is perfectly okay because the complete context
+depends also on the coefficient band (and since band 0 is occupied
+exclusively by position 0).
 
-As with other contexts used by VP8, the "neighboring block" context described here needs a special definition for subblocks lying along the top row or left edge of the frame. These "non-existent" predictors above and to the left of the image are simply taken to be empty -- that is, taken to contain no non-zero coefficients.
+As with other contexts used by VP8, the "neighboring block" context
+described here needs a special definition for subblocks lying along
+the top row or left edge of the frame.  These "non-existent"
+predictors above and to the left of the image are simply taken to be
+empty -- that is, taken to contain no non-zero coefficients.
 
-The residue decoding of each macroblock then requires, in each of two directions (above and to the left), an aggregate coefficient predictor consisting of a single Y2 predictor, two predictors for each of U and V, and four predictors for Y. In accordance with the scan-ordering of macroblocks, a decoder needs to maintain a single "left" aggregate predictor and a row of "above" aggregate predictors.
+The residue decoding of each macroblock then requires, in each of two
+directions (above and to the left), an aggregate coefficient
+predictor consisting of a single Y2 predictor, two predictors for
+each of U and V, and four predictors for Y.  In accordance with the
+scan-ordering of macroblocks, a decoder needs to maintain a single
+"left" aggregate predictor and a row of "above" aggregate predictors.
 
-Before decoding any residue, these maintained predictors may simply be cleared, in compliance with the definition of "non-existent" prediction. After each block is decoded, the two predictors referenced by the block are replaced with the (empty or non-empty) state of the block, in preparation for the later decoding of the blocks below and to the right of the block just decoded.
+Before decoding any residue, these maintained predictors may simply
+be cleared, in compliance with the definition of "non-existent"
+prediction.  After each block is decoded, the two predictors
+referenced by the block are replaced with the (empty or non-empty)
+state of the block, in preparation for the later decoding of the
+blocks below and to the right of the block just decoded.
 
-The fourth, and final, dimension of the token probability array is of course indexed by (half) the position in the token tree structure, as are all tree probability arrays.
+The fourth, and final, dimension of the token probability array is of
+course indexed by (half) the position in the token tree structure, as
+are all tree probability arrays.
 
-The below pseudocode illustrates the decoding process. Note that criteria, functions, etc. delimited with `**` are either dependent on decoder architecture or are elaborated on elsewhere in this document.
+The pseudocode below illustrates the decoding process.  Note that
+criteria, functions, etc. delimited with `**` are either dependent on
+decoder architecture or are elaborated on elsewhere in this document.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,8 +126,8 @@ int absValue;
 int extraBits;
 bool prevCoeffWasZero = false;
 bool currentBlockHasCoeffs = false;
-/* base coeff abs values per each category, elem #0 is 
-   DCT_VAL_CATEGORY1, * #1 is DCT_VAL_CATEGORY2 etc */
+/* base coeff abs values per each category, elem #0 is
+   DCT_VAL_CATEGORY1, * #1 is DCT_VAL_CATEGORY2, etc. */
 int categoryBase[6] = { 5, 7, 11, 19, 35, 67 };
 
 /* Determine plane to use */
@@ -83,14 +136,14 @@ else if ( **current_block_is_chroma** )   plane = 2;
 else if ( **current_macroblock_has_Y2** ) plane = 1;
 else                                      plane = 3;
 
-/* For luma blocks of an "Y2 macroblock" we skip coeff index #0 */
+/* For luma blocks of a "Y2 macroblock" we skip coeff index #0 */
 if( plane == 1 )
     firstCoeff++;
 
-/* Determine whether neighbour 4x4 blocks have coeffiecients. 
-   This is dependant of the plane we are currently decoding; 
-   i.e. we check only coefficients from same plane as current 
-   block. */
+/* Determine whether neighbor 4x4 blocks have coefficients.
+   This is dependent on the plane we are currently decoding;
+   i.e., we check only coefficients from the same plane as the
+   current block. */
 if( **left_neighbor_block_has_coefficients(plane)** )
     ctx3++;
 if( **above_neighbor_block_has_coefficients(plane)** )
@@ -118,7 +171,7 @@ for( i = firstCoeff ; i < 16 ; ++i )
   {
       extraBits = DCTextra( token ); 
       absValue =
-          categoryBase[**token_to_cat_index(token)**] + 
+          categoryBase[**token_to_cat_index(token)**] +
     extraBits;
   }
   else
@@ -138,15 +191,17 @@ for( i = firstCoeff ; i < 16 ; ++i )
     if( absValue == 0 )         ctx3 = 0;
     else if ( absValue == 1 )   ctx3 = 1;
     else                        ctx3 = 2;
-    prevCoeffWasZero = true;   
+    prevCoeffWasZero = true;
 }
 
 /* Store current block status to decoder internals */
-**block_has_coefficients[currentMb][currentBlock]** = 
+**block_has_coefficients[currentMb][currentBlock]** =
   currentBlockHasCoeffs;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-While we have in fact completely described the coefficient decoding procedure, the reader will probably find it helpful to consult the reference implementation, which can be found in the file `tokens.c`.
+While we have in fact completely described the coefficient decoding
+procedure, the reader will probably find it helpful to consult the
+reference implementation, which can be found in the file `tokens.c`
+(Section 20.16).
 

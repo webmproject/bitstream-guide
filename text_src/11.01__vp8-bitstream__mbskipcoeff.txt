@@ -1,7 +1,9 @@
 
 
-#### 11.1 mb_skip_coeff                                      {#h-11-01}
+#### 11.1 mb_skip_coeff                                    {#h-11-01}
 
 
-The single bool flag is decoded using `prob_skip_false` if and only if `mb_no_skip_coeff` is set to `1` (see sections 9.10 and 9.11). If `mb_no_skip_coeff` is set to `0` then this value defaults to `0`.
+The single bool flag is decoded using `prob_skip_false` if and only if
+`mb_no_skip_coeff` is set to `1` (see Sections 9.10 and 9.11).  If
+`mb_no_skip_coeff` is set to `0`, then this value defaults to `0`.
 

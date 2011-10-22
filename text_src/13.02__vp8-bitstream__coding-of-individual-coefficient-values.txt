@@ -1,15 +1,22 @@
 
 
-#### 13.2 Coding of Individual Coefficient Values            {#h-13-02}
+#### 13.2 Coding of Individual Coefficient Values          {#h-13-02}
 
 
-The coding of coefficient tokens is the same for the DCT and WHT and for the remainder of this chapter DCT should be taken to mean either DCT or WHT.
+The coding of coefficient tokens is the same for the DCT and WHT, and
+for the remainder of this section "DCT" should be taken to mean
+either DCT or WHT.
 
-All tokens (except end-of-block) specify either a single unsigned value or a range of unsigned values (immediately) followed by a simple probabilistic encoding of the offset of the value from the base of that range.
+All tokens (except end-of-block) specify either a single unsigned
+value or a range of unsigned values (immediately) followed by a
+simple probabilistic encoding of the offset of the value from the
+base of that range.
 
-Non-zero values (of either type) are then followed by a flag indicating the sign of the coded value (negative if `1`, positive if `0`).
+Non-zero values (of either type) are then followed by a flag
+indicating the sign of the coded value (negative if `1`, positive
+if `0`).
 
-Here are the tokens and decoding tree.
+Below are the tokens and decoding tree.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,9 +60,16 @@ const tree_index coeff_tree [2 * (num_dct_tokens - 1)] =
 {:lang="c"}
 
 
-In general, all DCT coefficients are decoded using the same tree. However, if the preceding coefficient is a `DCT_0`, decoding will skip the first branch since it is not possible for `dct_eob` to follow a `DCT_0`.
+In general, all DCT coefficients are decoded using the same tree.
+However, if the preceding coefficient is a `DCT_0`, decoding will skip
+the first branch, since it is not possible for `dct_eob` to follow a
+`DCT_0`.
 
-The tokens `dct_cat1` ... `dct_cat6` specify ranges of unsigned values, the value within the range being formed by adding an unsigned offset (whose width is 1, 2, 3, 4, 5, or 11 bits, respectively) to the base of the range, using the following algorithm and fixed probability tables.
+The tokens `dct_cat1` ... `dct_cat6` specify ranges of unsigned values,
+the value within the range being formed by adding an unsigned offset
+(whose width is 1, 2, 3, 4, 5, or 11 bits, respectively) to the base
+of the range, using the following algorithm and fixed probability
+tables.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,9 +90,9 @@ const Prob Pcat6[] =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-If `v`, the unsigned value decoded using the coefficient tree, possibly augmented by the process above, is non-zero, its sign is set by simply reading a flag:
-
+If `v` -- the unsigned value decoded using the coefficient tree,
+possibly augmented by the process above -- is non-zero, its sign is
+set by simply reading a flag:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if( read_bool( d, 128))

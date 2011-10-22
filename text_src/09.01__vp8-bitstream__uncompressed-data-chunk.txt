@@ -1,17 +1,27 @@
 
 
-#### 9.1 Uncompressed Data Chunk                             {#h-09-01}
+#### 9.1 Uncompressed Data Chunk                           {#h-09-01}
 
-The uncompressed data chunk comprises a common (for key frames and interframes) 3-byte frame tag that contains four fields, as follows:
+The uncompressed data chunk comprises a common (for key frames and
+interframes) 3-byte frame tag that contains four fields, as follows:
 
   1. A 1-bit frame type (`0` for key frames, `1` for interframes).
-  2. A 3-bit version number (`0` - `3` are defined as four different profiles with different decoding complexity; other values may be defined for future variants of the VP8 data format).
-  3. A 1-bit `show_frame` flag (`0` when current frame is not for display, `1` when current frame is for display).
-  4. A 19-bit field containing the size of the first data partition in bytes.
 
-Version number enables or disables certain features in the bitstream, as follows:
+  2. A 3-bit version number (`0` - `3` are defined as four different
+     profiles with different decoding complexity; other values may be
+     defined for future variants of the VP8 data format).
 
-| Version | Reconstruction filter   | Loop filter |
+  3. A 1-bit `show_frame` flag (`0` when current frame is not for display,
+     `1` when current frame is for display).
+
+  4. A 19-bit field containing the size of the first data partition in
+     bytes.
+
+The version number setting enables or disables certain features in
+the bitstream, as follows:
+
+
+| Version | Reconstruction Filter   | Loop Filter |
 | ------- | ----------------------- | ----------- |
 | `0`     | Bicubic                 | Normal      |
 | `1`     | Bilinear                | Simple      |
@@ -19,9 +29,19 @@ Version number enables or disables certain features in the bitstream, as follows
 | `3`     | None                    | None        |
 | Other   | Reserved for future use |             |
 
-The reference software also adjusts the loop filter based on version number, as per the table above. Version number `1` implies a "simple" loop filter and version numbers `2` and `3` imply no loop filter. However, the "simple" filter setting in this context has no effect whatsoever on the decoding process, and the "no loop filter" setting only forces the reference encoder to set filter level equal to `0`. Neither affect the decoding process. In decoding, the only loop filter settings that matter are those in the frame header.
 
-For key frames the frame tag is followed by a further 7 bytes of uncompressed data, as follows:
+The reference software also adjusts the loop filter based on version
+number, as per the table above.  Version number `1` implies a "simple"
+loop filter, and version numbers `2` and `3` imply no loop filter.
+However, the "simple" filter setting in this context has no effect
+whatsoever on the decoding process, and the "no loop filter" setting
+only forces the reference encoder to set filter level equal to `0`.
+Neither affect the decoding process.  In decoding, the only loop
+filter settings that matter are those in the frame header.
+
+For key frames, the frame tag is followed by a further 7 bytes of
+uncompressed data, as follows:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Start code byte 0     0x9d
@@ -34,7 +54,10 @@ Start code byte 2     0x2a
 {:lang="c"}
 
 
-The following source code segment illustrates validation of the start code and reading the width, height and scale factors for a key frame.
+The following source code segment illustrates validation of the start
+code and reading the width, height, and scale factors for a key
+frame.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 unsigned char *c = pbi->source+3;
@@ -46,9 +69,10 @@ if(c[0]!=0x9d||c[1]!=0x01||c[2]!=0x2a)
 {:lang="c"}
 
 
-where `pbi->source` points to the beginning of the frame. 
+Where `pbi->source` points to the beginning of the frame.
 
 The following code reads the image dimension from the bitstream:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 pc->Width      = swap2(*(unsigned short*)(c+3))&0x3fff;
@@ -59,7 +83,9 @@ pc->vert_scale  = swap2(*(unsigned short*)(c+5))>>14;
 {:lang="c"}
 
 
-where `swap2` macro takes care of the endian on different platform: 
+Where the `swap2` macro takes care of the endian on a different
+platform:
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #if defined(__ppc__) || defined(__ppc64__)
@@ -73,9 +99,17 @@ where `swap2` macro takes care of the endian on different platform:
 {:lang="c"}
 
 
-While each frame is encoded as a raster scan of 16x16 macroblocks, the frame dimensions are not necessarily evenly divisible by 16. In this case, write `ew = 16 - (width & 15)` and `eh = 16 - (height & 15)` for the excess width and height, respectively. Although they are encoded, the last `ew` columns and `eh` rows are not actually part of the image and should be discarded before final output. However, these "excess pixels" should be maintained in the internal reconstruction buffer used to predict ensuing frames.
+While each frame is encoded as a raster scan of 16x16 macroblocks,
+the frame dimensions are not necessarily evenly divisible by 16.  In
+this case, write `ew = 16 - (width & 15)` and `eh = 16 - (height & 15)`
+for the excess width and height, respectively.  Although they are
+encoded, the last `ew` columns and `eh` rows are not actually part of the
+image and should be discarded before final output.  However, these
+"excess pixels" should be maintained in the internal reconstruction
+buffer used to predict ensuing frames.
 
 The scaling specifications for each dimension are encoded as follows.
+
 
 | Value  | Scaling                               
 | ------ | -------------------------------------  
@@ -84,7 +118,14 @@ The scaling specifications for each dimension are encoded as follows.
 | `2`    | Upscale by 5/3.
 | `3`    | Upscale by 2.
 
-Upscaling does **not** affect the reconstruction buffer, which should be maintained at the encoded resolution. Any reasonable method of upsampling (including any that may be supported by video hardware in the playback environment) may be used. Since scaling has no effect on decoding, we do not discuss it any further.
 
-As discussed in Chapter 5, allocation (or re-allocation) of data structures (such as the reconstruction buffer) whose size depends on dimension will be triggered here.
+Upscaling does **not** affect the reconstruction buffer, which should be
+maintained at the encoded resolution.  Any reasonable method of
+upsampling (including any that may be supported by video hardware in
+the playback environment) may be used.  Since scaling has no effect
+on decoding, we do not discuss it any further.
+
+As discussed in Section 5, allocation (or re-allocation) of data
+structures (such as the reconstruction buffer) whose size depends on
+dimension will be triggered here.
 

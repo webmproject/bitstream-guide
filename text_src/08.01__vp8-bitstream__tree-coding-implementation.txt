@@ -1,16 +1,37 @@
 
 
-#### 8.1 Tree Coding Implementation                          {#h-08-01}
+#### 8.1 Tree Coding Implementation                        {#h-08-01}
 
-We give a suggested implementation of a tree data structure followed by a couple of actual examples of its usage by VP8.
+We give a suggested implementation of a tree data structure followed
+by a couple of actual examples of its usage by VP8.
 
-It is most convenient to represent the values using small positive integers, typically an enum counting up from zero. The largest alphabet (used to code DCT coefficients, described in Chapter 13 that is tree-coded by VP8 has only 12 values. The tree for this alphabet adds 11 interior nodes and so has a total of 23 positions. Thus, an 8-bit number easily accommodates both a tree position and a return value.
+It is most convenient to represent the values using small positive
+integers, typically an enum counting up from zero.  The largest
+alphabet (used to code DCT coefficients, described in Section 13)
+that is tree-coded by VP8 has only 12 values.  The tree for this
+alphabet adds 11 interior nodes and so has a total of 23 positions.
+Thus, an 8-bit number easily accommodates both a tree position and a
+return value.
 
-A tree may then be compactly represented as an array of (pairs of) 8-bit integers. Each (even) array index corresponds to an interior node of the tree;, the 0th index of course corresponds to the root of the tree. The array entries come in pairs corresponding to the left (0) and right (1) branches of the subtree below the interior node. We use the convention that a positive (even) branch entry is the index of a deeper interior node, while a nonpositive entry [[ v ]] corresponds to a leaf whose value is [[ -v ]].
+A tree may then be compactly represented as an array of (pairs of)
+8-bit integers.  Each (even) array index corresponds to an interior
+node of the tree; the 0th index of course corresponds to the root of
+the tree.  The array entries come in pairs corresponding to the left
+(0) and right (1) branches of the subtree below the interior node.
+We use the convention that a positive (even) branch entry is the
+index of a deeper interior node, while a nonpositive entry v
+corresponds to a leaf whose value is -v.
 
-The node probabilities associated to a tree-coded value are stored in an array whose indices are half the indices of the corresponding tree positions. The length of the probability array is one less than the size of the alphabet.
+The node probabilities associated to a tree-coded value are stored in
+an array whose indices are half the indices of the corresponding tree
+positions.  The length of the probability array is one less than the
+size of the alphabet.
 
-Here is C code implementing the foregoing. The advantages of our data structure should be noted. Aside from the smallness of the structure itself, the tree-directed reading algorithm is essentially a single line of code.
+Here is C code implementing the foregoing.  The advantages of our
+data structure should be noted.  Aside from the smallness of the
+structure itself, the tree-directed reading algorithm is essentially
+a single line of code.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* A tree specification is simply an array of 8-bit integers. */
@@ -37,5 +58,6 @@ int treed_read(
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Tree-based decoding is implemented in the reference decoder file `bool_decoder.h`.
+Tree-based decoding is implemented in the reference decoder file
+`bool_decoder.h` (Section 20.2).
 

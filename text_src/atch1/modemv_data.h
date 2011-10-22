@@ -1,3 +1,12 @@
+/*
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.  An additional intellectual property rights grant can be
+ *  found in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
 static const unsigned char kf_y_mode_probs[] = { 145, 156, 163, 128};
 static const unsigned char kf_uv_mode_probs[] = { 142, 114, 183};
 static const unsigned char kf_b_mode_probs[10][10][9] =

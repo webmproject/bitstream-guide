@@ -1,24 +1,73 @@
 
 
-### Chapter 2: Format Overview                               {#h-02-00}
+### Section 2: Format Overview                             {#h-02-00}
 
-VP8 works exclusively with an 8-bit YUV 4:2:0 image format. In this format, each 8-bit pixel in the two chroma planes (U and V) corresponds positionally to a 2x2 block of 8-bit luma pixels in the Y plane; coordinates of the upper left corner of the Y block are of course exactly twice the coordinates of the corresponding chroma pixels. When we refer to pixels or pixel distances without specifying a plane, we are implicitly referring to the Y plane or to the complete image, both of which have the same (full) resolution.
+VP8 works exclusively with an 8-bit YUV 4:2:0 image format.  In this
+format, each 8-bit pixel in the two chroma planes (U and V)
+corresponds positionally to a 2x2 block of 8-bit luma pixels in the
+Y plane; coordinates of the upper left corner of the Y block are of
+course exactly twice the coordinates of the corresponding chroma
+pixels.  When we refer to pixels or pixel distances without
+specifying a plane, we are implicitly referring to the Y plane or to
+the complete image, both of which have the same (full) resolution.
 
-As is usually the case, the pixels are simply a large array of bytes stored in rows from top to bottom, each row being stored from left to right. This "left to right" then "top to bottom" raster-scan order is reflected in the layout of the compressed data as well.
+As is usually the case, the pixels are simply a large array of bytes
+stored in rows from top to bottom, each row being stored from left to
+right.  This "left to right" then "top to bottom" raster-scan order
+is reflected in the layout of the compressed data as well.
 
-Provision has been made in the VP8 bitstream header for the support of a secondary YUV color format, in the form of a reserved bit.
+Provision has been made in the VP8 bitstream header for the support
+of a secondary YUV color format, in the form of a reserved bit.
 
-Occasionally, at very low datarates, a compression system may decide to reduce the resolution of the input signal to facilitate efficient compression. The VP8 data format supports this via optional upscaling of its internal reconstruction buffer prior to output (this is completely distinct from the optional postprocessing discussed earlier, which has nothing to do with decoding per se). This upsampling restores the video frames to their original resolution. In other words, the compression/decompression system can be viewed as a "black box", where the input and output is always at a given resolution. The compressor might decide to "cheat" and process the signal at a lower resolution. In that case, the decompressor needs the ability to restore the signal to its original resolution.
+Occasionally, at very low datarates, a compression system may decide
+to reduce the resolution of the input signal to facilitate efficient
+compression.  The VP8 data format supports this via optional
+upscaling of its internal reconstruction buffer prior to output (this
+is completely distinct from the optional postprocessing discussed
+earlier, which has nothing to do with decoding per se).  This
+upsampling restores the video frames to their original resolution.
+In other words, the compression/decompression system can be viewed as
+a "black box", where the input and output are always at a given
+resolution.  The compressor might decide to "cheat" and process the
+signal at a lower resolution.  In that case, the decompressor needs
+the ability to restore the signal to its original resolution.
 
-Internally, VP8 decomposes each output frame into an array of macroblocks. A macroblock is a square array of pixels whose Y dimensions are 16x16 and whose U and V dimensions are 8x8. Macroblock-level data in a compressed frame occurs (and must be processed) in a raster order similar to that of the pixels comprising the frame.
+Internally, VP8 decomposes each output frame into an array of
+macroblocks.  A macroblock is a square array of pixels whose Y
+dimensions are 16x16 and whose U and V dimensions are 8x8.
+Macroblock-level data in a compressed frame occurs (and must be
+processed) in a raster order similar to that of the pixels comprising
+the frame.
 
-Macroblocks are further decomposed into 4x4 subblocks. Every macroblock has 16 Y subblocks, 4 U subblocks, and 4 V subblocks. Any subblock-level data (and processing of such data) again occurs in raster order, this time in raster order within the containing macroblock.
+Macroblocks are further decomposed into 4x4 subblocks.  Every
+macroblock has 16 Y subblocks, 4 U subblocks, and 4 V subblocks.  Any
+subblock-level data (and processing of such data) again occurs in
+raster order, this time in raster order within the containing
+macroblock.
 
-As discussed in further detail below, data can be specified at the levels of both macroblocks and their subblocks.
+As discussed in further detail below, data can be specified at the
+levels of both macroblocks and their subblocks.
 
-Pixels are always treated, at a minimum, at the level of subblocks, which may be thought of as the "atoms" of the VP8 algorithm. In particular, the 2x2 chroma blocks corresponding to 4x4 Y subblocks are never treated explicitly in the data format or in the algorithm specification.
+Pixels are always treated, at a minimum, at the level of subblocks,
+which may be thought of as the "atoms" of the VP8 algorithm.  In
+particular, the 2x2 chroma blocks corresponding to 4x4 Y subblocks
+are never treated explicitly in the data format or in the algorithm
+specification.
 
-The DCT and WHT always operate at a 4x4 resolution. The DCT is used for the 16Y, 4U and 4V subblocks. The WHT is used (with some but not all prediction modes) to encode a 4x4 array comprising the average intensities of the 16 Y subblocks of a macroblock. These average intensities are, up to a constant normalization factor, nothing more that the 0th DCT coefficients of the Y subblocks. This "higher-level" WHT is a substitute for the explicit specification of those coefficients, in exactly the same way as the DCT of a subblock substitutes for the specification of the pixel values comprising the subblock.  We consider this 4x4 array as a _second-order_ subblock called Y2, and think of a macroblock as containing 24 "real" subblocks and, sometimes, a 25th "virtual" subblock. This is dealt with further in Chapter 13.
+The DCT and WHT always operate at a 4x4 resolution.  The DCT is used
+for the 16Y, 4U, and 4V subblocks.  The WHT is used (with some but
+not all prediction modes) to encode a 4x4 array comprising the
+average intensities of the 16 Y subblocks of a macroblock.  These
+average intensities are, up to a constant normalization factor,
+nothing more than the 0th DCT coefficients of the Y subblocks.  This
+"higher-level" WHT is a substitute for the explicit specification of
+those coefficients, in exactly the same way as the DCT of a subblock
+substitutes for the specification of the pixel values comprising the
+subblock.  We consider this 4x4 array as a second-order subblock
+called Y2, and think of a macroblock as containing 24 "real"
+subblocks and, sometimes, a 25th "virtual" subblock.  This is dealt
+with further in Section 13.
 
-The frame layout used by the reference decoder may be found in the file `vpx_image.h`.
+The frame layout used by the reference decoder may be found in the
+file `vpx_image.h` (Section 20.23).
 

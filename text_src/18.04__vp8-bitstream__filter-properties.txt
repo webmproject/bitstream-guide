@@ -1,27 +1,90 @@
 
 
-#### 18.4 Filter Properties                                  {#h-18-04}
+#### 18.4 Filter Properties                                {#h-18-04}
 
 
-We discuss briefly the rationale behind the choice of filters. Our approach is necessarily cursory; a genuinely accurate discussion would require a couple of books. Readers unfamiliar with signal processing may or may not wish to skip this.
+We discuss briefly the rationale behind the choice of filters.  Our
+approach is necessarily cursory; a genuinely accurate discussion
+would require a couple of books.  Readers unfamiliar with signal
+processing may or may not wish to skip this.
 
-All digital signals are of course sampled in some fashion. The case where the inter-sample spacing (say in time for audio samples, or space for pixels) is uniform, that is, the same at all positions, is particularly common and amenable to analysis. Many aspects of the treatment of such signals are best-understood in the frequency domain via Fourier Analysis, particularly those aspects of the signal that are not changed by shifts in position, especially when those positional shifts are not given by a whole number of samples.
+All digital signals are of course sampled in some fashion.  The case
+where the inter-sample spacing (say in time for audio samples, or
+space for pixels) is uniform, that is, the same at all positions, is
+particularly common and amenable to analysis.  Many aspects of the
+treatment of such signals are best-understood in the frequency domain
+via Fourier Analysis, particularly those aspects of the signal that
+are not changed by shifts in position, especially when those
+positional shifts are not given by a whole number of samples.
 
-Non-integral translates of a sampled signal are a textbook example of the foregoing. In our case of non-integral motion vectors, we wish to say what the underlying image "really is" at these pixels; although we don't have values for them, we feel that it makes  sense to talk about them. The correctness of this feeling is predicated on the underlying signal being band-limited, that is, not containing any energy in spatial frequencies that cannot be faithfully rendered at the pixel resolution at our disposal. In one dimension, this range of "OK" frequencies is called the Nyquist band; in our two-dimensional case of integer-grid samples, this range might be termed a Nyquist rectangle. The finer the grid, the more we know about the image, and the wider the Nyquist rectangle.
+Non-integral translates of a sampled signal are a textbook example of
+the foregoing.  In our case of non-integral motion vectors, we wish
+to say what the underlying image "really is" at these pixels;
+although we don't have values for them, we feel that it makes sense
+to talk about them.  The correctness of this feeling is predicated on
+the underlying signal being band-limited, that is, not containing any
+energy in spatial frequencies that cannot be faithfully rendered at
+the pixel resolution at our disposal.  In one dimension, this range
+of "OK" frequencies is called the Nyquist band; in our two-
+dimensional case of integer-grid samples, this range might be termed
+a Nyquist rectangle.  The finer the grid, the more we know about the
+image, and the wider the Nyquist rectangle.
 
-It turns out that, for such band-limited signals, there is indeed an exact mathematical formula to produce the correct sample value at an arbitrary point. Unfortunately, this calculation requires the consideration of every single sample in the image, as well as needing to operate at infinite precision. Also, strictly speaking, all band-limited signals have infinite spatial (or temporal) extent, so everything we are discussing is really some sort of approximation.
+It turns out that, for such band-limited signals, there is indeed an
+exact mathematical formula to produce the correct sample value at an
+arbitrary point.  Unfortunately, this calculation requires the
+consideration of every single sample in the image, as well as needing
+to operate at infinite precision.  Also, strictly speaking, all band-
+limited signals have infinite spatial (or temporal) extent, so
+everything we are discussing is really some sort of approximation.
 
-It is true that the theoretically correct subsampling procedure, as well as any approximation thereof, is always given by a translation-invariant weighted sum (or filter) similar to that used by VP8. It is also true that the reconstruction error made by such a filter can be simply represented as a multiplier in the frequency domain, that is, such filters simply multiply the Fourier transform of any signal to which they are applied by a fixed function associated to the filter. This fixed function is usually called the frequency response (or transfer function); the ideal subsampling filter has a frequency response equal to one in the Nyquist rectangle and zero everywhere else.
+It is true that the theoretically correct subsampling procedure, as
+well as any approximation thereof, is always given by a translation-
+invariant weighted sum (or filter) similar to that used by VP8.  It
+is also true that the reconstruction error made by such a filter can
+be simply represented as a multiplier in the frequency domain; that
+is, such filters simply multiply the Fourier transform of any signal
+to which they are applied by a fixed function associated to the
+filter.  This fixed function is usually called the frequency response
+(or transfer function); the ideal subsampling filter has a frequency
+response equal to one in the Nyquist rectangle and zero everywhere
+else.
 
-Another basic fact about approximations to "truly correct" subsampling is that, the wider the subrectangle (within the Nyquist rectangle) of spatial frequencies one wishes to "pass" (that is, correctly render) or, put more accurately, the closer one wishes to approximate the ideal transfer function, the more samples of the original signal must be considered by the subsampling, and the wider the calculation precision necessitated.
+Another basic fact about approximations to "truly correct"
+subsampling is that the wider the subrectangle (within the Nyquist
+rectangle) of spatial frequencies one wishes to "pass" (that is,
+correctly render) or, put more accurately, the closer one wishes to
+approximate the ideal transfer function, the more samples of the
+original signal must be considered by the subsampling, and the wider
+the calculation precision necessitated.
 
-The filters chosen by VP8 were chosen, within the constraints of 4 or 6 taps and 7-bit precision, to do the best possible job of handling the low spatial frequencies near the 0th DC frequency along with introducing no resonances (places where the absolute value of the frequency response exceeds one).
+The filters chosen by VP8 were chosen, within the constraints of 4 or
+6 taps and 7-bit precision, to do the best possible job of handling
+the low spatial frequencies near the 0th DC frequency along with
+introducing no resonances (places where the absolute value of the
+frequency response exceeds one).
 
-The justification for the foregoing has two parts. First, resonances can produce extremely objectionable visible artifacts when, as often happens in actual compressed video streams, filters are applied repeatedly. Second, the vast majority of energy in real-world images lies near DC and not at the high-end.
+The justification for the foregoing has two parts.  First, resonances
+can produce extremely objectionable visible artifacts when, as often
+happens in actual compressed video streams, filters are applied
+repeatedly.  Second, the vast majority of energy in real-world images
+lies near DC and not at the high end.
 
-To get slightly more specific, the filters chosen by VP8 are the best resonance-free 4- or 6-tap filters possible, where "best" describes the frequency response near the origin: the response at 0 is required to be 1 and the graph of the response at 0 is as flat as possible.
+To get slightly more specific, the filters chosen by VP8 are the best
+resonance-free 4- or 6-tap filters possible, where "best" describes
+the frequency response near the origin: The response at 0 is required
+to be 1, and the graph of the response at 0 is as flat as possible.
 
-To provide an intuitively more obvious point of reference, the "best" 2-tap filter is given by simple linear interpolation between the surrounding actual pixels.
+To provide an intuitively more obvious point of reference, the "best"
+2-tap filter is given by simple linear interpolation between the
+surrounding actual pixels.
 
-Finally, it should be noted that, because of the way motion vectors are calculated, the (shorter) 4-tap filters (used for odd fractional displacements) are applied in the chroma plane only. Human color perception is notoriously poor, especially where higher spatial frequencies are involved. The shorter filters are easier to understand mathematically, and the difference between them and a theoretically slightly better 6-tap filter is negligible where chroma is concerned.
+Finally, it should be noted that, because of the way motion vectors
+are calculated, the (shorter) 4-tap filters (used for odd fractional
+displacements) are applied in the chroma plane only.  Human color
+perception is notoriously poor, especially where higher spatial
+frequencies are involved.  The shorter filters are easier to
+understand mathematically, and the difference between them and a
+theoretically slightly better 6-tap filter is negligible where chroma
+is concerned.
 

@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
+ * Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
- *  found in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
+ * Use of this source code is governed by a BSD-style license
+ * that can be found in the LICENSE file in the root of the source
+ * tree.  An additional intellectual property rights grant can be
+ * found in the file PATENTS.  All contributing project authors may
+ * be found in the AUTHORS file in the root of the source tree.
  */
 
 
@@ -240,10 +240,10 @@ void vpx_img_flip(vpx_image_t *img)
 {
     /* Note: In the calculation pointer adjustment calculation, we
      * want the rhs to be promoted to a signed type. Section 6.3.1.8
-     * of the ISO C99 standard indicates that if the adjustment
-     * parameter is unsigned, the stride parameter will be promoted
-     * to unsigned, causing errors when the lhs is a larger type than
-     * the rhs.
+     * of the ISO C99 standard  [ISO-C99] indicates that if the
+     * adjustment parameter is unsigned, the stride parameter will 
+     * be promoted to unsigned, causing errors when the lhs is a 
+     * larger type than the rhs.
      */
     img->planes[VPX_PLANE_Y] += (signed)
       (img->d_h - 1) * img->stride[VPX_PLANE_Y];

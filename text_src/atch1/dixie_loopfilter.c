@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -373,7 +373,7 @@ filter_row_normal(struct vp8_decoder_ctx *ctx,
     {
         int edge_limit, interior_limit, hev_threshold;
 
-        /* TODO: only need to recalculate every MB if segmentation is
+        /* TODO: Only need to recalculate every MB if segmentation is
          * enabled.
          */
         calculate_filter_parameters(ctx, mbi, &edge_limit,
@@ -393,8 +393,8 @@ filter_row_normal(struct vp8_decoder_ctx *ctx,
 
             /* NOTE: This conditional is actually dependent on the
              * number of coefficients decoded, not the skip flag as
-             * coded in the bitstream. The tokens task is expected to
-             * set 31 if there is *any* non-zero data.
+             * coded in the bitstream.  The tokens task is expected
+             * to set 31 if there is *any* non-zero data.
              */
             if (mbi->base.eob_mask
                 || mbi->base.y_mode == SPLITMV
@@ -478,7 +478,7 @@ filter_row_simple(struct vp8_decoder_ctx *ctx,
     {
         int edge_limit, interior_limit, hev_threshold;
 
-        /* TODO: only need to recalculate every MB if segmentation is
+        /* TODO: Only need to recalculate every MB if segmentation is
          * enabled.
          */
         calculate_filter_parameters(ctx, mbi, &edge_limit,
@@ -489,8 +489,8 @@ filter_row_simple(struct vp8_decoder_ctx *ctx,
 
             /* NOTE: This conditional is actually dependent on the
              * number of coefficients decoded, not the skip flag as
-             * coded in the bitstream. The tokens task is expected to
-             * set 31 if there is *any* non-zero data.
+             * coded in the bitstream.  The tokens task is expected
+             * to set 31 if there is *any* non-zero data.
              */
             int filter_subblocks = (mbi->base.eob_mask
                                     || mbi->base.y_mode == SPLITMV

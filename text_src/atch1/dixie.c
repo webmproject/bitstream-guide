@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -492,7 +492,7 @@ vp8_parse_frame_header(const unsigned char   *data,
     if (sz < 10)
         return VPX_CODEC_CORRUPT_FRAME;
 
-    /* The frame header is defined as a three byte little endian
+    /* The frame header is defined as a three-byte little endian
      * value
      */
     raw = data[0] | (data[1] << 8) | (data[2] << 16);
@@ -511,7 +511,7 @@ vp8_parse_frame_header(const unsigned char   *data,
     {
         unsigned int update = 0;
 
-        /* Keyframe header consists of a three byte sync code
+        /* Keyframe header consists of a three-byte sync code
          * followed by the width and height and associated scaling
          * factors.
          */

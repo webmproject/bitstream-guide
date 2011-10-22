@@ -1,9 +1,15 @@
 
 
-#### 9.5 Token Partition and Partition Data Offsets          {#h-09-05}
+#### 9.5 Token Partition and Partition Data Offsets        {#h-09-05}
 
 
-VP8 allows DCT coefficients to be packed into multiple partitions besides the first partition with header and per-macroblock prediction information, so the decoder can perform parallel decoding in an efficient manner. There are two bits `L(2)` used to indicate the number of coefficient data partitions within a compressed frame. The two bits are defined in the following table:
+VP8 allows DCT coefficients to be packed into multiple partitions,
+besides the first partition with header and per-macroblock prediction
+information, so the decoder can perform parallel decoding in an
+efficient manner.  A two-bit `L(2)` is used to indicate the number of
+coefficient data partitions within a compressed frame.  The two bits
+are defined in the following table:
+
 
 | Bit 1   |  Bit 0  |  Number of Partitions
 | :-----: | :-----: | :--------------------:
@@ -12,7 +18,17 @@ VP8 allows DCT coefficients to be packed into multiple partitions besides the fi
 | 1       | 0       | 4
 | 1       | 1       | 8
 
-Offsets are embedded in the bitstream to provide the decoder direct access to token partitions. If the number of data partitions is greater than 1, the size of each partition (except the last) is written in 3 bytes (24 bits). The size of the last partition is the remainder of the data not used by any of the previous partitions. The partitioned data are consecutive in the bitstream, so the size can also be used to calculate the offset of each partition. The following pseudocode illustrates how the size/offset is defined by the three bytes in the bitstream.
+
+Offsets are embedded in the bitstream to provide the decoder direct
+access to token partitions.  If the number of data partitions is
+greater than 1, the size of each partition (except the last) is
+written in 3 bytes (24 bits).  The size of the last partition is the
+remainder of the data not used by any of the previous partitions.
+
+The partitioned data are consecutive in the bitstream, so the size
+can also be used to calculate the offset of each partition.  The
+following pseudocode illustrates how the size/offset is defined by
+the three bytes in the bitstream.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

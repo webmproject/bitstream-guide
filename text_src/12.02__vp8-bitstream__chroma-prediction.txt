@@ -1,21 +1,51 @@
 
 
-#### 12.2 Chroma Prediction                                  {#h-12-02}
+#### 12.2 Chroma Prediction                                {#h-12-02}
 
 
-The chroma prediction is a little simpler than the luma prediction, so we treat it first. Each of the chroma modes treats U and V identically, that is, the U and V prediction values are calculated in parallel, using the same relative addressing and arithmetic in each of the two planes.
+The chroma prediction is a little simpler than the luma prediction,
+so we treat it first.  Each of the chroma modes treats U and V
+identically; that is, the U and V prediction values are calculated in
+parallel, using the same relative addressing and arithmetic in each
+of the two planes.
 
-The modes extrapolate prediction values using the 8-pixel row "A" lying immediately above the block (that is, the bottom chroma row of the macroblock immediately above the current macroblock) and the 8-pixel column "L" immediately to the left of the block (that is, the rightmost chroma column of the macroblock immediately to the left of the current macroblock).
+The modes extrapolate prediction values using the 8-pixel row "A"
+lying immediately above the block (that is, the bottom chroma row of
+the macroblock immediately above the current macroblock) and the
+8-pixel column "L" immediately to the left of the block (that is, the
+rightmost chroma column of the macroblock immediately to the left of
+the current macroblock).
 
-Vertical prediction (chroma mode `V_PRED`) simply fills each 8-pixel row of the 8x8 chroma block with a copy of the "above" row (A). If the current macroblock lies on the top row of the frame, all 8 of the pixel values in A are assigned the value `127`.
+Vertical prediction (chroma mode `V_PRED`) simply fills each 8-pixel
+row of the 8x8 chroma block with a copy of the "above" row (A).  If
+the current macroblock lies on the top row of the frame, all 8 of the
+pixel values in A are assigned the value `127`.
 
-Similarly, horizontal prediction (`H_PRED`) fills each 8-pixel column of the 8x8 chroma block with a copy of the "left" column (L). If the current macroblock is in the left column of the frame, all 8 pixel values in L are assigned the value `129`.
+Similarly, horizontal prediction (`H_PRED`) fills each 8-pixel column
+of the 8x8 chroma block with a copy of the "left" column (L).  If the
+current macroblock is in the left column of the frame, all 8 pixel
+values in `L` are assigned the value `129`.
 
-DC prediction (`DC_PRED`) fills the 8x8 chroma block with a single value. In the generic case of a macroblock lying below the top row and right of the leftmost column of the frame, this value is the average of the 16 (genuinely visible) pixels in the (union of the) above row A and left column L.
+DC prediction (`DC_PRED`) fills the 8x8 chroma block with a single
+value.  In the generic case of a macroblock lying below the top row
+and right of the leftmost column of the frame, this value is the
+average of the 16 (genuinely visible) pixels in the (union of the)
+above row `A` and left column `L`.
 
-Otherwise, if the current macroblock lies on the top row of the frame, the average of the 8 pixels in L is used; if it lies in the left column of the frame, the average of the 8 pixels in A is used.  Note that the averages used in these exceptional cases are not the same as those that would be arrived at by using the out-of-bounds A and L values defined for V_PRED and H_PRED. In the case of the leftmost macroblock on the top row of the frame the 8x8 block is simply filled with the constant value `128`.
+Otherwise, if the current macroblock lies on the top row of the
+frame, the average of the 8 pixels in `L` is used; if it lies in the
+left column of the frame, the average of the 8 pixels in `A` is used.
 
-For `DC_PRED`, apart from the exceptional case of the top-left macroblock, we are averaging either 16 or 8 pixel values to get a single prediction value that fills the 8x8 block. The rounding is done as follows:
+Note that the averages used in these exceptional cases are not the
+same as those that would be arrived at by using the out-of-bounds `A`
+and `L` values defined for `V_PRED` and `H_PRED`.  In the case of the
+leftmost macroblock on the top row of the frame, the 8x8 block is
+simply filled with the constant value `128`.
+
+For `DC_PRED`, apart from the exceptional case of the top-left
+macroblock, we are averaging either 16 or 8 pixel values to get a
+single prediction value that fills the 8x8 block.  The rounding is
+done as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,9 +57,14 @@ Pixel DCvalue = (sum + (1 << (shf-1))) >> shf;
 {:lang="c"}
 
 
-Because the summands are all valid pixels, no "clamp" is necessary in the calculation of `DCvalue`.
+Because the summands are all valid pixels, no "clamp" is necessary in
+ the calculation of `DCvalue`.
 
-The remaining "True Motion" (`TM_PRED`) chroma mode gets its name from an older technique of video compression used by On2 Technologies, to which it bears some relation. In addition to the row "A" and column "L", `TM_PRED` uses the pixel "P" above and to the left of the chroma block.
+The remaining "True Motion" (`TM_PRED`) chroma mode gets its name from
+an older technique of video compression used by On2 Technologies, to
+which it bears some relation.  In addition to the row "A" and column
+"L", `TM_PRED` uses the pixel "P" above and to the left of the chroma
+block.
 
 The following figure gives an example of how `TM_PRED` works:
 
@@ -56,9 +91,12 @@ The following figure gives an example of how `TM_PRED` works:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Where P, As and Ls represent reconstructed pixel values from previously coded blocks, and X00 through X77 represent predicted values for the current block. `TM_PRED` uses the following equation to calculate [[ X_ij ]]:
+Where P, As, and Ls represent reconstructed pixel values from
+previously coded blocks, and X00 through X77 represent predicted
+values for the current block.  `TM_PRED` uses the following equation
+to calculate X_ij:
 
-  [[ X_ij = L_i + A_j - P (i, j=0, 1, 2, 3) ]]
+  X_ij = L_i + A_j - P (i, j=0, 1, 2, 3)
 
 The exact algorithm is as follows:
 
@@ -85,9 +123,14 @@ void TMpred(
 {:lang="c"}
 
 
-Note that the process could equivalently be described as propagating the vertical differences between pixels in L (starting from P), using the pixels from A to start each column.
+Note that the process could equivalently be described as propagating
+the vertical differences between pixels in L (starting from P), using
+the pixels from A to start each column.
 
-An implementation of chroma intra-prediction may be found in the reference decoder file `predict.c`.
+An implementation of chroma intra-prediction may be found in the
+reference decoder file `predict.c` (Section 20.14).
 
-Unlike `DC_PRED`, for macroblocks on the top row or left edge `TM_PRED` does use the out-of-bounds values of `127` and `129` (respectively) defined for `V_PRED` and `H_PRED`.
+Unlike `DC_PRED`, for macroblocks on the top row or left edge, `TM_PRED`
+does use the out-of-bounds values of `127` and `129` (respectively)
+defined for `V_PRED` and `H_PRED`.
 

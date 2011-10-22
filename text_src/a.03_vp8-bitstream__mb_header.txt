@@ -1,97 +1,125 @@
 
 
-#### A.3 Macroblock Data                                     {#h-0a-03}
+#### A.3 Macroblock Data                                   {#h-0a-03}
 
 
+| ---------------------------------------------- | ----- |
 | Macroblock Data                                | Type  |
-|--------------------  --------------------------|-------|
-| `macroblock_header()`                          |       |
-| `residual_data()`                              |       |
+| ---------------------------------------------- | ----- |
+| macroblock_header()                            |       |
+| residual_data()                                |       |
 {:.col1-pre}
 
 
+| ---------------------------------------------- | ----- |
 | macroblock_header()                            | Type  |
-|------------------------  ----------------------|-------|
-| `if (segmentation_map_update) {`               |       |
-| `  segment_id`                                 | T     |
-| `if (mb_no_skip_coeff) {`                      |       |
-| `  mb_skip_coeff`                              | B(p)  |
-| `}`                                            |       |
-| `if (!key_frame) {`                            |       |
-| `  is_inter_mb`                                | B(p)  |
-| `if (is_inter_mb) {`                           |       |
-| `  mb_ref_frame_sel1`                          | B(p)  |
-| `  if (mb_ref_frame_sel1)`                     |       |
-| `    mb_ref_frame_sel2`                        | B(p)  |
-| `  mv_mode`                                    | T     |
-| `  if (mv_mode == SPLITMV) {`                  |       |
-| `    mv_split_mode`                            | T     |
-| `    for (i = 0; i < numMvs; i++) {`           |       |
-| `      sub_mv_mode`                            | T     |
-| `      if (sub_mv_mode == NEWMV4x4) {`         |       |
-| `        read_mvcomponent()`                   |       |
-| `        read_mvcomponent()`                   |       |
-| `      }`                                      |       |
-| `   }`                                         |       |
-| `  } else if (mv_mode == NEWMV) {`             |       |
-| `    read_mvcomponent()`                       |       |
-| `    read_mvcomponent()`                       |       |
-| `  }`                                          |       |
-| `} else { /* intra mb */`                      |       |
-| `  intra_y_mode`                               | T     |
+| ---------------------------------------------- | ----- |
+| if (update_mb_segmentation_map)                |       |
+|   segment_id                                   | T     |
+| if (mb_no_skip_coeff)                          |       |
+|   mb_skip_coeff                                | B(p)  |
+| if (!key_frame)                                |       |
+|   is_inter_mb                                  | B(p)  |
+| if (is_inter_mb) {                             |       |
+|   mb_ref_frame_sel1                            | B(p)  |
+|   if (mb_ref_frame_sel1)                       |       |
+|     mb_ref_frame_sel2                          | B(p)  |
+|   mv_mode                                      | T     |
+|   if (mv_mode == SPLITMV) {                    |       |
+|     mv_split_mode                              | T     |
+|     for (i = 0; i < numMvs; i++) {             |       |
+|       sub_mv_mode                              | T     |
+|       if (sub_mv_mode == NEWMV4x4) {           |       |
+|         read_mvcomponent()                     |       |
+|         read_mvcomponent()                     |       |
+|       }                                        |       |
+|    }                                           |       |
+|   } else if (mv_mode == NEWMV) {               |       |
+|     read_mvcomponent()                         |       |
+|     read_mvcomponent()                         |       |
+|   }                                            |       |
+| } else { /* intra mb */                        |       |
+|   intra_y_mode                                 | T     |
+|   if (intra_y_mode == B_PRED) {                |       |
+|     for (i = 0; i < 16; i++)                   |       |
+|       intra_b_mode                             | T     |
+|   }                                            |       |
+|   intra_uv_mode                                | T     |
+| }                                              |       |
 {:.col1-pre}
 
 
-| macroblock_header()                            | Type  |
-|------------------------------------------------|-------|
-| `  if (intra_y_mode == B_PRED) {`              |       |
-| `    for (i = 0; i < 16; i++)`                 |       |
-| `      intra_b_mode`                           | T     |
-| `  }`                                          |       |
-| `  intra_uv_mode`                              | T     |
-| `}`                                            |       |
-{:.col1-pre}
+  * `segment_id` indicates to which segment the macroblock belongs
+    ([Section 10](#h-10-00))
+
+  * `mb_skip_coeff` indicates whether the macroblock contains any coded
+    coefficients or not ([Section 11.1](#h-11-01))
+
+  * `is_inter_mb` indicates whether the macroblock is intra- or inter-
+    coded ([Section 16](#h-16-00))
+
+  * `mb_ref_frame_sel1` selects the reference frame to be used; last
+    frame (0), golden/alternate (1) ([Section 16.2](#h-16-02))
+
+  * `mb_ref_frame_sel2` selects whether the golden (0) or alternate
+    reference frame (1) is used ([Section 16.2](#h-16-02))
+
+  * `mv_mode` determines the macroblock motion vector mode
+    ([Section 16.2](#h-16-02))
+
+  * `mv_split_mode` gives the macroblock partitioning specification and
+    determines the number of motion vectors used (numMvs)
+    ([Section 16.2](#h-16-02))
+
+  * `sub_mv_mode` determines the sub-macroblock motion vector mode for
+    macroblocks coded using the `SPLITMV` motion vector mode
+    ([Section 16.2](#h-16-02))
+
+  * `intra_y_mode` selects the luminance intra-prediction mode
+    ([Section 16.1](#h-16-01))
+
+  * `intra_b_mode` selects the sub-macroblock luminance prediction mode
+    for macroblocks coded using `B_PRED` mode ([Section 16.1](#h-16-01))
+
+  * `intra_uv_mode` selects the chrominance intra-prediction mode
+    ([Section 16.1](#h-16-01))
 
 
-  * `segment_id` indicates to which segment the macroblock belongs ([10](#h-10-00))
-  * `mb_skip_coeff` indicates if the macroblock contains any coded coefficients or not ([11.1](#h-11-01))
-  * `is_inter_mb` indicates if the macroblock is intra or inter coded ([16](#h-16-00))
-  * `mb_ref_frame_sel1` selects the reference frame to be used; last frame (0), golden/alternate (1) ([16.2](#h-16-02))
-  * `mb_ref_frame_sel2` selects whether the golden (0) or alternate reference frame (1) is used ([16.2](#h-16-02))
-  * `mv_mode` determines the macroblock motion vector mode ([16.2](#h-16-02))
-  * `mv_split_mode` gives macroblock partitioning specification and determines number of motion vectors used (numMvs)([16.2](#h-16-02))
-  * `sub_mv_mode` determines the sub-macroblock motion vector mode for macroblocks coded using `SPLITMV` motion vector mode ([16.2](#h-16-02))
-  * `intra_y_mode` selects the luminance intra prediction mode ([16.1](#h-16-01))
-  * `intra_b_mode` selects the sub-macroblock luminance prediction mode for macroblocks coded using `B_PRED` mode ([16.1](#h-16-01))
-  * `intra_uv_mode` selects the chrominance intra prediction mode ([16.1](#h-16-01))
-
-
+| ----------------------------------------------------- | ----- |
 | residual_data()                                       | Type  |
 | ----------------------------------------------------- | ----- |
-| `if (!mb_skip_coeff) {`                               |       |
-| `  if ( (is_inter_mb && mv_mode != SPLITMV) \|\|`     |       |
-| `       (!is_inter_mb && intra_y_mode != B_PRED) ) {` |       |
-| `    residual_block() /* Y2 */`                       |       |
-| `  }`                                                 |       |
-| `  for (i = 0; i < 24; i++)`                          |       |
-| `    residual_block() /* 16 Y, 4 U, 4 V */`           |       |
-| `}`                                                   |       |
+| if (!mb_skip_coeff) {                                 |       |
+|   if ( (is_inter_mb && mv_mode != SPLITMV) ||         |       |
+|        (!is_inter_mb && intra_y_mode != B_PRED) )     |       |
+|     residual_block() /* Y2 */                         |       |
+|   for (i = 0; i < 24; i++)                            |       |
+|     residual_block() /* 16 Y, 4 U, 4 V */             |       |
+| }                                                     |       |
 {:.col1-pre}
 
 
+| ----------------------------------------------------- | ----- |
 | residual_block()                                      | Type  |
 | ----------------------------------------------------- | ----- |
-| `for (i = firstCoeff; i < 16; i++) {`                 |       |
-| `  token`                                             |   T   |
-| `  if (token == EOB) break;`                          |       |
-| `  if (token_has_extra_bits) {`                       |       |
-| `    extra_bits`                                      | L(n)  |
-| `  sign`                                              | L(1)  |
+| for (i = firstCoeff; i < 16; i++) {                   |       |
+|   token                                               |   T   |
+|   if (token == EOB) break;                            |       |
+|   if (token_has_extra_bits)                           |       |
+|     extra_bits                                        | L(n)  |
+|   if (coefficient != 0)                               |       |
+|   sign                                                | L(1)  |
+| }                                                     |       |
 {:.col1-pre}
 
 
-  * firstCoeff is 1 for luma blocks of macroblocks containing Y2 subblock, otherwise 0
-  * `token` defines the value of the coefficient, the value range of the coefficient or the end of block ([13.2](#h-13-02))
-  * `extra_bits` determine the value of the coefficient within the value range defined by `token` ([13.2](#h-13-02))
-  * `sign` indicates the sign of the coefficient ([13.2](#h-13-02))
+  * firstCoeff is 1 for luma blocks of macroblocks containing Y2
+    subblock; otherwise 0
+
+  * `token` defines the value of the coefficient, the value range of the
+    coefficient, or the end of block ([Section 13.2](#h-13-02))
+
+  * `extra_bits` determines the value of the coefficient within the
+    value range defined by the `token` ([Section 13.2](#h-13-02))
+
+  * `sign` indicates the sign of the coefficient ([Section 13.2](#h-13-02))
 

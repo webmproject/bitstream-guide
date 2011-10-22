@@ -1,10 +1,11 @@
 
 
-#### 9.4 Loop Filter Type and Levels                         {#h-09-04}
+#### 9.4 Loop Filter Type and Levels                       {#h-09-04}
 
-
-VP8 supports two types of loop filter, having different computational complexity. The following bits occur in the header to support the selection of the baseline type, strength and sharpness behavior of the loop filter used for the current frame. 
-
+VP8 supports two types of loop filters having different computational
+complexity.  The following bits occur in the header to support the
+selection of the baseline type, strength, and sharpness behavior of
+the loop filter used for the current frame.
 
 
 | Index  | Description
@@ -14,11 +15,33 @@ VP8 supports two types of loop filter, having different computational complexity
 | `L(3)` | sharpness_level
 
 
-The meaning of these numbers will be further explained in Chapter 15.
+The meaning of these numbers will be further explained in Section 15.
 
-VP8 has a feature in the bitstream that enables adjustment of the loop filter level based on a macroblock's prediction mode and reference frame. The per-macroblock adjustment is done through delta values against default loop filter level for the current frame. This subsection contains flag and value information for implementing per-macroblock loop filter level adjustment to default decoder behaviors. The data in this section is used in the decoding of the ensuing per-macroblock information and applies to the entire frame.
+VP8 has a feature in the bitstream that enables adjustment of the
+loop filter level based on a macroblock's prediction mode and
+reference frame.  The per-macroblock adjustment is done through delta
+values against the default loop filter level for the current frame.
+This subsection contains flag and value information for implementing
+per-macroblock loop filter level adjustment to default decoder
+behavior.  The data in this section is used in the decoding of the
+ensuing per-macroblock information and applies to the entire frame.
 
-`L(1)` is a one-bit flag indicating if macroblock loop filter adjustment is on for the current frame. `0` means such feature is not supported in the current frame and `1` means this feature is enabled for the current frame.
+`L(1)` is a one-bit flag indicating if the macroblock loop filter
+adjustment is on for the current frame. `0` means that such a feature
+is not supported in the current frame, and `1` means this feature is
+enabled for the current frame.
 
-Whether the adjustment is based on reference frame or encoding mode, the adjustment of loop filter level is done via a delta value against a baseline loop filter value. The delta values are updated for the current frame if an `L(1)` bit, `mode_ref_lf_delta_update`, takes the value `1`. There are two groups of delta values, one group of delta values are for reference frame-based adjustments, the other group is for mode-based adjustments. The number of delta values in the two groups is `MAX_REF_LF_DELTAS` and `MAX_MODE_LF_DELTAS`, respectively. For every value within the two groups, there is one bit `L(1)` to indicate if the particular value is updated. When one is updated (1), it is transmitted as a six-bit magnitude `L(6)` followed by a one-bit sign flag `(L(1)`, `0` for positive and `1` for negative).
+Whether the adjustment is based on a reference frame or encoding
+mode, the adjustment of the loop filter level is done via a delta
+value against a baseline loop filter value.  The delta values are
+updated for the current frame if an `L(1)` bit,
+`mode_ref_lf_delta_update`, takes the value `1`. There are two groups of
+delta values: One group of delta values is for reference frame-based
+adjustments, and the other group is for mode-based adjustments.  The
+number of delta values in the two groups is `MAX_REF_LF_DELTAS` and
+`MAX_MODE_LF_DELTAS`, respectively.  For every value within the two
+groups, there is a one-bit `L(1)` to indicate if the particular value
+is updated.  When one is updated (1), it is transmitted as a six-bit-
+magnitude `L(6)` followed by a one-bit sign flag `(L(1)` -- `0` for
+positive and `1` for negative).
 

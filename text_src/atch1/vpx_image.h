@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
+ * Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
- *  found in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
+ * Use of this source code is governed by a BSD-style license
+ * that can be found in the LICENSE file in the root of the source
+ * tree.  An additional intellectual property rights grant can be
+ * found in the file PATENTS.  All contributing project authors may
+ * be found in the AUTHORS file in the root of the source tree.
  */
 
 
@@ -187,8 +187,8 @@ extern "C" {
      * Returns a descriptor for storing an image of the given format.
      * The storage for the descriptor is allocated on the heap.
      *
-     * \param[in]    img       Pointer to storage for descriptor. If
-     *                         this parameter is NULL, the storage
+     * \param[in]    img       Pointer to storage for descriptor.
+     *                         If this parameter is NULL, the storage
      *                         for the descriptor will be allocated
      *                         on the heap.
      * \param[in]    fmt       Format for the image
@@ -214,8 +214,8 @@ extern "C" {
      * The storage for descriptor has been allocated elsewhere, and a
      * descriptor is desired to "wrap" that storage.
      *
-     * \param[in]    img       Pointer to storage for descriptor. If
-     *                         this parameter is NULL, the storage
+     * \param[in]    img       Pointer to storage for descriptor.
+     *                         If this parameter is NULL, the storage
      *                         for the descriptor will be
      *                         allocated on the heap.
      * \param[in]    fmt       Format for the image
@@ -249,7 +249,7 @@ extern "C" {
      * \param[in]    w         width
      * \param[in]    h         height
      *
-     * \return 0 if the requested rectangle is valid, nonzero
+     * \return 0 if the requested rectangle is valid, non-zero
      * otherwise.
      */
     int vpx_img_set_rect(vpx_image_t  *img,

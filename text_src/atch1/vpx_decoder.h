@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -12,8 +12,8 @@
 /*!\defgroup decoder Decoder Algorithm Interface
  * \ingroup codec
  * This abstraction allows applications using this decoder to easily
- * support multiple video formats with minimal code duplication. This
- * section describes the interface common to all decoders.
+ * support multiple video formats with minimal code duplication.
+ * This section describes the interface common to all decoders.
  * @{
  */
 
@@ -49,7 +49,7 @@ extern "C" {
      *  are extra interfaces or functionality, and are not required
      *  to be supported by a decoder.
      *
-     *  The available flags are specifiedby VPX_CODEC_CAP_* defines.
+     *  The available flags are specified by VPX_CODEC_CAP_* defines.
      */
 #define VPX_CODEC_CAP_PUT_SLICE  0x10000 /**< Will issue put_slice
     callbacks */
@@ -71,8 +71,8 @@ extern "C" {
     /*!\brief Stream properties
      *
      * This structure is used to query or set properties of the
-     * decoded stream. Algorithms may extend this structure with data
-     * specific to their bitstream by setting the sz member
+     * decoded stream. Algorithms may extend this structure with
+     * data specific to their bitstream by setting the sz member
      * appropriately.
      */
     typedef struct vpx_codec_stream_info
@@ -118,7 +118,7 @@ extern "C" {
      * been set.
      *
      * \param[in]    ctx     Pointer to this instance's context.
-     * \param[in]    iface   Pointer to the alogrithm interface to
+     * \param[in]    iface   Pointer to the algorithm interface to
      *                       use.
      * \param[in]    cfg     Configuration to use, if known. May be
      *                       NULL.
@@ -153,7 +153,7 @@ extern "C" {
      * if the bitstream is of the proper format, and to extract
      * information from the stream.
      *
-     * \param[in]      iface   Pointer to the alogrithm interface
+     * \param[in]      iface   Pointer to the algorithm interface
      * \param[in]      data    Pointer to a block of data to parse
      * \param[in]      data_sz Size of the data buffer
      * \param[in,out]  si      Pointer to stream info to update. The
@@ -195,8 +195,8 @@ extern "C" {
 
     /*!\brief Decode data
      *
-     * Processes a buffer of coded data. If the processing results in
-     * a new decoded frame becoming available, PUT_SLICE and
+     * Processes a buffer of coded data. If the processing results
+     * in a new decoded frame becoming available, PUT_SLICE and
      * PUT_FRAME events may be generated, as appropriate. Encoded
      * data \ref MUST be passed in DTS (decode time stamp) order.
      * Frames produced will always be in PTS (presentation time
@@ -208,7 +208,7 @@ extern "C" {
      *                         VPX_CODEC_CB_PUT_FRAME event is posted
      *                         for the previously decoded frame.
      * \param[in] data_sz      Size of the coded data, in bytes.
-     * \param[in] user_priv    Application specific data to associate
+     * \param[in] user_priv    Application-specific data to associate
      *                         with this frame.
      * \param[in] deadline     Soft deadline the decoder should
      *                         attempt to meet, in us. Set to zero

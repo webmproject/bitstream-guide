@@ -1,19 +1,46 @@
 
 
-### Chapter 15: Loop Filter                                  {#h-15-00}
+### Section 15: Loop Filter                                {#h-15-00}
 
 
-Loop filtering is the last stage of frame reconstruction and the next-to-last stage of the decoding process. The loop filter is applied to the entire frame after the summation of predictor and residue described in Chapter 14.
+Loop filtering is the last stage of frame reconstruction and the
+next-to-last stage of the decoding process.  The loop filter is
+applied to the entire frame after the summation of predictor and
+residue signals, as described in Section 14.
 
-The purpose of the loop filter is to eliminate (or at least reduce) visually objectionable artifacts associated with the semi-independence of the coding of macroblocks and their constituent subblocks.
+The purpose of the loop filter is to eliminate (or at least reduce)
+visually objectionable artifacts associated with the semi-
+independence of the coding of macroblocks and their constituent
+subblocks.
 
-As was discussed in Chapter 5, the loop filter is "integral" to decoding, in that the results of loop filtering are used in the prediction of subsequent frames. Consequently, a functional decoder implementation must perform loop filtering exactly as described here. This is in distinction to any postprocessing that may be applied only to the image immediately before display; such postprocessing is entirely at the option of the implementor (and/or user) and has no effect on decoding per se.
+As was discussed in Section 5, the loop filter is "integral" to
+decoding, in that the results of loop filtering are used in the
+prediction of subsequent frames.  Consequently, a functional decoder
+implementation must perform loop filtering exactly as described here.
+This is distinct from any postprocessing that may be applied only to
+the image immediately before display; such postprocessing is entirely
+at the option of the implementor (and/or user) and has no effect on
+decoding per se.
 
-The baseline frame level parameters controlling the loop filter are defined in the frame header (Chapter 9.4) along with a mechanism for adjustment based on a macroblock's prediction mode and/or reference frame. The first is a flag selecting the type of filter (normal or simple), the other two are numbers (`loop_filter_level` and `sharpness_level`) that adjust the strength or sensitivity of the filter. As described in Chapters 9.3 and 10, `loop_filter_level` may also be overridden on a per-macroblock basis using segmentation.
+The baseline frame-level parameters controlling the loop filter are
+defined in the frame header (Section 9.4) along with a mechanism for
+adjustment based on a macroblock's prediction mode and/or reference
+frame.  The first is a flag (`filter_type`) selecting the type of
+filter (normal or simple); the other two are numbers
+(`loop_filter_level` and `sharpness_level`) that adjust the strength or
+sensitivity of the filter.  As described in Sections 9.3 and 10,
+`loop_filter_level` may also be overridden on a per-macroblock basis
+using segmentation.
 
-Loop filtering is one of the more computationally-intensive aspects of VP8 decoding. This is the reason for the existence of the optional, less-demanding simple filter type.
+Loop filtering is one of the more computationally intensive aspects
+of VP8 decoding.  This is the reason for the existence of the
+optional, less-demanding simple filter type.
 
-Note carefully that loop filtering must be skipped entirely if `loop_filter_level` at either the frame header level or macroblock override level is `0`.  In no case should the loop filter be run with a value of `0`; it should instead be skipped.
+Note carefully that loop filtering must be skipped entirely if
+`loop_filter_level` at either the frame header level or macroblock
+override level is `0`.  In no case should the loop filter be run with a
+value of `0`; it should instead be skipped.
 
-We begin by discussing the aspects of loop filtering that are independent of the controlling parameters and type of filter chosen.
+We begin by discussing the aspects of loop filtering that are
+independent of the controlling parameters and type of filter chosen.
 

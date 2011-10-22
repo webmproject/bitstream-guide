@@ -1,3 +1,13 @@
+/*
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.  An additional intellectual property rights grant can be
+ *  found in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 static const int dc_q_lookup[128] =
 {
     4,    5,    6,    7,    8,    9,    10,   10,
@@ -17,6 +27,7 @@ static const int dc_q_lookup[128] =
     122,  124,  126,  128,  130,  132,  134,  136,
     138,  140,  143,  145,  148,  151,  154,  157
 };
+
 static const int ac_q_lookup[128] =
 {
     4,    5,    6,    7,    8,    9,    10,   11,

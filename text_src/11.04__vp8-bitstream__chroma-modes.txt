@@ -1,9 +1,12 @@
 
 
-#### 11.4 Chroma Modes                                       {#h-11-04}
+#### 11.4 Chroma Modes                                     {#h-11-04}
 
 
-After the Y mode (and optional subblock mode) specification comes the chroma mode. The chroma modes are a subset of the Y modes and are coded using the `uv_mode_tree` described in Chapter 8, again repeated here for convenience:
+After the Y mode (and optional subblock mode) specification comes the
+chroma mode. The chroma modes are a subset of the Y modes and are
+coded using the `uv_mode_tree`, as described in Section 8 and repeated
+here for convenience:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,16 +22,21 @@ const tree_index uv_mode_tree [2 * (num_uv_modes - 1)] =
 {:lang="c"}
 
 
-As for the Y modes (in a key frame), the chroma modes are coded using a fixed, contextless probability table:
+As for the Y modes (in a key frame), the chroma modes are coded using
+a fixed, contextless probability table:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const Prob kf_uv_mode_prob [num_uv_modes - 1] = { 142, 114, 183};
-uv_mode = (intra_mbmode) treed_read( d, uv_mode_tree, 
+uv_mode = (intra_mbmode) treed_read( d, uv_mode_tree,
   kf_uv_mode_prob);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
 
-This completes the description of macroblock prediction coding for key frames. As will be discussed in Chapter 16, the coding of intra modes within interframes is similar, but not identical, to that described here (and in the reference code) for prediction modes and, indeed, for all tree-coded data in VP8.
+This completes the description of macroblock prediction coding for
+key frames.  As will be discussed in Section 16, the coding of intra
+modes within interframes is similar, but not identical, to that
+described here (and in the reference code) for prediction modes and,
+indeed, for all tree-coded data in VP8.
 

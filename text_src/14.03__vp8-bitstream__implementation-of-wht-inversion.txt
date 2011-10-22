@@ -1,14 +1,23 @@
 
 
-#### 14.3 Implementation of the WHT Inversion                {#h-14-03}
+#### 14.3 Implementation of the WHT Inversion              {#h-14-03}
 
 
-As previously discussed (see Chapters 2 and 13), for macroblocks encoded using prediction modes other than `B_PRED` and `SPLITMV`, the DC values derived from the DCT transform on the 16 Y blocks are collected to construct a 25th block of a macroblock (16 Y, 4 U, 4 V constitute the 24 blocks). This 25th block is transformed using a Walsh-Hadamard transform (WHT). 
+As previously discussed (see Sections 2 and 13), for macroblocks
+encoded using prediction modes other than `B_PRED` and `SPLITMV`, the DC
+values derived from the DCT transform on the 16 Y blocks are
+collected to construct a 25th block of a macroblock (16 Y, 4 U, 4 V
+constitute the 24 blocks). This 25th block is transformed using a
+Walsh-Hadamard transform (WHT).
 
-The inputs to the inverse WHT (that is, the dequantized coefficients), the intermediate "horizontally detransformed" signal, and the completely detransformed residue signal are all stored as arrays of 16-bit signed integers. 
+The inputs to the inverse WHT (that is, the dequantized
+coefficients), the intermediate "horizontally detransformed" signal,
+and the completely detransformed residue signal are all stored as
+arrays of 16-bit signed integers.
 
-Following the tradition of specifying bitstream format using the decoding process, we specify the inverse WHT in the decoding process using the following C style source code:  
-
+Following the tradition of specifying bitstream format using the
+decoding process, we specify the inverse WHT in the decoding process
+using the following C-style source code:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void vp8_short_inv_walsh4x4_c(short *input, short *output)
@@ -60,9 +69,8 @@ void vp8_short_inv_walsh4x4_c(short *input, short *output)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-In the case that there is only one non-zero DC value in input, the inverse transform can be simplified to the following: 
-
+In the case that there is only one non-zero DC value in input, the
+inverse transform can be simplified to the following: 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void vp8_short_inv_walsh4x4_1_c(short *input, short *output)
@@ -71,8 +79,6 @@ void vp8_short_inv_walsh4x4_1_c(short *input, short *output)
   int a1;
   short *op=output;
 
-
-  
   a1 = ((input[0] + 3)>>3);
 
   for(i=0;i<4;i++)
@@ -87,8 +93,11 @@ void vp8_short_inv_walsh4x4_1_c(short *input, short *output)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
+It should be noted that a conforming decoder should implement the
+inverse transform using exactly the same rounding to achieve bit-wise
+matching output to the output of the process specified by the above
+C source code.
 
-It should be noted, a conforming decoder should implement the inverse transform using exactly the same rounding to achieve bit-wise matching output to the output of the process specified by the above "C" source code. 
-
-The reference decoder WHT inversion may be found in the file `idct_add.c`.
+The reference decoder WHT inversion may be found in the file
+`idct_add.c` (Section 20.8).
 

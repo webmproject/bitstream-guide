@@ -1,15 +1,38 @@
 
 
-#### 18.1 Bounds on and Adjustment of Motion Vectors         {#h-18-01}
+#### 18.1 Bounds on, and Adjustment of, Motion Vectors     {#h-18-01}
 
 
-Since each motion vector is differentially encoded from a neighboring block or macroblock and the only clamp is to ensure that the referenced motion vector represents a valid location inside a reference frame buffer, it is technically possible within the VP8 format for a block or macroblock to have arbitrarily large motion vectors, up to the size of the input image plus the extended border areas. For practical reasons, VP8 imposes a motion vector size range limit of -4096 to 4095 full pixels, regardless of image size (VP8 defines 14 raw bits for width and height; 16383x16383 is the maximum possible image size). Bitstream-compliant encoders and decoders shall enforce this limit.
+Since each motion vector is differentially encoded from a neighboring
+block or macroblock and the only clamp is to ensure that the
+referenced motion vector represents a valid location inside a
+reference frame buffer, it is technically possible within the VP8
+format for a block or macroblock to have arbitrarily large motion
+vectors, up to the size of the input image plus the extended border
+areas.  For practical reasons, VP8 imposes a motion vector size range
+limit of -4096 to 4095 full pixels, regardless of image size (VP8
+defines 14 raw bits for width and height; 16383x16383 is the maximum
+possible image size).  Bitstream-compliant encoders and decoders
+shall enforce this limit.
 
-Because the motion vectors applied to the chroma subblocks have 1/8 pixel resolution, the synthetic pixel calculation, outlined in Chapter 5 and detailed below, uses this resolution for the luma subblocks as well. In accordance, the stored luma motion vectors are all doubled, each component of each luma vector becoming an even integer in the range -2046 to +2046, inclusive.
+Because the motion vectors applied to the chroma subblocks have
+1/8-pixel resolution, the synthetic pixel calculation, outlined in
+Section 5 and detailed below, uses this resolution for the luma
+subblocks as well.  In accordance, the stored luma motion vectors are
+all doubled, each component of each luma vector becoming an even
+integer in the range -2046 to +2046, inclusive.
 
-The vector applied to each chroma subblock is calculated by averaging the vectors for the 4 luma subblocks occupying the same visible area as the chroma subblock in the usual correspondence, that is, the vector for U and V block 0 is the average of the vectors for the Y subblocks { 0, 1, 4, 5}, chroma block 1 corresponds to Y blocks { 2, 3, 6, 7}, chroma block 2 to Y blocks { 8, 9, 12, 13}, and chroma block 3 to Y blocks { 10, 11, 14, 15}.
+The vector applied to each chroma subblock is calculated by averaging
+the vectors for the 4 luma subblocks occupying the same visible area
+as the chroma subblock in the usual correspondence; that is, the
+vector for U and V block 0 is the average of the vectors for the Y
+subblocks { 0, 1, 4, 5}, chroma block 1 corresponds to Y blocks { 2,
+3, 6, 7}, chroma block 2 to Y blocks { 8, 9, 12, 13}, and chroma
+block 3 to Y blocks { 10, 11, 14, 15}.
 
-In detail, each of the two components of the vectors for each of the chroma subblocks is calculated from the corresponding luma vector components as follows:
+In detail, each of the two components of the vectors for each of the
+chroma subblocks is calculated from the corresponding luma vector
+components as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,10 +40,10 @@ int avg( int c1, int c2, int c3, int c4)
 {
     int s = c1 + c2 + c3 + c4;
 
-    /* The shift divides by 8 (not 4) because chroma pixels 
-       have twice the diameter of luma pixels.  The handling 
-       of negative motion vector components is slightly 
-       cumbersome because, strictly speaking, right shifts 
+    /* The shift divides by 8 (not 4) because chroma pixels
+       have twice the diameter of luma pixels.  The handling
+       of negative motion vector components is slightly
+       cumbersome because, strictly speaking, right shifts
        of negative numbers are not well-defined in C. */
 
     return s >= 0 ?  (s + 4) >> 3 : -( (-s + 4) >> 3);
@@ -28,7 +51,11 @@ int avg( int c1, int c2, int c3, int c4)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Furthermore, if the version number in the frame tag specifies only full-pel chroma motion vectors, then the fractional parts of both components of the vector are truncated to zero, as illustrated in the following pseudocode (assuming 3 bits of fraction for both luma and chroma vectors):
+Furthermore, if the version number in the frame tag specifies only
+full-pel chroma motion vectors, then the fractional parts of both
+components of the vector are truncated to zero, as illustrated in the
+following pseudocode (assuming 3 bits of fraction for both luma and
+chroma vectors):
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,7 +65,16 @@ Furthermore, if the version number in the frame tag specifies only full-pel chro
 {:lang="c"}
 
 
-Earlier in this document we described the `vp8_clamp_mv()` function to limit "nearest" and "near" motion vector predictors inside specified margins within the frame boundaries. Additional clamping is performed for `NEWMV` macroblocks, for which the final motion vector is clamped again after combining the "best" predictor and the differential vector decoded from the stream. 
+Earlier in this document we described the `vp8_clamp_mv()` function
+to limit "nearest" and "near" motion vector predictors inside
+specified margins within the frame boundaries.  Additional clamping
+is performed for `NEWMV` macroblocks, for which the final motion
+vector is clamped again after combining the "best" predictor and the
+differential vector decoded from the stream.
 
-However, the secondary clamping is not performed for `SPLITMV` macroblocks, meaning that any subblock's motion vector within the `SPLITMV` macroblock may point outside the clamping zone. These non-clamped vectors are also used when determining the decoding tree context for subsequent subblocks' modes in the `vp8_mvCont()` function.
+However, the secondary clamping is not performed for `SPLITMV`
+macroblocks, meaning that any subblock's motion vector within the
+`SPLITMV` macroblock may point outside the clamping zone.  These non-
+clamped vectors are also used when determining the decoding tree
+context for subsequent subblocks' modes in the `vp8_mvCont()` function.
 

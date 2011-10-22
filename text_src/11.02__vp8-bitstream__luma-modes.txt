@@ -1,9 +1,11 @@
 
 
-#### 11.2 Luma Modes                                         {#h-11-02}
+#### 11.2 Luma Modes                                       {#h-11-02}
 
 
-First comes the luma specification of type `intra_mbmode`, coded using the `kf_ymode_tree`, as described in Chapter 8 and repeated here for convenience:
+First comes the luma specification of type `intra_mbmode`, coded using
+the `kf_ymode_tree`, as described in Section 8 and repeated here for
+convenience:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,7 +36,8 @@ const tree_index kf_ymode_tree [2 * (num_ymodes - 1)] =
 {:lang="c"}
 
 
-For key frames, the Y mode is decoded using a fixed probability array as follows:
+For key frames, the Y mode is decoded using a fixed probability array
+as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,9 +47,12 @@ Ymode = (intra_mbmode) treed_read( d, kf_ymode_tree, kf_ymode_prob);
 {:lang="c"}
 
 
-`d` is of course the `bool_decoder` being used to read the first data partition.
+`d` is of course the `bool_decoder` being used to read the first data
+partition.
 
-If the Ymode is `B_PRED`, it is followed by a (tree-coded) mode for each of the 16 Y subblocks. The 10 subblock modes and their coding tree as follows:
+If the Ymode is `B_PRED`, it is followed by a (tree-coded) mode for
+each of the 16 Y subblocks. The 10 subblock modes and their coding
+tree are as follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,6 +98,7 @@ const tree_index bmode_tree [2 * (num_intra_bmodes - 1)] =
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-The first four modes are smaller versions of the similarly-named 16x16 modes above, albeit with slightly different numbering. The last six "diagonal" modes are unique to luma subblocks.
+The first four modes are smaller versions of the similarly named
+16x16 modes above, albeit with slightly different numbering.  The
+last six "diagonal" modes are unique to luma subblocks.
 

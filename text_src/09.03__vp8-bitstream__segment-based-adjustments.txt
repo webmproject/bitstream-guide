@@ -1,25 +1,53 @@
 
 
-#### 9.3 Segment-based Adjustments                           {#h-09-03}
+#### 9.3 Segment-Based Adjustments                         {#h-09-03}
 
 
-This subsection contains probability and value information for implementing segment adaptive adjustments to default decoder behaviors. The data in this section is used in the decoding of the ensuing per-segment information and applies to the entire frame. When segment adaptive adjustments are enabled, each macroblock will be assigned a segment ID. Macroblocks with the same segment ID belong to same segment, and have the same adaptive adjustments over default baseline values for the frame. The adjustments can be quantizer level or loop filter strength.
+This subsection contains probability and value information for
+implementing segment adaptive adjustments to default decoder
+behavior.  The data in this subsection is used in the decoding of the
+ensuing per-segment information and applies to the entire frame.
+When segment adaptive adjustments are enabled, each macroblock will
+be assigned a segment ID.  Macroblocks with the same segment ID
+belong to the same segment and have the same adaptive adjustments
+over default baseline values for the frame.  The adjustments can be
+quantizer level or loop filter strength.
 
-The context for decoding this feature at the macroblock level is provided by a subsection in the frame header, which contains:
+The context for decoding this feature at the macroblock level is
+provided by a subsection in the frame header, which contains:
 
-  1. A `segmentation_enabled` flag that enables the feature for this frame if set to `1`, and disables it if set to `0`. The following fields occur if the feature is enabled.
+  1. A `segmentation_enabled` flag that enables the feature for this
+     frame if set to `1`, and disables it if set to `0`.  The following
+     fields occur if the feature is enabled.
 
-  2. `L(1)` indicates if the segment map is updated for the current frame (`update_mb_segmentation_map`).
+  2. `L(1)` indicates if the segment map is updated for the current
+     frame (`update_mb_segmentation_map`).
 
-  3. `L(1)` indicates if the segment feature data items are updated for the current frame (`update_segment_feature_data`).
+  3. `L(1)` indicates if the segment feature data items are updated for
+     the current frame (`update_segment_feature_data`).
 
-  4. If Item 3 above (`update_segment_feature_data`) is `1`, the following fields occur:
+  4. If Item 3 above (`update_segment_feature_data`) is `1`, the following
+     fields occur:
 
-     a. `L(1)` the mode of segment feature data (`segment_feature_mode`) can be absolute value mode (`0`) or delta value mode (`1`).
+     a. `L(1)`, the mode of segment feature data
+        (`segment_feature_mode`), can be absolute-value mode (`0`) or
+        delta value mode (`1`).
 
-     b. Segment feature data items are decoded segment by segment for each segment feature. For every data item, a one-bit flag indicates whether the item is `0`, or a non-zero value to be decoded. If the value is non-zero, then the value is decoded as a magnitude `L(n)`, followed by a one-bit sign (`L(1)` --  `0` for positive and `1` for negative). The length `n` can be looked up from a pre-defined length table for all feature data.
+     b. Segment feature data items are decoded segment by segment for
+        each segment feature.  For every data item, a one-bit flag
+        indicates whether the item is `0`, or a non-zero value to be
+        decoded. If the value is non-zero, then the value is decoded
+        as a magnitude `L(n)`, followed by a one-bit sign (`L(1)` -- `0`
+        for positive and `1` for negative).  The length `n` can be looked
+        up from a pre-defined length table for all feature data.
 
-  5. If the `L(1)` flag as noted in Item 2 above is set to `1`, the probabilities of the decoding tree for the segment map are decoded from the bitstream. Each probability is decoded with a one-bit flag indicating whether the probability is the default value of `255` (flag is set to `0`) or an 8-bit value, `L(8)`, from the bitstream.
+  5. If the `L(1)` flag as noted in Item 2 above is set to `1`, the
+     probabilities of the decoding tree for the segment map are
+     decoded from the bitstream.  Each probability is decoded with a
+     one-bit flag indicating whether the probability is the default
+     value of `255` (flag is set to `0`), or an 8-bit value, `L(8)`, from
+     the bitstream.
 
-The layout and semantics supporting this feature at the macroblock level are described in Chapter 10.
+The layout and semantics supporting this feature at the macroblock
+level are described in Section 10.
 

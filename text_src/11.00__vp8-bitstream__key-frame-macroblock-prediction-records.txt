@@ -1,7 +1,9 @@
 
 
-### Chapter 11: Key Frame Macroblock Prediction Records      {#h-11-00}
+### Section 11: Key Frame Macroblock Prediction Records    {#h-11-00}
 
 
-After the features described above, the macroblock prediction record next specifies the prediction mode used for the macroblock.
+After specifying the features described above, the macroblock
+prediction record next specifies the prediction mode used for the
+macroblock.
 

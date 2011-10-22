@@ -1,17 +1,42 @@
 
 
-### Chapter 12: Intraframe Prediction                        {#h-12-00}
+### Section 12: Intraframe Prediction                      {#h-12-00}
 
 
-Intraframe prediction uses already-coded macroblocks within the current frame to approximate the contents of the current macroblock. It applies to intra-coded macroblocks in an interframe and to all macroblocks in a key frame.
+Intraframe prediction uses already-coded macroblocks within the
+current frame to approximate the contents of the current macroblock.
+It applies to intra-coded macroblocks in an interframe and to all
+macroblocks in a key frame.
 
-Relative to the current macroblock "M", the already-coded macroblocks include all macroblocks above M together with the macroblocks on the same row as, and to the left of, M, though at most four of these macroblocks are actually used: the block "A" directly above M, the blocks immediately to the left and right of A, and the block immediately to the left of M.
+Relative to the current macroblock "M", the already-coded macroblocks
+include all macroblocks above M together with the macroblocks on the
+same row as, and to the left of, M, though at most four of these
+macroblocks are actually used: the block "A" directly above M, the
+blocks immediately to the left and right of A, and the block
+immediately to the left of M.
 
-Each of the prediction modes (i.e., means of extrapolation from already-calculated values) uses fairly simple arithmetic on pixel values whose positions, relative to the current position, are defined by the mode.
+Each of the prediction modes (i.e., means of extrapolation from
+already-calculated values) uses fairly simple arithmetic on pixel
+values whose positions, relative to the current position, are defined
+by the mode.
 
-The chroma (U and V) and luma (Y) predictions are independent of each other. 
+The chroma (U and V) and luma (Y) predictions are independent of each
+other.
 
-The relative addressing of pixels applied to macroblocks on the upper row or left column of the frame will sometimes cause pixels outside the visible frame to be referenced. Usually such out-of-bounds pixels have an assumed value of `129` for pixels to the left of the leftmost column of the visible frame and `127` for pixels above the top row of the visible frame (including the special case of the pixel above and to the left of the top-left pixel in the visible frame). Exceptions to this (associated to certain modes) will be noted below.
+The relative addressing of pixels applied to macroblocks on the upper
+row or left column of the frame will sometimes cause pixels outside
+the visible frame to be referenced.  Usually such out-of-bounds
+pixels have an assumed value of `129` for pixels to the left of the
+leftmost column of the visible frame and `127` for pixels above the
+top row of the visible frame (including the special case of the pixel
+above and to the left of the top-left pixel in the visible frame).
+Exceptions to this (associated to certain modes) will be noted below.
 
-The already-coded macroblocks referenced by intra-prediction have been "reconstructed", that is, have been predicted and residue-adjusted (as described in Chapter 14), but have not been loop-filtered. While it does process the edges between individual macroblocks and individual subblocks, loop filtering (described in Chapter 15) is applied to the frame as a whole, after all of the macroblocks have been reconstructed.
+The already-coded macroblocks referenced by intra-prediction have
+been "reconstructed", that is, have been predicted and residue-
+adjusted (as described in Section 14), but have not been loop-
+filtered.  While it does process the edges between individual
+macroblocks and individual subblocks, loop filtering (described in
+Section 15) is applied to the frame as a whole, after all of the
+macroblocks have been reconstructed.
 

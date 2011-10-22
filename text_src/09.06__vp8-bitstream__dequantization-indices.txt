@@ -1,11 +1,22 @@
 
 
-#### 9.6 Dequantization Indices                              {#h-09-06}
+#### 9.6 Dequantization Indices                            {#h-09-06}
 
 
-All residue signals are specified via a quantized 4x4 DCT applied to the Y, U, V, or Y2 subblocks of a macroblock. As detailed in Chapter 14, before inverting the transform, each decoded coefficient is multiplied by one of six dequantization factors, the choice of which depends on the plane (Y, chroma = U or V, Y2) and coefficient position (DC = coefficient 0, AC = coefficients 1-15). The six values are specified using 7-bit indices into six corresponding fixed tables (the tables are given in Chapter 14).
+All residue signals are specified via a quantized 4x4 DCT applied to
+the Y, U, V, or Y2 subblocks of a macroblock.  As detailed in
+Section 14, before inverting the transform, each decoded coefficient
+is multiplied by one of six dequantization factors, the choice of
+which depends on the plane (Y, chroma = U or V, Y2) and coefficient
+position (DC = coefficient 0, AC = coefficients 1-15).  The six
+values are specified using 7-bit indices into six corresponding fixed
+tables (the tables are given in Section 14).
 
-The first 7-bit index gives the dequantization table index for Y plane AC coefficients, called yac_qi. It is always coded and acts as a baseline for the other 5 quantization indices, each of which is represented by a delta from this baseline index. Following is pseudocode for reading the indices:
+The first 7-bit index gives the dequantization table index for
+Y-plane AC coefficients, called yac_qi.  It is always coded and acts
+as a baseline for the other 5 quantization indices, each of which is
+represented by a delta from this baseline index.  Pseudocode for
+reading the indices follows:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -26,7 +37,9 @@ uvac_delta = F? delta(): 0;  /* chroma ac delta specified
 {:lang="c"}
 
 
-Where `delta()` is the process to read 5 bits from the bitstream to determine a signed delta value: 
+Where `delta()` is the process to read 5 bits from the bitstream to
+determine a signed delta value: 
+
 
 | Index     | Description
 | --------- | -------------------------------

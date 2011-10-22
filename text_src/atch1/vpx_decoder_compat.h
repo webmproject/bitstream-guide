@@ -1,18 +1,18 @@
 /*
- *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
+ * Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
- *  found in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
+ * Use of this source code is governed by a BSD-style license
+ * that can be found in the LICENSE file in the root of the source
+ * tree.  An additional intellectual property rights grant can be
+ * found in the file PATENTS.  All contributing project authors may
+ * be found in the AUTHORS file in the root of the source tree.
  */
 
 
 /*!\defgroup decoder Common Decoder Algorithm Interface
  * This abstraction allows applications using this decoder to easily
- * support multiple video formats with minimal code duplication. This
- * section describes the interface common to all codecs.
+ * support multiple video formats with minimal code duplication.
+ * This section describes the interface common to all codecs.
  * @{
  */
 
@@ -20,8 +20,8 @@
  * \brief Provides a compatibility layer between version 1 and 2 of
  * this API.
  *
- * This interface has been deprecated. Only existing code should make
- * use of this interface, and therefore, it is only thinly
+ * This interface has been deprecated. Only existing code should
+ * make use of this interface, and therefore, it is only thinly
  * documented. Existing code should be ported to the vpx_codec_* API.
  */
 #ifdef __cplusplus
@@ -56,10 +56,11 @@ extern "C" {
         /*!\brief Encoded bitstream uses an unsupported feature
          *
          * The decoder does not implement a feature required by the
-         * encoder. This return code should only be used for features
-         * that prevent future pictures from being properly decoded.
-         * This error \ref MAY be treated as fatal to the stream or
-         * \ref MAY be treated as fatal to the current GOP.
+         * encoder. This return code should only be used for
+         * features that prevent future pictures from being properly
+         * decoded.  This error \ref MAY be treated as fatal to the
+         * stream or \ref MAY be treated as fatal to the current
+         * Group of Pictures (GOP).
          */
         VPX_DEC_UNSUP_FEATURE = VPX_CODEC_UNSUP_FEATURE,
 
@@ -102,7 +103,7 @@ extern "C" {
                                          callbacks */
 #define VPX_DEC_CAP_PUT_FRAME  0x0002 /**< Will issue put_frame
                                          callbacks */
-#define VPX_DEC_CAP_XMA        0x0004 /**< Supports eXternal Memory
+#define VPX_DEC_CAP_XMA        0x0004 /**< Supports External Memory
                                          Allocation */
 
     /*!\brief Stream properties
@@ -184,8 +185,8 @@ extern "C" {
     /*!\brief Convert error number to printable string
      *
      * Returns a human readable string for the last error returned
-     * by the algorithm. The returned error will be one line and will
-     * not contain any newline characters.
+     * by the algorithm. The returned error will be one line and
+     * will not contain any newline characters.
      *
      *
      * \param[in]    err     Error number.
@@ -328,7 +329,7 @@ extern "C" {
 
     /*!\brief Control algorithm
      *
-     * This function is used to exchange algorithm specific data with
+     * This function is used to exchange algorithm-specific data with
      * the decoder instance. This can be used to implement features
      * specific to a particular algorithm.
      *
@@ -338,7 +339,7 @@ extern "C" {
      * the request could not be dispatched.
      *
      * \param[in]     ctx          Pointer to this instance's context
-     * \param[in]     ctrl_id      Algorithm specific control
+     * \param[in]     ctrl_id      Algorithm-specific control
      *                             identifier
      * \param[in,out] data         Data to exchange with algorithm
      *                             instance.
@@ -356,12 +357,12 @@ extern "C" {
 
     /*!\brief Decode data
      *
-     * Processes a buffer of coded data. If the processing results in
-     * a new decoded frame becoming available, #VPX_DEC_CB_PUT_SLICE
-     * and #VPX_DEC_CB_PUT_FRAME events may be generated, as
-     * appropriate. Encoded data \ref MUST be passed in DTS (decode
-     * time stamp) order. Frames produced will always be in PTS
-     * (presentation time stamp) order.
+     * Processes a buffer of coded data.  If the processing results
+     * in a new decoded frame becoming available,
+     * #VPX_DEC_CB_PUT_SLICE and #VPX_DEC_CB_PUT_FRAME events may be
+     * generated, as appropriate.  Encoded data \ref MUST be passed
+     * in DTS (decode time stamp) order. Frames produced will always
+     * be in PTS (presentation time stamp) order.
      *
      * \param[in] ctx          Pointer to this instance's context
      * \param[in] data         Pointer to this block of new coded
@@ -369,7 +370,7 @@ extern "C" {
      *                         event is posted for the previously
      *                         decoded frame.
      * \param[in] data_sz      Size of the coded data, in bytes.
-     * \param[in] user_priv    Application specific data to associate
+     * \param[in] user_priv    Application-specific data to associate
      *                         with this frame.
      * \param[in] rel_pts      PTS relative to the previous frame, in
      *                         us. If unknown or unavailable, set to
@@ -580,17 +581,17 @@ extern "C" {
 
     /*!\brief Iterate over the list of segments to allocate.
      *
-     * Iterates over a list of the segments to allocate. The iterator
-     * storage should be initialized to NULL to start the iteration.
-     * Iteration is complete when this function returns
-     * VPX_DEC_LIST_END. The amount of memory needed to allocate is
-     * dependent upon the size of the encoded stream. This means that
-     * the stream info structure must be known at allocation time. It
-     * can be populated with the vpx_dec_peek_stream_info() function.
-     * In cases where the stream to be decoded is not available at
-     * allocation time, a fixed size must be requested. The decoder
-     * will not be able to decode streams larger than the size used
-     * at allocation time.
+     * Iterates over a list of the segments to allocate.  The
+     * iterator storage should be initialized to NULL to start the
+     * iteration.  Iteration is complete when this function returns
+     * VPX_DEC_LIST_END.  The amount of memory needed to allocate is
+     * dependent upon the size of the encoded stream.  This means
+     * that the stream info structure must be known at allocation
+     * time.  It can be populated with the vpx_dec_peek_stream_info()
+     * function.  In cases where the stream to be decoded is not
+     * available at allocation time, a fixed size must be requested.
+     * The decoder will not be able to decode streams larger than the
+     * size used at allocation time.
      *
      * \param[in]      ctx     Pointer to this instance's context.
      * \param[out]     mmap    Pointer to the memory map entry to

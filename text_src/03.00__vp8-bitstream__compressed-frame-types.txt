@@ -1,16 +1,47 @@
 
 
-### Chapter 3: Compressed Frame Types                        {#h-03-00}
+### Section 3: Compressed Frame Types                      {#h-03-00}
 
 There are only two types of frames in VP8.
 
-_Intraframes_ (also called _key frames_ and, in MPEG terminology, _I-frames_) are decoded without reference to any other frame in a sequence, that is, the decompressor reconstructs such frames beginning from its "default" state. Key frames provide random access (or seeking) points in a video stream.
+_Intraframes_ (also called _key frames_ and, in MPEG terminology,
+_I-frames_) are decoded without reference to any other frame in a
+sequence; that is, the decompressor reconstructs such frames
+beginning from its "default" state.  Key frames provide random access
+(or seeking) points in a video stream.
 
-_Interframes_ (also called _prediction frames_ and, in MPEG terminology, _P-frames_) are encoded with reference to prior frames, specifically all prior frames up to and including the most recent key frame. Generally speaking, the correct decoding of an interframe depends on the correct decoding of the most recent key frame and all ensuing frames. Consequently, the decoding algorithm is not tolerant of dropped frames: In an environment in which frames may be dropped or corrupted, correct decoding will not be possible until a key frame is correctly received.
+_Interframes_ (also called _prediction frames_ and, in MPEG terminology,
+_P-frames_) are encoded with reference to prior frames, specifically
+all prior frames up to and including the most recent key frame.
+Generally speaking, the correct decoding of an interframe depends on
+the correct decoding of the most recent key frame and all ensuing
+frames.  Consequently, the decoding algorithm is not tolerant of
+dropped frames: In an environment in which frames may be dropped or
+corrupted, correct decoding will not be possible until a key frame is
+correctly received.
 
-In contrast to MPEG, there is no use of bidirectional prediction. No frame is predicted using frames temporally subsequent to it; there is no analog to an MPEG B-frame.
+In contrast to MPEG, there is no use of bidirectional prediction.  No
+frame is predicted using frames temporally subsequent to it; there is
+no analog to an MPEG B-frame.
 
-Secondly, VP8 augments these notions with that of alternate prediction frames, called _golden frames_ and _altref frames_ (alternative reference frames). Blocks in an interframe may be predicted using blocks in the immediately previous frame as well as the most recent golden frame or altref frame. Every key frame is automatically golden and altref, and any interframe may optionally replace the most recent golden or altref frame.
+Secondly, VP8 augments these notions with that of alternate
+prediction frames, called _golden frames_ and _altref frames_
+(alternative reference frames).  Blocks in an interframe may be
+predicted using blocks in the immediately previous frame as well as
+the most recent golden frame or altref frame.  Every key frame is
+automatically golden and altref, and any interframe may optionally
+replace the most recent golden or altref frame.
 
-Golden frames and altref frames may also be used to partially overcome the intolerance to dropped frames discussed above: If a compressor is configured to code golden frames only with reference to the prior golden frame (and key frame) then the "substream" of key and golden frames may be decoded regardless of loss of other interframes. Roughly speaking, the implementation requires (on the compressor side) that golden frames subsume and recode any context updates effected by the intervening interframes. A typical application of this approach is video conferencing, in which retransmission of a prior golden frame and/or a delay in playback until receipt of the next golden frame is preferable to a larger retransmit and/or delay until the next key frame.
+Golden frames and altref frames may also be used to partially
+overcome the intolerance to dropped frames discussed above: If a
+compressor is configured to code golden frames only with reference to
+the prior golden frame (and key frame), then the "substream" of key
+and golden frames may be decoded regardless of loss of other
+interframes.  Roughly speaking, the implementation requires (on the
+compressor side) that golden frames subsume and recode any context
+updates effected by the intervening interframes.  A typical
+application of this approach is video conferencing, in which
+retransmission of a prior golden frame and/or a delay in playback
+until receipt of the next golden frame is preferable to a larger
+retransmit and/or delay until the next key frame.
 

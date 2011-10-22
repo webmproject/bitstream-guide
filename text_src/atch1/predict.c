@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -30,7 +30,7 @@ static const filter_t sixtap_filters[8] =
     { 3, -16,  77,   77, -16,  3 },
     { 0, -6,   50,   93,  -9,  0 },
     { 1, -8,   36,  108, -11,  2 },
-    { 0, -1,   12,  123,  -6,  0 },
+    { 0, -1,   12,  123,  -6,  0 }
 };
 
 
@@ -775,7 +775,7 @@ filter_block(unsigned char        *output,
 {
     int mx, my;
 
-    /* Handle 0,0 as a special case. TODO: does this make it any
+    /* Handle 0,0 as a special case. TODO: Does this make it any
      * faster?
      */
     if (!mv->raw)
@@ -968,7 +968,7 @@ predict_inter_emulated_edge(struct vp8_decoder_ctx  *ctx,
                             int                      mb_col,
                             int                      mb_row)
 {
-    /* TODO: move this into its own buffer. This only works because
+    /* TODO: Move this into its own buffer. This only works because
      * we still have a border allocated.
      */
     unsigned char *emul_block = ctx->frame_strg[0].img.img_data;

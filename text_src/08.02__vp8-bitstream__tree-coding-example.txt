@@ -1,10 +1,18 @@
 
 
-#### 8.2 Tree Coding Example                                 {#h-08-02}
+#### 8.2 Tree Coding Example                               {#h-08-02}
 
-As a multi-part example, without getting too far into the semantics of macroblock decoding (which is of course taken up below), we look at the "mode" coding for intra-predicted macroblocks.
+As a multi-part example, without getting too far into the semantics
+of macroblock decoding (which is of course taken up below), we look
+at the "mode" coding for intra-predicted macroblocks.
 
-It so happens that, because of a difference in statistics, the Y (or luma) mode encoding uses two different trees: one for key frames and another for interframes. This is the only instance in VP8 of the same dataset being coded by different trees under different circumstances. The UV (or chroma) modes are a proper subset of the Y modes and, as such, have their own decoding tree.
+It so happens that, because of a difference in statistics, the Y (or
+luma) mode encoding uses two different trees: one for key frames and
+another for interframes.  This is the only instance in VP8 of the
+same dataset being coded by different trees under different
+circumstances.  The UV (or chroma) modes are a proper subset of the Y
+modes and, as such, have their own decoding tree.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 typedef enum
@@ -21,7 +29,7 @@ typedef enum
 }
 intra_mbmode;
 
-/* The aforementioned trees together with the implied codings as 
+/* The aforementioned trees together with the implied codings as
    comments.
    Actual (i.e., positive) indices are always even.
    Value (i.e., nonpositive) indices are arbitrary. */
@@ -30,9 +38,9 @@ const tree_index ymode_tree [2 * (num_ymodes - 1)] =
 {
  -DC_PRED, 2,        /* root: DC_PRED = "0", "1" subtree */
   4, 6,              /* "1" subtree has 2 descendant subtrees */
-   -V_PRED, -H_PRED, /* "10" subtree: V_PRED = "100", 
+   -V_PRED, -H_PRED, /* "10" subtree: V_PRED = "100",
                         H_PRED = "101" */
-   -TM_PRED, -B_PRED /* "11" subtree: TM_PRED = "110", 
+   -TM_PRED, -B_PRED /* "11" subtree: TM_PRED = "110",
                         B_PRED = "111" */
 };
 
@@ -40,29 +48,34 @@ const tree_index kf_ymode_tree [2 * (num_ymodes - 1)] =
 {
  -B_PRED, 2,            /* root: B_PRED = "0", "1" subtree */
   4, 6,                 /* "1" subtree has 2 descendant subtrees */
-   -DC_PRED, -V_PRED,   /* "10" subtree: DC_PRED = "100", 
+   -DC_PRED, -V_PRED,   /* "10" subtree: DC_PRED = "100",
                            V_PRED = "101" */
-   -H_PRED, -TM_PRED    /* "11" subtree: H_PRED = "110", 
+   -H_PRED, -TM_PRED    /* "11" subtree: H_PRED = "110",
                            TM_PRED = "111" */
 };
 
 const tree_index uv_mode_tree [2 * (num_uv_modes - 1)] =
 {
  -DC_PRED, 2,          /* root: DC_PRED = "0", "1" subtree */
-  -V_PRED, 4,          /* "1" subtree:  V_PRED = "10", 
+  -V_PRED, 4,          /* "1" subtree:  V_PRED = "10",
                           "11" subtree */
-   -H_PRED, -TM_PRED   /* "11" subtree: H_PRED = "110", 
+   -H_PRED, -TM_PRED   /* "11" subtree: H_PRED = "110",
                           TM_PRED = "111" */
 };
 
-/* Given a bool_decoder d, a Y mode might be decoded as follows.*/
+/* Given a bool_decoder d, a Y mode might be decoded as follows. */
 
-const Prob pretend_its_huffman [num_ymodes - 1] = 
+const Prob pretend_its_huffman [num_ymodes - 1] =
   { 128, 128, 128, 128};
 Ymode = (intra_mbmode) treed_read( d, ymode_tree, 
   pretend_its_huffman);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-Since it greatly facilitates re-use of reference code, and since there  is no real reason to do otherwise, it is strongly suggested that any decoder implementation use exactly the same enumeration values and  probability table layouts as those described in this document (and in  the reference code) for all tree-coded data in VP8.
+
+Since it greatly facilitates re-use of reference code, and since
+there is no real reason to do otherwise, it is strongly suggested
+that any decoder implementation use exactly the same enumeration
+values and probability table layouts as those described in this
+document (and in the reference code) for all tree-coded data in VP8.
 

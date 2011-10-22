@@ -1,28 +1,42 @@
 
 
-#### 9.7 Refresh Golden Frame and AltRef Frame               {#h-09-07}
+#### 9.7 Refresh Golden Frame and Altref Frame             {#h-09-07}
 
 
-For key frames, both golden frame and altref frame are refreshed/replaced by the current reconstructed frame, by default. For non-key frames, VP8 uses two bits to indicate whether the two frame buffers are refreshed, using the reconstructed current frame:
+For key frames, both the golden frame and the altref frame are
+refreshed/ replaced by the current reconstructed frame, by default.
+For non-key frames, VP8 uses two bits to indicate whether the two
+frame buffers are refreshed, using the reconstructed current frame:
+
 
 | Index     | Description
 | --------- | -------------------------------
 | `L(1)`    | Whether golden frame is refreshed (`0` for no, `1` for yes).
 | `L(1)`    | Whether altref frame is refreshed (`0` for no, `1` for yes).
 
-When the flag for golden frame is `0`, VP8 uses 2 more bits in the bitstream to indicate whether the buffer (and which buffer) is copied to the golden frame, or if no buffer is copied:
+
+When the flag for the golden frame is `0`, VP8 uses 2 more bits in the
+bitstream to indicate whether the buffer (and which buffer) is copied
+to the golden frame, or if no buffer is copied:
+
 
 | Index     | Description
 | --------- | -------------------------------
 | `L(2)`    | Buffer copy flag for golden frame buffer
 
-Where: 
 
-* `0` means no buffer is copied to golden frame
-* `1` means last_frame is copied to golden frame
-* `2` means alt_ref_frame is copied to golden frame
+Where:
 
-Similarly, when the flag for altref is `0`, VP8 uses 2 bits in the bitstream to indicate which buffer is copied to `alt_ref_frame`.
+* `0` means no buffer is copied to the golden frame
+
+* `1` means `last_frame` is copied to the golden frame
+
+* `2` means `alt_ref_frame` is copied to the golden frame
+
+
+Similarly, when the flag for altref is `0`, VP8 uses 2 bits in the
+bitstream to indicate which buffer is copied to `alt_ref_frame`.
+
 
 | Index     | Description
 | --------- | -------------------------------
@@ -30,11 +44,16 @@ Similarly, when the flag for altref is `0`, VP8 uses 2 bits in the bitstream to 
 
 Where: 
 
-* `0` means no buffer is copied to altref frame
-* `1` means `last_frame` is copied to altref frame
-* `2` means `golden_frame` is copied to altref frame
+* `0` means no buffer is copied to the altref frame
 
-Two bits are transmitted for `ref_frame_sign_bias` for `golden_frame` and `alt_ref_frame` respectively.
+* `1` means `last_frame` is copied to the altref frame
+
+* `2` means `golden_frame` is copied to the altref frame
+
+
+Two bits are transmitted for `ref_frame_sign_bias` for `golden_frame` and
+`alt_ref_frame`, respectively.
+
 
 | Index     | Description
 | --------- | -------------------------------
@@ -42,5 +61,7 @@ Two bits are transmitted for `ref_frame_sign_bias` for `golden_frame` and `alt_r
 | `L(1)`    | Sign bias flag for altref frame
 
 
-These values are used to control the sign of the motion vectors when a golden frame or an altref frame is used as the reference frame for a macroblock.
+These values are used to control the sign of the motion vectors when
+a golden frame or an altref frame is used as the reference frame for
+a macroblock.
 

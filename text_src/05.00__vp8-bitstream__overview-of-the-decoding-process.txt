@@ -1,63 +1,198 @@
 
 
-### Chapter 5: Overview of the Decoding Process              {#h-05-00}
+### Section 5: Overview of the Decoding Process            {#h-05-00}
 
-A VP8 decoder needs to maintain four YUV frame buffers whose resolutions are at least equal to that of the encoded image. These buffers hold the current frame being reconstructed, the immediately previous reconstructed frame, the most recent golden frame, and the most recent altref frame.
+A VP8 decoder needs to maintain four YUV frame buffers whose
+resolutions are at least equal to that of the encoded image.  These
+buffers hold the current frame being reconstructed, the immediately
+previous reconstructed frame, the most recent golden frame, and the
+most recent altref frame.
 
-Most implementations will wish to "pad" these buffers with "invisible" pixels that extend a moderate number of pixels beyond all four edges of the visible image. This simplifies interframe prediction by allowing all (or most) prediction blocks -- which are _not_ guaranteed to lie within the visible area of a prior frame -- to address usable image data.
+Most implementations will wish to "pad" these buffers with
+"invisible" pixels that extend a moderate number of pixels beyond all
+four edges of the visible image.  This simplifies interframe
+prediction by allowing all (or most) prediction blocks -- which are
+_not_ guaranteed to lie within the visible area of a prior frame -- to
+address usable image data.
 
-Regardless of the amount of padding chosen, the invisible rows above (or below) the image are filled with copies of the top (or bottom) row of the image; the invisible columns to the left (or right) of the image are filled with copies of the leftmost (or rightmost) visible row; and the four invisible corners are filled with copies of the corresponding visible corner pixels. The use of these prediction buffers (and suggested sizes for the _halo_) will be elaborated on in the discussion of motion vectors, interframe prediction, and sub-pixel interpolation later in this document.
+Regardless of the amount of padding chosen, the invisible rows above
+(or below) the image are filled with copies of the top (or bottom)
+row of the image; the invisible columns to the left (or right) of the
+image are filled with copies of the leftmost (or rightmost) visible
+row; and the four invisible corners are filled with copies of the
+corresponding visible corner pixels.  The use of these prediction
+buffers (and suggested sizes for the _halo_) will be elaborated on in
+the discussion of motion vectors, interframe prediction, and sub-
+pixel interpolation later in this document.
 
-As will be seen in the description of the frame header, the image dimensions are specified (and can change) with every key frame. These buffers (and any other data structures whose size depends on the size of the image) should be allocated (or re-allocated) immediately after the dimensions are decoded.
+As will be seen in the description of the frame header, the image
+dimensions are specified (and can change) with every key frame.
+These buffers (and any other data structures whose size depends on
+the size of the image) should be allocated (or re-allocated)
+immediately after the dimensions are decoded.
 
-Leaving most of the details for later elaboration, the following is an outline the decoding process.
+Leaving most of the details for later elaboration, the following is
+an outline of the decoding process.
 
-First, the frame header (beginning of the first data partition) is decoded. Altering or augmenting the maintained state of the decoder, this provides the context in which the per-macroblock data can be interpreted.
+First, the frame header (the beginning of the first data partition)
+is decoded.  Altering or augmenting the maintained state of the
+decoder, this provides the context in which the per-macroblock data
+can be interpreted.
 
-The macroblock data occurs (and must be processed) in raster-scan order. This data comes in two or more parts. The first (_prediction_ or _mode_) part comes in the remainder of the first data partition. The other parts comprise the data partition(s) for the DCT/WHT coefficients of the residue signal. For each macroblock, the prediction data must be processed before the residue.
+The macroblock data occurs (and must be processed) in raster-scan
+order.  This data comes in two or more parts.  The first (_prediction_
+or _mode_) part comes in the remainder of the first data partition.
+The other parts comprise the data partition(s) for the DCT/WHT
+coefficients of the residue signal.  For each macroblock, the
+prediction data must be processed before the residue.
 
-Each macroblock is predicted using one (and only one) of four possible frames. All macroblocks in a key frame, and all _intra-coded_ macroblocks in an interframe, are predicted using the already-decoded macroblocks in the current frame. Macroblocks in an interframe may also be predicted using the previous frame, the golden frame or the altref frame. Such macroblocks are said to be _inter-coded_.
+Each macroblock is predicted using one (and only one) of four
+possible frames.  All macroblocks in a key frame, and all _intra-coded_
+macroblocks in an interframe, are predicted using the already-decoded
+macroblocks in the current frame.  Macroblocks in an interframe may
+also be predicted using the previous frame, the golden frame, or the
+altref frame.  Such macroblocks are said to be _inter-coded_.
 
-The purpose of prediction is to use already-constructed image data to approximate the portion of the original image being reconstructed. The effect of any of the prediction modes is then to write a macroblock-sized prediction buffer containing this approximation.
+The purpose of prediction is to use already-constructed image data to
+approximate the portion of the original image being reconstructed.
+The effect of any of the prediction modes is then to write a
+macroblock-sized prediction buffer containing this approximation.
 
-Regardless of the prediction method, the residue DCT signal is decoded, dequantized, reverse-transformed, and added to the prediction buffer to produce the (almost final) reconstruction value of the macroblock, which is stored in the correct position of the current frame buffer.
+Regardless of the prediction method, the residue DCT signal is
+decoded, dequantized, reverse-transformed, and added to the
+prediction buffer to produce the (almost final) reconstruction value
+of the macroblock, which is stored in the correct position of the
+current frame buffer.
 
-The residue signal consists of 24 (sixteen Y, four U, and four V) 4x4 quantized and losslessly-compressed DCT transforms approximating the difference between the original macroblock in the uncompressed source and the prediction buffer. For most prediction modes, the 0th coefficients of the sixteen Y subblocks are expressed via a 25th WHT of the second-order virtual Y2 subblock discussed above.
+The residue signal consists of 24 (sixteen Y, four U, and four V) 4x4
+quantized and losslessly compressed DCT transforms approximating the
+difference between the original macroblock in the uncompressed source
+and the prediction buffer.  For most prediction modes, the 0th
+coefficients of the sixteen Y subblocks are expressed via a 25th WHT
+of the second-order virtual Y2 subblock discussed above.
 
-_Intra-prediction_ exploits the spatial coherence of frames. The 16x16 luma (Y) and 8x8 chroma (UV) components are predicted independently of each other using one of four simple means of pixel propagation, starting from the already-reconstructed (16-pixel long luma, 8-pixel long chroma) row above and column to the left of the current macroblock. The four methods are:
+_Intra-prediction_ exploits the spatial coherence of frames.  The 16x16
+luma (Y) and 8x8 chroma (UV) components are predicted independently
+of each other using one of four simple means of pixel propagation,
+starting from the already-reconstructed (16-pixel-long luma, 8-pixel-
+long chroma) row above, and column to the left of, the current
+macroblock.  The four methods are:
 
-  1. Copying the row from above throughout the prediction buffer.
-  2. Copying the column from left throughout the prediction buffer.
-  3. Copying the average value of the row and column throughout the      prediction buffer.
-  4. Extrapolation from the row and column using the (fixed) second      difference (horizontal and vertical) from the upper left corner.
+  1.  Copying the row from above throughout the prediction buffer.
 
-Additionally, the sixteen Y subblocks may be predicted independently of each other using one of ten different _modes_, four of which are 4x4 analogs of those described above, augmented with six "diagonal" prediction methods. There are two types of predictions, one intra and one prediction (among all the modes), for which the residue signal does not use the Y2 block to encode the DC portion of the sixteen 4x4 Y subblock DCTs. This "independent Y subblock" mode has no effect on the 8x8 chroma prediction.
+  2.  Copying the column from the left throughout the prediction
+      buffer.
 
-_Inter-prediction_ exploits the temporal coherence between nearby frames. Except for the choice of the prediction frame itself, there is no difference between inter-prediction based on the previous frame and that based on the golden frame or altref frame.
+  3.  Copying the average value of the row and column throughout the
+      prediction buffer.
 
-Inter-prediction is conceptually very simple. While, for reasons of efficiency, there are several methods of encoding the relationship between the current macroblock and corresponding sections of the prediction frame, ultimately each of the sixteen Y subblocks is related to a 4x4 subblock of the prediction frame, whose position in that frame differs from the current subblock position by a (usually small) displacement. These two-dimensional displacements are called _motion vectors_.
+  4.  Extrapolation from the row and column using the (fixed) second
+      difference (horizontal and vertical) from the upper left corner.
 
-The motion vectors used by VP8 have quarter-pixel precision. Prediction of a subblock using a motion vector that happens to have integer (whole number) components is very easy: the 4x4 block of pixels from the displaced block in the previous, golden, or altref frame are simply copied into the correct position of the current macroblock's prediction buffer.
+Additionally, the sixteen Y subblocks may be predicted independently
+of each other using one of ten different _modes_, four of which are 4x4
+analogs of those described above, augmented with six "diagonal"
+prediction methods.  There are two types of predictions, one intra
+and one prediction (among all the modes), for which the residue
+signal does not use the Y2 block to encode the DC portion of the
+sixteen 4x4 Y subblock DCTs.  This "independent Y subblock" mode has
+no effect on the 8x8 chroma prediction.
 
-Fractional displacements are conceptually and implementationally more complex. They require the inference (or synthesis) of sample values that, strictly speaking, do not exist. This is one of the most basic problems in signal processing and readers conversant with that subject will see that the approach taken by VP8 provides a good balance of robustness, accuracy, and efficiency.
+_Inter-prediction_ exploits the temporal coherence between nearby
+frames.  Except for the choice of the prediction frame itself, there
+is no difference between inter-prediction based on the previous frame
+and that based on the golden frame or altref frame.
 
-Leaving the details for the implementation discussion below, the pixel interpolation is calculated by applying a kernel filter (using reasonable-precision integer math) three pixels on either side, both horizontally and vertically, of the pixel to be synthesized. The resulting 4x4 block of synthetic pixels is then copied into position exactly as in the case of integer displacements.
+Inter-prediction is conceptually very simple.  While, for reasons of
+efficiency, there are several methods of encoding the relationship
+between the current macroblock and corresponding sections of the
+prediction frame, ultimately each of the sixteen Y subblocks is
+related to a 4x4 subblock of the prediction frame, whose position in
+that frame differs from the current subblock position by a (usually
+small) displacement.  These two-dimensional displacements are called
+_motion vectors_.
 
-Each of the eight chroma subblocks is handled similarly. Their motion vectors are never specified explicitly; instead, the motion vector for each chroma subblock is calculated by averaging the vectors of the four Y subblocks that occupy the same area of the frame. Since chroma pixels have twice the diameter (and four times the area) of luma pixels, the calculated chroma motion vectors have 1/8 pixel resolution, but the procedure for copying or generating pixels for each subblock is essentially identical to that done in the luma plane.
+The motion vectors used by VP8 have quarter-pixel precision.
+Prediction of a subblock using a motion vector that happens to have
+integer (whole number) components is very easy: The 4x4 block of
+pixels from the displaced block in the previous, golden, or altref
+frame is simply copied into the correct position of the current
+macroblock's prediction buffer.
 
-After all the macroblocks have been generated (predicted and corrected with the DCT/WHT residue), a filtering step (the _loop filter_) is applied to the entire frame. The purpose of the loop filter is to reduce blocking artifacts at the boundaries between macroblocks and between subblocks of the macroblocks. The term loop filter is used because this filter is part of the "coding loop," that is, it affects the reconstructed frame buffers that are used to predict ensuing frames. This is distinguished from the postprocessing filters discussed earlier which affect only the viewed video and do not "feed into" subsequent frames.
+Fractional displacements are conceptually and implementationally more
+complex.  They require the inference (or synthesis) of sample values
+that, strictly speaking, do not exist.  This is one of the most basic
+problems in signal processing, and readers conversant with that
+subject will see that the approach taken by VP8 provides a good
+balance of robustness, accuracy, and efficiency.
 
-Next, if signaled in the data, the current frame may replace the golden frame prediction buffer and/or the altref frame buffer.
+Leaving the details for the implementation discussion below, the
+pixel interpolation is calculated by applying a kernel filter (using
+reasonable-precision integer math) three pixels on either side, both
+horizontally and vertically, of the pixel to be synthesized.  The
+resulting 4x4 block of synthetic pixels is then copied into position
+exactly as in the case of integer displacements.
 
-The halos of the frame buffers are next filled as specified above. Finally, at least as far as decoding is concerned, the (references to) the "current" and "last" frame buffers should be exchanged in preparation for the next frame.
+Each of the eight chroma subblocks is handled similarly.  Their
+motion vectors are never specified explicitly; instead, the motion
+vector for each chroma subblock is calculated by averaging the
+vectors of the four Y subblocks that occupy the same area of the
+frame.  Since chroma pixels have twice the diameter (and four times
+the area) of luma pixels, the calculated chroma motion vectors have
+1/8-pixel resolution, but the procedure for copying or generating
+pixels for each subblock is essentially identical to that done in the
+luma plane.
 
-Various processes may be required (or desired) before viewing the generated frame. As discussed in the frame dimension information below, truncation and/or upscaling of the frame may be required. Some playback systems may require a different frame format (RGB, YUY2, etc.). Finally, as mentioned in the introduction, further postprocessing or filtering of the image prior to viewing may be desired. Since the primary purpose of this document is a decoding specification, the postprocessing is not specified in this document.
+After all the macroblocks have been generated (predicted and
+corrected with the DCT/WHT residue), a filtering step (the _loop
+filter_) is applied to the entire frame.  The purpose of the loop
+filter is to reduce blocking artifacts at the boundaries between
+macroblocks and between subblocks of the macroblocks.  The term "loop
+filter" is used because this filter is part of the "coding loop";
+that is, it affects the reconstructed frame buffers that are used to
+predict ensuing frames.  This is distinguished from the
+postprocessing filters discussed earlier, which affect only the
+viewed video and do not "feed into" subsequent frames.
 
-While the basic ideas of prediction and correction used by VP8 are straightforward, many of the details are quite complex. The management of probabilities is particularly elaborate. Not only do the various modes of intra-prediction and motion vector specification have associated probabilities but they, together with the coding of DCT coefficients and motion vectors, often base these probabilities on a variety of contextual information (calculated from what has been decoded so far), as well as on explicit modification via the frame header.
+Next, if signaled in the data, the current frame may replace the
+golden frame prediction buffer and/or the altref frame buffer.
 
-The "top-level" of decoding and frame reconstruction is implemented in the reference decoder files `dixie.c`.
+The halos of the frame buffers are next filled as specified above.
+Finally, at least as far as decoding is concerned, the (references
+to) the "current" and "last" frame buffers should be exchanged in
+preparation for the next frame.
 
-This concludes our summary of decoding and reconstruction; we continue by discussing the individual aspects in more depth.
+Various processes may be required (or desired) before viewing the
+generated frame.  As discussed in the frame dimension information
+below, truncation and/or upscaling of the frame may be required.
+Some playback systems may require a different frame format (RGB,
+YUY2, etc.).  Finally, as mentioned in the Introduction, further
+postprocessing or filtering of the image prior to viewing may be
+desired.  Since the primary purpose of this document is a decoding
+specification, the postprocessing is not specified in this document.
 
-A reasonable "divide and conquer" approach to implementation of a decoder is to begin by decoding streams composed exclusively of key frames. After that works reliably, interframe handling can be added more easily than if complete functionality were attempted immediately. In accordance with this, we first discuss components needed to decode key frames (most of which are also used in the decoding of interframes) and conclude with topics exclusive to interframes.
+While the basic ideas of prediction and correction used by VP8 are
+straightforward, many of the details are quite complex.  The
+management of probabilities is particularly elaborate.  Not only do
+the various modes of intra-prediction and motion vector specification
+have associated probabilities, but they, together with the coding of
+DCT coefficients and motion vectors, often base these probabilities
+on a variety of contextual information (calculated from what has been
+decoded so far), as well as on explicit modification via the frame
+header.
+
+The "top-level" of decoding and frame reconstruction is implemented
+in the reference decoder file `dixie.c` (Section 20.4).
+
+This concludes our summary of decoding and reconstruction; we
+continue by discussing the individual aspects in more depth.
+
+A reasonable "divide and conquer" approach to implementation of a
+decoder is to begin by decoding streams composed exclusively of key
+frames.  After that works reliably, interframe handling can be added
+more easily than if complete functionality were attempted
+immediately.  In accordance with this, we first discuss components
+needed to decode key frames (most of which are also used in the
+decoding of interframes) and conclude with topics exclusive to
+interframes.
 

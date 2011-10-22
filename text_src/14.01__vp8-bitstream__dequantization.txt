@@ -1,15 +1,25 @@
 
 
-#### 14.1 Dequantization                                     {#h-14-01}
+#### 14.1 Dequantization                                   {#h-14-01}
 
 
-After decoding the DCTs/WHTs as described above, each (quantized) coefficient in each subblock is multiplied by one of six dequantization factors, the choice of factor depending on the plane (Y2, Y, or chroma) and position (DC = coefficient zero, AC = any other coefficient). If the current macroblock has overridden the quantizer level (as described in Chapter 10) then the six factors are looked up from two dequantization tables with appropriate scaling and clamping using the single index supplied by the override. Otherwise, the frame-level dequantization factors (as described in Section 9.6) are used. In either case, the multiplies are computed and stored using 16-bit signed integers.
+After decoding the DCTs/WHTs as described above, each (quantized)
+coefficient in each subblock is multiplied by one of six
+dequantization factors, the choice of factor depending on the plane
+(Y2, Y, or chroma) and position (DC = coefficient zero, AC = any
+other coefficient).  If the current macroblock has overridden the
+quantizer level (as described in Section 10), then the six factors
+are looked up from two dequantization tables with appropriate scaling
+and clamping using the single index supplied by the override.
+Otherwise, the frame-level dequantization factors (as described in
+Section 9.6) are used.  In either case, the multiplies are computed
+and stored using 16-bit signed integers.
 
-The two dequantization tables, which may also be found in the reference decoder file `dequant_data.h`, are as follows.
-
+The two dequantization tables, which may also be found in the
+reference decoder file `dequant_data.h` (Section 20.3), are as follows.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-static const int dc_qlookup[QINDEX_RANGE] = 
+static const int dc_qlookup[QINDEX_RANGE] =
 {
     4,   5,   6,   7,   8,   9,  10,  10,   11,  12,  13,  14,  15,
    16,  17,  17,  18,  19,  20,  20,  21,   21,  22,  22,  23,  23,
@@ -19,11 +29,11 @@ static const int dc_qlookup[QINDEX_RANGE] =
    60,  61,  62,  63,  64,  65,  66,  67,   68,  69,  70,  71,  72,
    73,  74,  75,  76,  76,  77,  78,  79,   80,  81,  82,  83,  84,
    85,  86,  87,  88,  89,  91,  93,  95,   96,  98, 100, 101, 102,
-   104, 106, 108, 110, 112, 114, 116, 118, 122, 124, 126, 128, 130, 
+   104, 106, 108, 110, 112, 114, 116, 118, 122, 124, 126, 128, 130,
    132, 134, 136, 138, 140, 143, 145, 148, 151, 154, 157,
 };
 
-static const int ac_qlookup[QINDEX_RANGE] = 
+static const int ac_qlookup[QINDEX_RANGE] =
 {
     4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,
    17,  18,  19,  20,  21,  22,  23,  24,  25,  26,  27,  28,  29,
@@ -40,5 +50,9 @@ static const int ac_qlookup[QINDEX_RANGE] =
 {:lang="c"}
 
 
-Lookup values from the above two tables are directly used the DC and AC coefficients in Y1 respectively. For Y2 and chroma, values from above tables undergo either a scaling process or clamping processing before the multiplies. Details to these scaling and clamping can be found related lookup functions in `dixie.c`.
+Lookup values from the above two tables are directly used in the DC
+and AC coefficients in Y1, respectively.  For Y2 and chroma, values
+from the above tables undergo either scaling or clamping before the
+multiplies.  Details regarding these scaling and clamping processes
+can be found in related lookup functions in `dixie.c`(Section 20.4).
 

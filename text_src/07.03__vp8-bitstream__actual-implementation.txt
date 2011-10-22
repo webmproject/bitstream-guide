@@ -1,10 +1,17 @@
 
 
-#### 7.3 Actual Implementation                               {#h-07-03}
+#### 7.3 Actual Implementation                             {#h-07-03}
 
-The C code below gives complete implementations of the encoder and decoder described above. While they are logically identical to the "bit-at-a-time" versions, they internally buffer a couple of extra bytes of the bitstream. This allows I/O to be done (more practically) a byte at a time and drastically reduces the number of carries the encoder has to propagate into the already-written data.
+The C code below gives complete implementations of the encoder and
+decoder described above.  While they are logically identical to the
+"bit-at-a-time" versions, they internally buffer a couple of extra
+bytes of the bitstream.  This allows I/O to be done (more
+practically) a byte at a time and drastically reduces the number of
+carries the encoder has to propagate into the already-written data.
 
-Another (logically equivalent) implementation may be found in the reference decoder files `bool_decoder.h`.
+Another (logically equivalent) implementation may be found in the
+reference decoder file `bool_decoder.h` (Section 20.2).
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* Encoder first */
@@ -23,15 +30,14 @@ void init_bool_encoder( bool_encoder *e, uint8 *start_partition)
 {
   e->output = start_partition;
   e->range = 255;
-
   e->bottom = 0;
   e->bit_count = 24;
 }
 
 /* Encoding very rarely produces a carry that must be propagated
-   to the already-written output. The arithmetic guarantees that
+   to the already-written output.  The arithmetic guarantees that
    the propagation will never go beyond the beginning of the
-   output. Put another way, the encoded value x is always less
+   output.  Put another way, the encoded value x is always less
    than one. */
 
 void add_one_to_output( uint8 *q)
@@ -46,7 +52,7 @@ void add_one_to_output( uint8 *q)
 
 void write_bool( bool_encoder *e, Prob prob, int bool_value)
 {
-  /* split is approximately (range * prob) / 256  and,
+  /* split is approximately (range * prob) / 256 and,
      crucially, is strictly bigger than zero and strictly
      smaller than range */
 
@@ -113,7 +119,7 @@ typedef struct {
 } bool_decoder;
 
 /* Call this function before reading any bools from the
-   partition.*/
+   partition. */
 
 void init_bool_decoder( bool_decoder *d, uint8 *start_partition)
 {
@@ -162,7 +168,7 @@ int read_bool( bool_decoder *d, Prob prob)
   return retval;
 }
 
-/* Convenience function reads a "literal", that is, a "num_bits"
+/* Convenience function reads a "literal", that is, a "num_bits"-
    wide unsigned value whose bits come high- to low-order, with
    each bit encoded at probability 128 (i.e., 1/2). */
 

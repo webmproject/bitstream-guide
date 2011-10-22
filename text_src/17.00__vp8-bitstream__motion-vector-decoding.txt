@@ -1,9 +1,14 @@
 
 
-### Chapter 17: Motion Vector Decoding                       {#h-17-00}
+### Section 17: Motion Vector Decoding                     {#h-17-00}
 
 
-As discussed above, motion vectors appear in two places in the VP8 datastream: applied to whole macroblocks in `NEWMV` mode and applied to subsets of macroblocks in `NEW4x4` mode. The format of the vectors is identical in both cases.
+As discussed above, motion vectors appear in two places in the VP8
+datastream: applied to whole macroblocks in `NEWMV` mode and applied to
+subsets of macroblocks in `NEW4x4` mode.  The format of the vectors
+is identical in both cases.
 
-Each vector has two pieces: A vertical component (row) followed by a horizontal component (column). The row and column use separate coding probabilities but are otherwise represented identically.
+Each vector has two pieces: a vertical component (row) followed by a
+horizontal component (column).  The row and column use separate
+coding probabilities but are otherwise represented identically.
 

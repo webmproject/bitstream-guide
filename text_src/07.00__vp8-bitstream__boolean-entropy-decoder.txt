@@ -1,26 +1,56 @@
 
 
-### Chapter 7: Boolean Entropy Decoder                       {#h-07-00}
+### Section 7: Boolean Entropy Decoder                     {#h-07-00}
 
-As discussed in the overview above, essentially the entire VP8 data stream is encoded using a boolean entropy coder.
+As discussed in the overview above, essentially the entire VP8 data
+stream is encoded using a boolean entropy coder.
 
-An understanding of the `bool_decoder` is critical to the implementation of a VP8 decompressor, so we discuss in detail. It is easier to comprehend the `bool_decoder` in conjunction with the `bool_encoder` used by the compressor to write the compressed data partitions.
+An understanding of the `bool_decoder` is critical to the
+implementation of a VP8 decompressor, so we discuss the `bool_decoder`
+in detail.  It is easier to comprehend the `bool_decoder` in
+conjunction with the `bool_encoder` used by the compressor to write
+the compressed data partitions.
 
-The `bool_encoder` encodes (and the `bool_decoder` decodes) one bool (zero-or-one boolean value) at a time. Its purpose is to losslessly compress a sequence of bools for which the probability of their being zero or one can be well-estimated (via constant or previously-coded information) at the time they are written, using identical corresponding probabilities at the time they are read.
+The `bool_encoder` encodes (and the `bool_decoder` decodes) one bool
+(zero-or-one boolean value) at a time.  Its purpose is to losslessly
+compress a sequence of bools for which the probability of their being
+zero or one can be well-estimated (via constant or previously coded
+information) at the time they are written, using identical
+corresponding probabilities at the time they are read.
 
-As the reader is probably aware, if a bool is much more likely to be zero than one (for instance), it can, on average, be faithfully encoded using much less than one bit per value. The `bool_encoder` exploits this.
+As the reader is probably aware, if a bool is much more likely to be
+zero than one (for instance), it can, on average, be faithfully
+encoded using much less than one bit per value. The `bool_encoder`
+exploits this.
 
-In the 1940s, Claude Shannon proved that there is a lower bound for the average datarate of a faithful encoding of a sequence of bools (whose probability distributions are known and are independent of each other) and also that there are encoding algorithms that approximate this lower bound as closely as one wishes.
+In the 1940s, [Shannon] proved that there is a lower bound for the
+average datarate of a faithful encoding of a sequence of bools (whose
+probability distributions are known and are independent of each
+other) and also that there are encoding algorithms that approximate
+this lower bound as closely as one wishes.
 
-If we encode a sequence of bools whose probability of being zero is [[ p ]] (and whose probability of being 1 is [[ 1-p ]]), the lowest possible datarate per value is
+If we encode a sequence of bools whose probability of being zero is p
+(and whose probability of being 1 is 1-p), the lowest possible
+datarate per value is
 
-[[ p*log(p) + (1-p)*log(1-p); ]]
+p*log(p) + (1-p)*log(1-p);
 
-taking the logarithms to the base [[ 1//2 ]] expresses the datarate in bits/value.
+taking the logarithms to the base 1/2 expresses the datarate in
+bits/value.
 
-We give two simple examples. At one extreme, if [[ p=1//2 ]], then [[ log(p) = log(1-p) = 1 ]] and the lowest possible datarate per bool is [[ 1//2 + 1//2 = 1 ]], that is, we cannot do any better than simply literally writing out bits. At another extreme, if [[ p ]] is very small, say [[ p=1//1024 ]], then [[ log(p)=10 ]], [[ log(1-p) ]] is roughly .0014, and the lowest possible datarate is approximately [[ 10//1024 + .0014 ]], roughly 1/100 of a bit per bool.
+We give two simple examples.  At one extreme, if p = 1/2, then log(p)
+= log(1-p) = 1, and the lowest possible datarate per bool is 1/2 +
+1/2 = 1; that is, we cannot do any better than simply literally
+writing out bits.  At another extreme, if p is very small, say p =
+1/1024, then log(p)=10, log(1-p) is roughly .0014, and the lowest
+possible datarate is approximately 10/1024 + .0014, roughly 1/100 of
+a bit per bool.
 
-Because most of the bools in the VP8 datastream have zero-probabilities nowhere near [[ 1//2 ]], the compression provided by the `bool_encoder` is critical to the performance of VP8.
+Because most of the bools in the VP8 datastream have zero-
+probabilities nowhere near 1/2, the compression provided by the
+`bool_encoder` is critical to the performance of VP8.
 
-The boolean coder used by VP8 is a variant of an arithmetic coder. An excellent discussion of arithmetic coding (and other lossless compression techniques) can be found in the book _Text Compression_ by Timothy C. Bell, John G. Cleary, and Ian H. Witten, published in 1990 by Prentice-Hall.
+The boolean coder used by VP8 is a variant of an arithmetic coder.
+An excellent discussion of arithmetic coding (and other lossless
+compression techniques) can be found in [Bell].
 

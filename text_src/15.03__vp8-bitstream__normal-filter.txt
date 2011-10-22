@@ -1,45 +1,53 @@
 
 
-#### 15.3 Normal Filter                                      {#h-15-03}
+#### 15.3 Normal Filter                                    {#h-15-03}
 
 
-The normal loop filter is a refinement of the simple loop filter; all of the general discussion above applies here as well. In particular, the functions `c`, `u2s`, `s2u`, `abs`, and `common_adjust` are used by both the normal and simple filters.
+The normal loop filter is a refinement of the simple loop filter; all
+of the general discussion above applies here as well.  In particular,
+the functions `c`, `u2s`, `s2u`, `abs`, and `common_adjust` are used by both
+the normal and simple filters.
 
-As mentioned above, the normal algorithms for inter-macroblock and inter-subblock edges differ. Nonetheless, they have a great deal in common: They use similar threshold algorithms to disable the filter and to detect high internal edge variance (which influences the filtering algorithm). Both algorithms also use, at least conditionally, the simple filter adjustment procedure described above.
+As mentioned above, the normal algorithms for inter-macroblock and
+inter-subblock edges differ.  Nonetheless, they have a great deal in
+common: They use similar threshold algorithms to disable the filter
+and to detect high internal edge variance (which influences the
+filtering algorithm).  Both algorithms also use, at least
+conditionally, the simple filter adjustment procedure described
+above.
 
 The common thresholding algorithms are as follows.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/* All functions take (among other things) a segment (of length 
+/* All functions take (among other things) a segment (of length
    at most 4 + 4 = 8) symmetrically straddling an edge.
 
-   The pixel values (or pointers) are always given in order, 
-   from the "beforemost" to the "aftermost". So, for a 
-   horizontal edge (written "|"), an 8-pixel segment would be 
+   The pixel values (or pointers) are always given in order,
+   from the "beforemost" to the "aftermost".  So, for a
+   horizontal edge (written "|"), an 8-pixel segment would be
    ordered p3 p2 p1 p0 | q0 q1 q2 q3. */
 
-
-/* Filtering is disabled if the difference between any two 
-   adjacent "interior" pixels in the 8-pixel segment exceeds 
-   the relevant threshold (I). A more complex thresholding 
-   calculation is done for the group of four pixels that 
-   straddle the edge, in line with the calculation in 
+/* Filtering is disabled if the difference between any two
+   adjacent "interior" pixels in the 8-pixel segment exceeds
+   the relevant threshold (I).  A more complex thresholding
+   calculation is done for the group of four pixels that
+   straddle the edge, in line with the calculation in
    simple_segment() above. */
 
 int filter_yes(
     uint8 I,        /* limit on interior differences */
     uint8 E,        /* limit at the edge */
 
-    cint8 p3, cint8 p2, cint8 p1, cint8 p0, /* pixels before 
+    cint8 p3, cint8 p2, cint8 p1, cint8 p0, /* pixels before
                                                edge */
-    cint8 q0, cint8 q1, cint8 q2, cint8 q3  /* pixels after 
+    cint8 q0, cint8 q1, cint8 q2, cint8 q3  /* pixels after
                                                edge */
 ) {
-    return  (abs(p0 - q0)*2 + abs(p1-q1)/2) <= E
-        &&  abs(p3 - p2) <= I  &&  abs(p2 - p1) <= I  &&  
+    return  (abs(p0 - q0)*2 + abs(p1 - q1)/2) <= E
+        &&  abs(p3 - p2) <= I  &&  abs(p2 - p1) <= I  &&
           abs(p1 - p0) <= I
-        &&  abs(q3 - q2) <= I  &&  abs(q2 - q1) <= I  &&  
+        &&  abs(q3 - q2) <= I  &&  abs(q2 - q1) <= I  &&
           abs(q1 - q0) <= I;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,8 +55,8 @@ int filter_yes(
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/* Filtering is altered if (at least) one of the differences 
-   on either side of the edge exceeds a threshold (we have 
+/* Filtering is altered if (at least) one of the differences
+   on either side of the edge exceeds a threshold (we have
    "high edge variance"). */
 
 int hev(
@@ -61,25 +69,31 @@ int hev(
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-The subblock filter is a variant of the simple filter. In fact, if we have high edge variance, the adjustment is exactly as for the simple filter. Otherwise, the simple adjustment (without outer taps) is applied and the two pixels one step in from the edge pixels are adjusted by roughly half the amount by which the two edge pixels are adjusted; since the edge adjustment here is essentially 3/8 the edge difference, the inner adjustment is approximately 3/16 the edge difference.
+The subblock filter is a variant of the simple filter.  In fact, if
+we have high edge variance, the adjustment is exactly as for the
+simple filter.  Otherwise, the simple adjustment (without outer taps)
+is applied, and the two pixels one step in from the edge pixels are
+adjusted by roughly half the amount by which the two edge pixels are
+adjusted; since the edge adjustment here is essentially 3/8 the edge
+difference, the inner adjustment is approximately 3/16 the edge
+difference.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void subblock_filter(
     uint8 hev_threshold,     /* detect high edge variance */
     uint8 interior_limit,    /* possibly disable filter */
     uint8 edge_limit,
-    cint8 *P3, cint8 *P2, int8 *P1, int8 *P0,   /* pixels before 
+    cint8 *P3, cint8 *P2, int8 *P1, int8 *P0,   /* pixels before
                                                    edge */
-    int8 *Q0, int8 *Q1, cint8 *Q2, cint8 *Q3    /* pixels after 
+    int8 *Q0, int8 *Q1, cint8 *Q2, cint8 *Q3    /* pixels after
                                                    edge */
 ) {
-    cint8 p3 = u2s(*P3), p2 = u2s(*P2), p1 = u2s(*P1), 
+    cint8 p3 = u2s(*P3), p2 = u2s(*P2), p1 = u2s(*P1),
       p0 = u2s(*P0);
-    cint8 q0 = u2s(*Q0), q1 = u2s(*Q1), q2 = u2s(*Q2), 
+    cint8 q0 = u2s(*Q0), q1 = u2s(*Q1), q2 = u2s(*Q2),
       q3 = u2s(*Q3);
 
-    if( filter_yes( interior_limit, edge_limit, q3, q2, q1, q0, 
+    if( filter_yes( interior_limit, edge_limit, q3, q2, q1, q0,
       p0, p1, p2, p3))
     {
         const int hv = hev( hev_threshold, p1, p0, q0, q1);
@@ -95,26 +109,31 @@ void subblock_filter(
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
-
-The inter-macroblock filter has potentially wider scope. If the edge variance is high, it performs the simple adjustment (using the outer taps, just like the simple filter and the corresponding case of the normal subblock filter). If the edge variance is low, we begin with the same basic filter calculation and apply multiples of it to pixel pairs symmetric about the edge; the magnitude of adjustment decays as we move away from the edge and six of the pixels in the segment are affected.
-
+The inter-macroblock filter has potentially wider scope.  If the edge
+variance is high, it performs the simple adjustment (using the outer
+taps, just like the simple filter and the corresponding case of the
+normal subblock filter).  If the edge variance is low, we begin with
+the same basic filter calculation and apply multiples of it to pixel
+pairs symmetric about the edge; the magnitude of adjustment decays as
+we move away from the edge and six of the pixels in the segment are
+affected.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void MBfilter(
     uint8 hev_threshold,     /* detect high edge variance */
     uint8 interior_limit,    /* possibly disable filter */
     uint8 edge_limit,
-    cint8 *P3, int8 *P2, int8 *P1, int8 *P0,  /* pixels before 
+    cint8 *P3, int8 *P2, int8 *P1, int8 *P0,  /* pixels before
                                                  edge */
-    int8 *Q0, int8 *Q1, int8 *Q2, cint8 *Q3   /* pixels after 
+    int8 *Q0, int8 *Q1, int8 *Q2, cint8 *Q3   /* pixels after
                                                  edge */
 ) {
-    cint8 p3 = u2s(*P3), p2 = u2s(*P2), p1 = u2s(*P1), 
+    cint8 p3 = u2s(*P3), p2 = u2s(*P2), p1 = u2s(*P1),
       p0 = u2s(*P0);
-    cint8 q0 = u2s(*Q0), q1 = u2s(*Q1), q2 = u2s(*Q2), 
+    cint8 q0 = u2s(*Q0), q1 = u2s(*Q1), q2 = u2s(*Q2),
       q3 = u2s(*Q3);
 
-    if( filter_yes( interior_limit, edge_limit, q3, q2, q1, q0, 
+    if( filter_yes( interior_limit, edge_limit, q3, q2, q1, q0,
       p0, p1, p2, p3))
     {
         if( !hev( hev_threshold, p1, p0, q0, q1))
@@ -124,9 +143,9 @@ void MBfilter(
 
             const int8 w = c( c(p1 - q1) + 3*(q0 - p0) );
 
-            /* 9/64 is approximately 9/63 = 1/7 and 1<<7 = 128 = 
-               2*64. So this a, used to adjust the pixels adjacent 
-               to the edge, is something like 3/7 the edge 
+            /* 9/64 is approximately 9/63 = 1/7, and 1<<7 = 128 =
+               2*64.  So this a, used to adjust the pixels adjacent
+               to the edge, is something like 3/7 the edge
                difference. */
 
             int8 a = c( (27*w + 63) >> 7);
@@ -146,10 +165,9 @@ void MBfilter(
             *Q2 = s2u( q2 - a);  *P2 = s2u( p2 + a);
 
         } else                      /* if hev, do simple filter */
-            common_adjust( 1, P1, P0, Q0, Q1);   /* using outer 
+            common_adjust( 1, P1, P0, Q0, Q1);   /* using outer
                                                     taps */
     }
-
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}

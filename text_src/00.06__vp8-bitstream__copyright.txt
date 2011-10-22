@@ -1,8 +1,9 @@
 
 
-### Copyright                                               {#h-00-06}
+### Copyright                                              {#h-00-06}
 
-*This specification is made available under a [Creative Commons Attribution 3.0 License][1].*
+*This specification is made available under a [Creative Commons
+Attribution 3.0 License][1].*
 
 [1]: http://creativecommons.org/licenses/by/3.0/
 

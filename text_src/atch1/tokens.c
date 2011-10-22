@@ -1,9 +1,9 @@
 /*
- *  Copyright (c) 2010 The VP8 project authors. All Rights Reserved.
+ *  Copyright (c) 2010, 2011, Google Inc.  All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
- *  tree. An additional intellectual property rights grant can be
+ *  tree.  An additional intellectual property rights grant can be
  *  found in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
  */
@@ -283,7 +283,7 @@ ONE_CONTEXT_NODE_0_:
     b_tokens[zigzag[15]] = v;
 BLOCK_FINISHED:
     eob_mask |= (c > 1) << i;
-    t = (c != !type);   // any nonzero data?
+    t = (c != !type);   // any non-zero data?
     eob_mask |= t << 31;
 
     left[left_context_index[i]] = above[above_context_index[i]] = t;
@@ -337,8 +337,8 @@ reset_mb_context(token_entropy_ctx_t  *left,
                  token_entropy_ctx_t  *above,
                  enum prediction_mode  mode)
 {
-    /* Reset the macroblock context on the left and right. We have to
-     * preserve the context of the second order block if this mode
+    /* Reset the macroblock context on the left and right.  We have
+     * to preserve the context of the second order block if this mode
      * would not have updated it.
      */
     memset(left, 0, sizeof((*left)[0]) * 8);

@@ -1,17 +1,33 @@
 
 
-#### 15.2 Simple Filter                                      {#h-15-02}
+#### 15.2 Simple Filter                                    {#h-15-02}
 
 
-Having described the overall procedure of, and pixels affected by, the loop filter, we turn our attention to the treatment of individual segments straddling edges. We begin by describing the simple filter, which, as the reader might guess, is somewhat simpler than the normal filter.
+Having described the overall procedure of, and pixels affected by,
+the loop filter, we turn our attention to the treatment of individual
+segments straddling edges.  We begin by describing the simple filter,
+which, as the reader might guess, is somewhat simpler than the normal
+filter.
 
-Note that the simple filter only applies to luma edges. Chroma edges are left unfiltered.
+Note that the simple filter only applies to luma edges.  Chroma edges
+are left unfiltered.
 
-Roughly speaking, the idea of loop filtering is, within limits, to reduce the difference between pixels straddling an edge. Differences in excess of a threshold (associated to the `loop_filter_level`) are assumed to be "natural" and are unmodified; differences below the threshold are assumed to be artifacts of quantization and the (partially) separate coding of blocks, and are reduced via the procedures described below. While the `loop_filter_level` is in principle arbitrary, the levels chosen by a VP8 compressor tend to be correlated to quantizer levels.
+Roughly speaking, the idea of loop filtering is, within limits, to
+reduce the difference between pixels straddling an edge.  Differences
+in excess of a threshold (associated to the `loop_filter_level`) are
+assumed to be "natural" and are unmodified; differences below the
+threshold are assumed to be artifacts of quantization and the
+(partially) separate coding of blocks, and are reduced via the
+procedures described below.  While the `loop_filter_level` is in
+principle arbitrary, the levels chosen by a VP8 compressor tend to be
+correlated to quantizer levels.
 
-Most of the filtering arithmetic is done using 8-bit signed operands (having a range -128 to +127, inclusive), supplemented by 16-bit temporaries holding results of multiplies.
+Most of the filtering arithmetic is done using 8-bit signed operands
+(having a range of -128 to +127, inclusive), supplemented by 16-bit
+temporaries holding results of multiplies.
 
-Sums and other temporaries need to be "clamped" to a valid signed 8-bit range:
+Sums and other temporaries need to be "clamped" to a valid signed
+8-bit range:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +39,8 @@ int8 c( int v)
 {:lang="c"}
 
 
-Since pixel values themselves are unsigned 8-bit numbers, we need to convert between signed and unsigned values:
+Since pixel values themselves are unsigned 8-bit numbers, we need to
+convert between signed and unsigned values:
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,7 +54,11 @@ Pixel s2u( int v) { return (Pixel) ( c(v) + 128);}
 {:lang="c"}
 
 
-Filtering is often predicated on absolute-value thresholds. The following function is the equivalent of the standard library function `abs`, whose prototype is found in the standard header file `stdlib.h`. For us, the argument `v` is always the difference between two pixels and lies in the range [[ -255 <= v <= +255 ]].
+Filtering is often predicated on absolute-value thresholds.  The
+following function is the equivalent of the standard library function
+abs, whose prototype is found in the standard header file `stdlib.h`.
+For us, the argument v is always the difference between two pixels
+and lies in the range -255 <= v <= +255.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,14 +67,33 @@ int abs( int v) { return v < 0?  -v : v;}
 {:lang="c"}
 
 
-An actual implementation would of course use inline functions or macros to accomplish these trivial procedures (which are used by both the normal and simple loop filters). An optimal implementation would probably express them in machine language, perhaps using single instruction, multiple data (SIMD) vector instructions. On many SIMD processors, the saturation accomplished by the above clamping function is often folded into the arithmetic instructions themselves, obviating the explicit step taken here.
+An actual implementation would of course use inline functions or
+macros to accomplish these trivial procedures (which are used by both
+the normal and simple loop filters).  An optimal implementation would
+probably express them in machine language, perhaps using single
+instruction, multiple data (SIMD) vector instructions.  On many SIMD
+processors, the saturation accomplished by the above clamping
+function is often folded into the arithmetic instructions themselves,
+obviating the explicit step taken here.
 
-To simplify the specification of relative pixel positions, we use the word before to mean "immediately above" (for a vertical segment straddling a horizontal edge) or "immediately to the left of" (for a horizontal segment straddling a vertical edge) and the word after to mean "immediately below" or "immediately to the right of".
+To simplify the specification of relative pixel positions, we use the
+word "before" to mean "immediately above" (for a vertical segment
+straddling a horizontal edge) or "immediately to the left of" (for a
+horizontal segment straddling a vertical edge), and the word "after"
+to mean "immediately below" or "immediately to the right of".
 
-Given an edge, a segment, and a limit value, the simple loop filter computes a value based on the four pixels that straddle the edge (two either side). If that value is below a supplied limit, then, very roughly speaking, the two pixel values are brought closer to each other, "shaving off" something like a quarter of the difference. The same procedure is used for all segments straddling any type of edge, regardless of the nature (inter-macroblock, inter-subblock, luma, or chroma) of the edge; only the limit value depends on the edge-type.
+Given an edge, a segment, and a limit value, the simple loop filter
+computes a value based on the four pixels that straddle the edge (two
+either side).  If that value is below a supplied limit, then, very
+roughly speaking, the two pixel values are brought closer to each
+other, "shaving off" something like a quarter of the difference.  The
+same procedure is used for all segments straddling any type of edge,
+regardless of the nature (inter-macroblock, inter-subblock, luma, or
+chroma) of the edge; only the limit value depends on the edge type.
 
-The exact procedure (for a single segment) is as follows; the subroutine common_adjust is used by both the simple filter presented here and the normal filters discussed in [Section 15.3](#h-15-03).
-
+The exact procedure (for a single segment) is as follows; the
+subroutine common_adjust is used by both the simple filter presented
+here and the normal filters discussed in Section 15.3.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 int8 common_adjust(
@@ -69,13 +109,13 @@ int8 common_adjust(
     cint8 q1 = u2s( *Q1);
 
     /* Disregarding clamping, when "use_outer_taps" is false,
-       "a" is 3*(q0-p0). Since we are about to divide "a" by
+       "a" is 3*(q0-p0).  Since we are about to divide "a" by
        8, in this case we end up multiplying the edge
        difference by 5/8.
 
        When "use_outer_taps" is true (as for the simple filter),
        "a" is p1 - 3*p0 + 3*q0 - q1, which can be thought of as
-       a refinement of 2*(q0 - p0) and the adjustment is
+       a refinement of 2*(q0 - p0), and the adjustment is
        something like (q0 - p0)/4. */
 
     int8 a = c( ( use_outer_taps? c(p1 - q1) : 0 ) + 3*(q0 - p0) );
@@ -86,8 +126,8 @@ int8 common_adjust(
     cint8 b = (c(a + 3)) >> 3;
 
     /* Divide a by 8, rounding up when f >= 1/2.
-       Although not strictly part of the "C" language,
-       the right-shift is assumed to propagate the sign bit. */
+       Although not strictly part of the C language,
+       the right shift is assumed to propagate the sign bit. */
 
     a = c( a + 4) >> 3;
 
@@ -118,16 +158,31 @@ void simple_segment(
     Pixel *Q0,          /* pixel after edge */
     const Pixel *Q1     /* pixel after Q0 */
 ) {
-    if( (abs(*P0 - *Q0)*2 + abs(*P1-*Q1)/2) <= edge_limit))
+    if( (abs(*P0 - *Q0)*2 + abs(*P1 - *Q1)/2) <= edge_limit))
         common_adjust( 1, P1, P0, Q0, Q1);   /* use outer taps */
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
 
 
-We make a couple of remarks about the rounding procedure above. When `b` is zero (that is, when the "fractional part" of `a` is not 1/2 ), we are (except for clamping) adding the same number to `p0` as we are subtracting from `q0`. This preserves the average value of `p0` and `q0` but the resulting difference between `p0` and `q0` is always even; in particular, the smallest non-zero gradation [[ +-1 ]] is not possible here.
+We make a couple of remarks about the rounding procedure above.  When
+`b` is zero (that is, when the "fractional part" of `a` is not 1/2), we
+are (except for clamping) adding the same number to `p0` as we are
+subtracting from `q0`.  This preserves the average value of `p0` and `q0`,
+but the resulting difference between `p0` and `q0` is always even; in
+particular, the smallest non-zero gradation +-1 is not possible here.
 
-When `b` is one, the value we add to `p0` (again except for clamping) is one less than the value we are subtracting from `q0`. In this case, the resulting difference is always odd (and the small gradation [[ +-1 ]] is possible) but the average value is reduced by 1/2, yielding, for instance, a very slight darkening in the luma plane. (In the very unlikely event of appreciable darkening after a large number of interframes, a compressor would of course eventually compensate for this in the selection of predictor and/or residue.)
+When `b` is one, the value we add to `p0` (again except for clamping) is
+one less than the value we are subtracting from `q0`.  In this case,
+the resulting difference is always odd (and the small gradation +-1
+is possible), but the average value is reduced by 1/2, yielding, for
+instance, a very slight darkening in the luma plane.  (In the very
+unlikely event of appreciable darkening after a large number of
+interframes, a compressor would of course eventually compensate for
+this in the selection of predictor and/or residue.)
 
-The derivation of the `edge_limit` value used above, which depends on the `loop_filter_level` and `sharpness_level`, as well as the type of edge being processed, will be taken up after we describe the normal loop filtering algorithm below.
+The derivation of the `edge_limit` value used above, which depends on
+the `loop_filter_level` and `sharpness_level`, as well as the type of
+edge being processed, will be taken up after we describe the normal
+loop filtering algorithm below.
 
