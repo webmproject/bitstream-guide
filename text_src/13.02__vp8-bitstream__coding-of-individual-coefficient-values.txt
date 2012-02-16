@@ -53,8 +53,8 @@ const tree_index coeff_tree [2 * (num_dct_tokens - 1)] =
      18, 20,
       -dct_cat3, -dct_cat4, /* cat3 = "1111100", 
                                cat4 = "1111101" */
-      -dct_cat5, -dct_cat6  /* cat4 = "1111110", 
-                               cat4 = "1111111" */
+      -dct_cat5, -dct_cat6  /* cat5 = "1111110", 
+                               cat6 = "1111111" */
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {:lang="c"}
