@@ -1,0 +1,8 @@
+
+
+#### Refresh Entropy Probabilities                        {#h-09-07a}
+
+
+VP8 uses one bit, L(1), to indicate if the entropy probabilities are
+refreshed.
+
